@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using FluentCsv.Exceptions;
 
-namespace FluentCsv
+namespace FluentCsv.CsvParser
 {
     public class ColumnsResolver<TResult> where TResult : new()
     {

@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace FluentCsv
+namespace FluentCsv.CsvParser
 {
     public class CsvFileParser<TResult> where TResult : new()
     {

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace FluentCsv
+namespace FluentCsv.CsvParser
 {
     public class ColumnExtractor<TResult, TMember> : IColumnExtractor
     {

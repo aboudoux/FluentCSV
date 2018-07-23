@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentCsv.CsvParser;
 using NUnit.Framework;
 
 namespace FluentCsv.Tests
