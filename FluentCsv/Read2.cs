@@ -12,21 +12,21 @@ namespace FluentCsv
 
     public class CsvReader2
     {
-        public FileOptions FromString(string fileName)
+        public FileOptions FromString(string source)
         {
-            return new FileOptions(fileName);
+            return new FileOptions(source);
         }
     }
 
     public class FileOptions
     {
-        private readonly string _fileName;
+        private readonly string _source;
         private readonly GlobalOptions _globalOptions;
         private readonly ResultSetOptions _resultSetOptions;
 
-        public FileOptions(string fileName)
+        public FileOptions(string source)
         {
-            _fileName = fileName;
+            _source = source;
             _resultSetOptions = new ResultSetOptions();
             _globalOptions = new GlobalOptions(_resultSetOptions);
         }

@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq.Expressions;
 using FluentAssertions;
+using FluentCsv.Exceptions;
 using NUnit.Framework;
 
 namespace FluentCsv.Tests
@@ -23,29 +22,14 @@ namespace FluentCsv.Tests
             result.Member2.Should().Be(5);
             result.Member3.Should().Be(new DateTime(1980,07,01));
         }
-    }
 
-    public class ColumnsResolver<TResult> where TResult : new()
-    {
-        private readonly Dictionary<int, IColumnExtractor> _columns = new Dictionary<int, IColumnExtractor>();
-
-        public void AddColumn<TMember>(int index, Expression<Func<TResult, TMember>> into, Func<string, TMember> setInThisWay = null)
+        [Test]
+        public void ThrowErrorIfAddColumnWithSameIndex()
         {
-            var extractor = new ColumnExtractor<TResult, TMember>();
-            extractor.SetInto(into);
-
-            if(setInThisWay != null)
-                extractor.SetInThisWay(setInThisWay);
-            
-            _columns.Add(index, extractor);
-        }
-
-        public TResult GetResult(string[] rawColumns)
-        {
-            var result = new TResult();
-            foreach (var extractor in _columns)
-                extractor.Value.Extract(result, rawColumns[extractor.Key]);
-            return result;
+            var resolver = new ColumnsResolver<TestResult>();
+            resolver.AddColumn(0, a=>a.Member1);
+            Action error = () => resolver.AddColumn(0, a => a.Member1);
+            error.Should().Throw<ColumnWithSameIndexAlreadyDeclaredException>();
         }
     }
 }

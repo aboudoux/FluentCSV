@@ -8,7 +8,7 @@ namespace FluentCsv.Tests
         [Test]
         public void TestMethod1()
         {
-            var data = Read
+           /* var data = Read
                 .Csv
                 .FromString("test")
                     .Where.LinesEndWith("\r\n")
@@ -17,7 +17,7 @@ namespace FluentCsv.Tests
                     .Put.Column(0).As<DateTime>().Into(a => a.P3)
                     .Put.Column(2).Into(a => a.P2)
                     .Put.Column(3).As<Address>().InThisWay(a=>new Address(a)).Into(a=>a.Address)
-                .GetAll();
+                .GetAll();*/
 
             Read2.Csv
                 .FromString("test")

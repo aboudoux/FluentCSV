@@ -168,7 +168,7 @@ namespace FluentCsv
     {
         internal ResultSetBuilder(TechnicalData technicalData) : base(technicalData){}
 
-        public ColumnsBuilder<TLine> ReturnsLinesOf<TLine>()
+        public ColumnsBuilder<TLine> ReturnsLinesOf<TLine>() where TLine : new()
         {
             return new ColumnsBuilder<TLine>(TechnicalData);
         }
