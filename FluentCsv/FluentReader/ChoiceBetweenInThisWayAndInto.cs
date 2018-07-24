@@ -24,5 +24,10 @@ namespace FluentCsv.FluentReader
             _inThisWhayBuilder = new InThisWhayBuilder<TLine, TMember>(CsvFileParser, columnIndex);
             _intoBuilder = new IntoBuilder<TLine, TMember>(CsvFileParser, columnIndex);
         }
+        internal ChoiceBetweenInThisWayAndInto(CsvFileParser<TLine> parser, string columnName) : base(parser)
+        {
+            _inThisWhayBuilder = new InThisWhayBuilder<TLine, TMember>(CsvFileParser, columnName);
+            _intoBuilder = new IntoBuilder<TLine, TMember>(CsvFileParser, columnName);
+        }
     }
 }

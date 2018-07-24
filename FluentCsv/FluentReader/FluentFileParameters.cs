@@ -21,5 +21,11 @@ namespace FluentCsv.FluentReader
             CsvParameters.EndLineDelimiter = lineDelimiter;
             return _choice;
         }
+
+        public ChoiceBetweenFileParametersrAndResultsetBuilder FirstLineIsHeader()
+        {
+            CsvParameters.FirstLineHasHeader = true;
+            return _choice;
+        }
     }
 }

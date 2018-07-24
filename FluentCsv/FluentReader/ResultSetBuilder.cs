@@ -13,6 +13,10 @@ namespace FluentCsv.FluentReader
                 ColumnDelimiter = CsvParameters.ColumnDelimiter,
                 LineDelimiter = CsvParameters.EndLineDelimiter
             };
+
+            if(CsvParameters.FirstLineHasHeader)
+                parser.DeclareFirstLineHasHeader();
+
             return new ColumnsBuilder<TLine>(parser);
         }
     }

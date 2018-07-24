@@ -102,6 +102,48 @@ test3<->3<->01012003";
             resultSet[2].Should().BeEquivalentTo(new TestResult() { Member1 = "test3", Member2 = 3, Member3 = new DateTime(2003, 01, 01) });
         }
 
+        [Test]
+        public void DontReadFirstLineIfHeader()
+        {
+            const string csv = @"Name,Age
+Jules,20
+Gaetan,30
+Benoit,40";
+
+            var resultset = Read.Csv.FromString(csv)
+                .Where.ColumnsAreDelimitedBy(",").And.FirstLineIsHeader()
+                .That.ReturnsLinesOf<TestResult>()
+                .Put.Column(0).Into(a => a.Member1)
+                .Put.Column(1).As<int>().Into(a => a.Member2)
+                .GetAll();
+
+            resultset.Should().HaveCount(3);
+            resultset[0].Should().BeEquivalentTo(new TestResult() { Member1 = "Jules", Member2 = 20 });
+            resultset[1].Should().BeEquivalentTo(new TestResult() { Member1 = "Gaetan", Member2 = 30});
+            resultset[2].Should().BeEquivalentTo(new TestResult() { Member1 = "Benoit", Member2 = 40 });
+        }
+
+        [Test]
+        public void UseColumnName()
+        {
+            const string csv = @"Name,Age
+Jules,20
+Gaetan,30
+Benoit,40";
+
+            var resultset = Read.Csv.FromString(csv)
+                .Where.ColumnsAreDelimitedBy(",").And.FirstLineIsHeader()
+                .That.ReturnsLinesOf<TestResult>()
+                .Put.Column("Name").Into(a => a.Member1)
+                .Put.Column("Age").As<int>().Into(a => a.Member2)
+                .GetAll();
+
+            resultset.Should().HaveCount(3);
+            resultset[0].Should().BeEquivalentTo(new TestResult() { Member1 = "Jules", Member2 = 20 });
+            resultset[1].Should().BeEquivalentTo(new TestResult() { Member1 = "Gaetan", Member2 = 30 });
+            resultset[2].Should().BeEquivalentTo(new TestResult() { Member1 = "Benoit", Member2 = 40 });
+        }
+
         private static DateTime ParseFromEightDigit(string eightDigitDate)
             => DateTime.ParseExact(eightDigitDate, "ddMMyyyy", CultureInfo.InvariantCulture);
     }

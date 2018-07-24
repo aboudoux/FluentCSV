@@ -12,5 +12,10 @@ namespace FluentCsv.FluentReader
         {
             return new ChoiceBetweenAsAndInto<TLine>(CsvFileParser, index);
         }
+
+        public ChoiceBetweenAsAndInto<TLine> Column(string columnName)
+        {
+            return new ChoiceBetweenAsAndInto<TLine>(CsvFileParser, columnName);
+        }
     }
 }

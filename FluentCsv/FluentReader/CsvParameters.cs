@@ -5,5 +5,7 @@ namespace FluentCsv.FluentReader
         public string Source { get; set; }
         public string ColumnDelimiter { get; set; } = ";";
         public string EndLineDelimiter { get; set; } = "\r\n";
+
+        public bool FirstLineHasHeader = false;
     }
 }
