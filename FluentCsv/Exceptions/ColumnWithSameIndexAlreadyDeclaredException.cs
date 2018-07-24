@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace FluentCsv.Exceptions
+﻿namespace FluentCsv.Exceptions
 {
-    public class ColumnWithSameIndexAlreadyDeclaredException : Exception
+    public class ColumnWithSameIndexAlreadyDeclaredException : FluentCsvException
     {
         public ColumnWithSameIndexAlreadyDeclaredException(int index) 
             : base($"A column with index {index} is already declared")

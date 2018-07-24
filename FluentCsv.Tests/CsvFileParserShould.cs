@@ -1,5 +1,7 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using FluentCsv.CsvParser;
+using FluentCsv.Exceptions;
 using NUnit.Framework;
 
 namespace FluentCsv.Tests
@@ -9,9 +11,7 @@ namespace FluentCsv.Tests
         [Test]
         public void ParseSimpleCsvFromString()
         {
-            const string input = @"test1
-Test2
-test3";
+            const string input = "test1\r\nTest2\r\ntest3";
 
             var parser = new CsvFileParser<TestResult>(input);
             parser.AddColumn(0, a=>a.Member1);
@@ -22,9 +22,7 @@ test3";
         [Test]
         public void ParseCsvWithMultipleColumns()
         {
-            const string input = @"test1;1
-test2;2
-test3;3";
+            const string input = "test1;1\r\ntest2;2\r\ntest3;3";
 
             var parser = new CsvFileParser<TestResult>(input);
             parser.AddColumn(0, a => a.Member1);
@@ -32,24 +30,16 @@ test3;3";
             var result = parser.Parse();
 
             result.Should().HaveCount(3);
-
-            result[0].Member1.Should().Be("test1");
-            result[0].Member2.Should().Be(1);
-
-            result[1].Member1.Should().Be("test2");
-            result[1].Member2.Should().Be(2);
-
-            result[2].Member1.Should().Be("test3");
-            result[2].Member2.Should().Be(3);
+            result.ShouldContainEquivalentTo(
+                TestResult.Create("test1", 1),
+                TestResult.Create("test2", 2),
+                TestResult.Create("test3", 3));
         }
 
         [Test]
         public void DontParseFirstLineIfDeclaredHasHeader()
         {
-            const string input = @"Firstname;Lastname
-Iven;Bazinet
-Arridano;Charette
-Olivier;Gamelin";
+            const string input = "Firstname;Lastname\r\nIven;Bazinet\r\nArridano;Charette\r\nOlivier;Gamelin";
 
             var parser = new CsvFileParser<TestResult>(input);
             parser.DeclareFirstLineHasHeader();
@@ -66,10 +56,7 @@ Olivier;Gamelin";
         [Test]
         public void UseColumnName()
         {
-            const string input = @"Firstname;Age
-Iven;20
-Arridano;30
-Olivier;40";
+            const string input = "Firstname;Age\r\nIven;20\r\nArridano;30\r\nOlivier;40";
 
             var parser = new CsvFileParser<TestResult>(input);
             parser.AddColumn("Firstname", a => a.Member1);
@@ -77,9 +64,44 @@ Olivier;40";
 
             var result = parser.Parse();
             result.Should().HaveCount(3);
-            result[0].Should().BeEquivalentTo(new TestResult { Member1 = "Iven", Member2 =  20});
-            result[1].Should().BeEquivalentTo(new TestResult { Member1 = "Arridano", Member2 =  30});
-            result[2].Should().BeEquivalentTo(new TestResult { Member1 = "Olivier", Member2 =  40});
+            result.ShouldContainEquivalentTo(
+                TestResult.Create("Iven", 20),
+                TestResult.Create("Arridano", 30),
+                TestResult.Create("Olivier", 40));
         }
+
+        [Test]
+        public void ThrowErrorIfUsingDuplicatedColumnName()
+        {
+            const string input = "FirstName;LastName;FirstName\r\nBenoit;DURANT;George";
+
+            var parser = new CsvFileParser<TestResult>(input);
+            Action action = () => parser.AddColumn("FirstName", a => a.Member1);
+
+            action.Should().Throw<DuplicateColumnNameException>();
+        }
+
+        [Test]
+        public void ThrowErrorIfColumnNameDoesNotExists()
+        {
+            const string input = "FirstName;LastName\r\nBenoit;DURANT";
+
+            var parser = new CsvFileParser<TestResult>(input);
+            Action action = () => parser.AddColumn("NotExists", a => a.Member1);
+
+            action.Should().Throw<ColumnNameNotFoundException>();
+        }
+
+        [Test]
+        public void DontThrowErrorIfNotUsingDuplicatedColumnName()
+        {
+            const string input = "FirstName;LastName;FirstName\r\nBenoit;DURANT;George";
+
+            var parser = new CsvFileParser<TestResult>(input);
+            parser.AddColumn("LastName", a => a.Member1);
+
+            var result = parser.Parse();
+            result.Should().HaveCount(1);
+        }        
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using FluentCsv.Exceptions;
 
 namespace FluentCsv.CsvParser
 {
@@ -52,14 +53,29 @@ namespace FluentCsv.CsvParser
         private class HeaderIndex
         {
             private readonly Dictionary<string, int> _headerindex = new Dictionary<string, int>();
+            private readonly HashSet<string> _duplicateColumnName = new HashSet<string>();
 
             public HeaderIndex(string[] headers)
             {
                 var columnIndex = 0;
-                _headerindex = headers.ToDictionary(a => a, a => columnIndex++);
+                foreach (var header in headers)
+                {
+                    if (_headerindex.ContainsKey(header))
+                        _duplicateColumnName.Add(header);
+                    else
+                        _headerindex.Add(header, columnIndex);
+                    columnIndex++;
+                }
             }
 
-            public int GetColumnIndex(string header) => _headerindex[header];
+            public int GetColumnIndex(string columnName)
+            {
+                if(_duplicateColumnName.Contains(columnName))
+                    throw new DuplicateColumnNameException(columnName);
+                if(!_headerindex.ContainsKey(columnName))
+                    throw new ColumnNameNotFoundException(columnName);
+                return _headerindex[columnName];
+            }
         }
     }
 }

@@ -11,9 +11,7 @@ namespace FluentCsv.Tests
         [Test]
         public void ReturnsSimpleResultSet()
         {
-            const string csv = @"test1;1
-test2;2
-test3;3";
+            const string csv = "test1;1\r\ntest2;2\r\ntest3;3";
 
             var resultSet = Read.Csv.FromString(csv)
                 .That.ReturnsLinesOf<TestResult>()
@@ -22,17 +20,16 @@ test3;3";
                 .GetAll();
 
             resultSet.Should().HaveCount(3);
-            resultSet[0].Should().BeEquivalentTo(new TestResult(){ Member1 = "test1", Member2 = 1});
-            resultSet[1].Should().BeEquivalentTo(new TestResult(){ Member1 = "test2", Member2 = 2});
-            resultSet[2].Should().BeEquivalentTo(new TestResult(){ Member1 = "test3", Member2 = 3});
+            resultSet.ShouldContainEquivalentTo(
+                TestResult.Create("test1", 1),
+                TestResult.Create("test2", 2),
+                TestResult.Create("test3", 3));
         }
 
         [Test]
         public void ReturnResultSetWithColumnTransformation()
         {
-            const string csv = @"01012001
-01022002
-01032003";
+            const string csv = "01012001\r\n01022002\r\n01032003";
 
             var resultSet = Read.Csv.FromString(csv)
                 .That.ReturnsLinesOf<TestResult>()
@@ -40,17 +37,17 @@ test3;3";
                 .GetAll();
 
             resultSet.Should().HaveCount(3);
-            resultSet[0].Member3.Should().Be(new DateTime(2001, 01, 01));
-            resultSet[1].Member3.Should().Be(new DateTime(2002, 02, 01));
-            resultSet[2].Member3.Should().Be(new DateTime(2003, 03, 01));
+            resultSet.ShouldContainEquivalentTo(
+                TestResult.Create(member3: new DateTime(2001, 01, 01)),
+                TestResult.Create(member3: new DateTime(2002, 02, 01)),
+                TestResult.Create(member3: new DateTime(2003, 03, 01))
+            );
         }
 
         [Test]
         public void ParseCsvWithCustomColumnSeparator()
         {
-            const string csv = @"test1<->1<->01012001
-test2<->2<->01012002
-test3<->3<->01012003";
+            const string csv = "test1<->1<->01012001\r\ntest2<->2<->01012002\r\ntest3<->3<->01012003";
 
             var resultSet = Read.Csv.FromString(csv)
                 .Where.ColumnsAreDelimitedBy("<->")
@@ -61,9 +58,11 @@ test3<->3<->01012003";
                 .GetAll();
 
             resultSet.Should().HaveCount(3);
-            resultSet[0].Should().BeEquivalentTo(new TestResult() { Member1 = "test1", Member2 = 1, Member3 = new DateTime(2001,01,01)});
-            resultSet[1].Should().BeEquivalentTo(new TestResult() { Member1 = "test2", Member2 = 2, Member3 = new DateTime(2002,01,01)});
-            resultSet[2].Should().BeEquivalentTo(new TestResult() { Member1 = "test3", Member2 = 3, Member3 = new DateTime(2003,01,01)});
+            resultSet.ShouldContainEquivalentTo(
+                TestResult.Create("test1", 1, new DateTime(2001, 01, 01)),
+                TestResult.Create("test2", 2, new DateTime(2002, 01, 01)),
+                TestResult.Create("test3", 3, new DateTime(2003, 01, 01))
+            );
         }
 
         [Test]
@@ -97,18 +96,17 @@ test3<->3<->01012003";
                 .GetAll();
 
             resultSet.Should().HaveCount(3);
-            resultSet[0].Should().BeEquivalentTo(new TestResult() { Member1 = "test1", Member2 = 1, Member3 = new DateTime(2001, 01, 01) });
-            resultSet[1].Should().BeEquivalentTo(new TestResult() { Member1 = "test2", Member2 = 2, Member3 = new DateTime(2002, 01, 01) });
-            resultSet[2].Should().BeEquivalentTo(new TestResult() { Member1 = "test3", Member2 = 3, Member3 = new DateTime(2003, 01, 01) });
+            resultSet.ShouldContainEquivalentTo(
+                TestResult.Create("test1", 1, new DateTime(2001, 01, 01)),
+                TestResult.Create("test2", 2, new DateTime(2002, 01, 01)),
+                TestResult.Create("test3", 3, new DateTime(2003, 01, 01))
+                );
         }
 
         [Test]
         public void DontReadFirstLineIfHeader()
         {
-            const string csv = @"Name,Age
-Jules,20
-Gaetan,30
-Benoit,40";
+            const string csv = "Name,Age\r\nJules,20\r\nGaetan,30\r\nBenoit,40";
 
             var resultset = Read.Csv.FromString(csv)
                 .Where.ColumnsAreDelimitedBy(",").And.FirstLineIsHeader()
@@ -117,19 +115,17 @@ Benoit,40";
                 .Put.Column(1).As<int>().Into(a => a.Member2)
                 .GetAll();
 
-            resultset.Should().HaveCount(3);
-            resultset[0].Should().BeEquivalentTo(new TestResult() { Member1 = "Jules", Member2 = 20 });
-            resultset[1].Should().BeEquivalentTo(new TestResult() { Member1 = "Gaetan", Member2 = 30});
-            resultset[2].Should().BeEquivalentTo(new TestResult() { Member1 = "Benoit", Member2 = 40 });
+            resultset.Should().HaveCount(3);      
+            resultset.ShouldContainEquivalentTo(
+                TestResult.Create("Jules", 20), 
+                TestResult.Create("Gaetan", 30),
+                TestResult.Create("Benoit", 40));
         }
 
         [Test]
         public void UseColumnName()
         {
-            const string csv = @"Name,Age
-Jules,20
-Gaetan,30
-Benoit,40";
+            const string csv = "Name,Age\r\nJules,20\r\nGaetan,30\r\nBenoit,40";
 
             var resultset = Read.Csv.FromString(csv)
                 .Where.ColumnsAreDelimitedBy(",").And.FirstLineIsHeader()
@@ -138,10 +134,11 @@ Benoit,40";
                 .Put.Column("Age").As<int>().Into(a => a.Member2)
                 .GetAll();
 
-            resultset.Should().HaveCount(3);
-            resultset[0].Should().BeEquivalentTo(new TestResult() { Member1 = "Jules", Member2 = 20 });
-            resultset[1].Should().BeEquivalentTo(new TestResult() { Member1 = "Gaetan", Member2 = 30 });
-            resultset[2].Should().BeEquivalentTo(new TestResult() { Member1 = "Benoit", Member2 = 40 });
+            resultset.Should().HaveCount(3);        
+            resultset.ShouldContainEquivalentTo(
+                TestResult.Create("Jules", 20), 
+                TestResult.Create("Gaetan", 30),
+                TestResult.Create("Benoit", 40));
         }
 
         private static DateTime ParseFromEightDigit(string eightDigitDate)

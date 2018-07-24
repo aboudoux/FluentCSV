@@ -19,9 +19,7 @@ namespace FluentCsv.Tests
             var result = resolver.GetResult(new[] {"coucou", "5", "01071980"});
 
             result.Should().NotBeNull();
-            result.Member1.Should().Be("coucou");
-            result.Member2.Should().Be(5);
-            result.Member3.Should().Be(new DateTime(1980,07,01));
+            result.Should().BeEquivalentTo(TestResult.Create("coucou",5, new DateTime(1980, 07, 01)));
         }
 
         [Test]
