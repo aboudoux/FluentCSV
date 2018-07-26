@@ -1,20 +1,20 @@
 ﻿== Options
 
-- option pour faire désactiver le trim sur les données (le faire par défaut)
-- option pour désactiver le trim sur les nom de colonnes (le faire par defaut)
-- option pour ne pas prendre en compte les lignes vides
+[x] option pour faire désactiver le trim sur les données (le faire par défaut) - Pas la peine, le mec passera par un InThisWay s'il veut faire un trim
+[x] option pour désactiver le trim sur les nom de colonnes (le faire par defaut) - OK, on laisse sans option.
+- option pour ne pas prendre en compte les lignes vides 
 
 == Erreurs à gérer
 
 - s'il y a plus de colonnes qu'il y en a dans la première ligne
 - si une colonne pointe sur un index en dehors du nombe de colonne
-- si on défini deux foix le même index (je crois que c'est déjà fait)
+[x] si on défini deux foix le même index (je crois que c'est déjà fait)
 
 == Fonctionnalités
 
 - gérer le RFC avec les doubles quotes
 - possibilité de commenter des lignes en ajoutant un caractère (par defaut #)
-- resultat avec liste des erreurs et resultset
+--- resultat avec liste des erreurs et resultset ( il manque le numéro de colonne)
 - lire depuis un fichier
 - lire depuis une ressource d'assembly
 - Gestion de l'encoding

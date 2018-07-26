@@ -34,14 +34,25 @@ namespace FluentCsv.CsvParser
             _columns.AddColumn(_headerIndex.GetColumnIndex(columnName), into, setInThisWay);
         }
 
-        public TResult[] Parse()
+        public ParseCsvResult<TResult> Parse()
         {
-            return SplitLines(_source)
-                  .Skip(HeaderIfExists())
-                  .Select(line => _columns.GetResult(SplitColumns(line)))
-                  .ToArray();
+            var currentLineNumber = 1;
+            var resultSet = SplitLines(_source)
+                .Skip(HeaderIfExists())
+                .Select(line => _columns.GetResult(SplitColumns(line), currentLineNumber++))
+                .ToList();
 
-            int HeaderIfExists() => _headerIndex == null ? 0 : 1;
+            return new ParseCsvResult<TResult>(
+                resultSet.OfType<TResult>().ToArray(), 
+                resultSet.OfType<CsvParseError>().ToArray());
+
+            int HeaderIfExists()
+            {
+                if (_headerIndex == null)
+                    return 0;
+                currentLineNumber++;
+                return 1;
+            }
         }
 
         private string[] SplitLines(string source) 
@@ -58,24 +69,58 @@ namespace FluentCsv.CsvParser
             public HeaderIndex(string[] headers)
             {
                 var columnIndex = 0;
-                foreach (var header in headers)
+
+                headers.ForEach(MapHeaderToIndex);
+
+                void MapHeaderToIndex(string header)
                 {
-                    if (_headerindex.ContainsKey(header))
-                        _duplicateColumnName.Add(header);
+                    var headerName = header.Trim();
+                    if (_headerindex.ContainsKey(headerName))
+                        _duplicateColumnName.Add(headerName);
                     else
-                        _headerindex.Add(header, columnIndex);
+                        _headerindex.Add(headerName, columnIndex);
                     columnIndex++;
                 }
             }
 
             public int GetColumnIndex(string columnName)
             {
-                if(_duplicateColumnName.Contains(columnName))
-                    throw new DuplicateColumnNameException(columnName);
-                if(!_headerindex.ContainsKey(columnName))
-                    throw new ColumnNameNotFoundException(columnName);
-                return _headerindex[columnName];
+                var headerName = columnName.Trim();
+
+                if (_duplicateColumnName.Contains(headerName))
+                    throw new DuplicateColumnNameException(headerName);
+                if(!_headerindex.ContainsKey(headerName))
+                    throw new ColumnNameNotFoundException(headerName);
+                return _headerindex[headerName];
             }
         }
+    }
+
+    public class ParseCsvResult<TResult>
+    {
+        public ParseCsvResult(TResult[] resultSet, CsvParseError[] errors)
+        {
+            ResultSet = resultSet;
+            Errors = errors;
+        }
+
+        public TResult[] ResultSet { get; }
+        public CsvParseError[] Errors { get; }
+    }
+
+    public class CsvParseError
+    {
+        public CsvParseError(int lineNumber, int columnNumber, string columnName, string errorMessage)
+        {
+            LineNumber = lineNumber;
+            ColumnNumber = columnNumber;
+            ColumnName = columnName;
+            ErrorMessage = errorMessage;
+        }
+
+        public int LineNumber { get; }
+        public int ColumnNumber { get; }
+        public string ColumnName { get; }
+        public string ErrorMessage { get; }
     }
 }

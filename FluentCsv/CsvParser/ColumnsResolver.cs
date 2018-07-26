@@ -28,12 +28,42 @@ namespace FluentCsv.CsvParser
             }
         }
 
-        public TResult GetResult(string[] rawColumns)
+        public object GetResult(string[] rawColumnsData, int lineNumber)
         {
-            var result = new TResult();
-            foreach (var extractor in _columns)
-                extractor.Value.Extract(result, rawColumns[extractor.Key]);
-            return result;
+            try
+            {
+                var result = new TResult();
+                _columns.ForEach(ExtractData);
+                return result;
+
+                void ExtractData(KeyValuePair<int, IColumnExtractor> extractor)
+                {
+                    try
+                    {
+                        extractor.Value.Extract(result, rawColumnsData[extractor.Key]);
+                    }
+                    catch (Exception e)
+                    {                        
+                        throw new CsvExtractException(extractor.Key, lineNumber, e.Message);
+                    }
+                }
+            }
+            catch (CsvExtractException parseError)
+            {                
+                return new CsvParseError(parseError.LineNumber, parseError.ColumnIndex, "", parseError.Message);
+            }
+        }
+    }
+
+    public class CsvExtractException : Exception
+    {
+        public int ColumnIndex { get; }
+        public int LineNumber { get; }
+
+        public CsvExtractException(int columnIndex, int lineNumber, string message) : base(message)
+        {
+            ColumnIndex = columnIndex;
+            LineNumber = lineNumber;
         }
     }
 }

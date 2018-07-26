@@ -7,7 +7,7 @@ namespace FluentCsv.FluentReader
     {
         public ColumnFluentBuilder<TLine> Put { get; }
 
-        public IReadOnlyList<TLine> GetAll()
+        public ParseCsvResult<TLine> GetAll()
         {
             return CsvFileParser.Parse();
         }

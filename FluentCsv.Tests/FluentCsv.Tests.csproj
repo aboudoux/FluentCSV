@@ -64,7 +64,9 @@
     <Compile Include="ColumnExtractorShould.cs" />
     <Compile Include="ColumnsResolverShould.cs" />
     <Compile Include="CsvFileParserShould.cs" />
+    <Compile Include="ErrorsFromCsvFileParserShould.cs" />
     <Compile Include="FluentAssertionsExtensions.cs" />
+    <Compile Include="FluentCsvReadWithErrorShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadCsvFromStringShould.cs" />
     <Compile Include="TestResult.cs" />

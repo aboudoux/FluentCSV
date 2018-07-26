@@ -17,7 +17,7 @@ namespace FluentCsv.Tests
                 .That.ReturnsLinesOf<TestResult>()
                 .Put.Column(0).Into(result => result.Member1)
                 .Put.Column(1).As<int>().Into(result => result.Member2)
-                .GetAll();
+                .GetAll().ResultSet;
 
             resultSet.Should().HaveCount(3);
             resultSet.ShouldContainEquivalentTo(
@@ -34,7 +34,7 @@ namespace FluentCsv.Tests
             var resultSet = Read.Csv.FromString(csv)
                 .That.ReturnsLinesOf<TestResult>()
                 .Put.Column(0).As<DateTime>().InThisWay(ParseFromEightDigit).Into(m => m.Member3)
-                .GetAll();
+                .GetAll().ResultSet;
 
             resultSet.Should().HaveCount(3);
             resultSet.ShouldContainEquivalentTo(
@@ -55,7 +55,7 @@ namespace FluentCsv.Tests
                 .Put.Column(0).Into(a => a.Member1)
                 .Put.Column(1).As<int>().Into(a => a.Member2)
                 .Put.Column(2).As<DateTime>().InThisWay(ParseFromEightDigit).Into(a => a.Member3)
-                .GetAll();
+                .GetAll().ResultSet;
 
             resultSet.Should().HaveCount(3);
             resultSet.ShouldContainEquivalentTo(
@@ -74,7 +74,7 @@ namespace FluentCsv.Tests
                 .Where.LinesEndWith("<endl>")
                 .That.ReturnsLinesOf<TestResult>()
                 .Put.Column(0).Into(a => a.Member1)
-                .GetAll();
+                .GetAll().ResultSet;
 
             resultSet.Should().HaveCount(3);
             resultSet[0].Member1.Should().Be("test1");
@@ -93,7 +93,7 @@ namespace FluentCsv.Tests
                 .Put.Column(0).Into(a => a.Member1)
                 .Put.Column(1).As<int>().Into(a => a.Member2)
                 .Put.Column(2).As<DateTime>().InThisWay(ParseFromEightDigit).Into(a => a.Member3)
-                .GetAll();
+                .GetAll().ResultSet;
 
             resultSet.Should().HaveCount(3);
             resultSet.ShouldContainEquivalentTo(
@@ -113,7 +113,7 @@ namespace FluentCsv.Tests
                 .That.ReturnsLinesOf<TestResult>()
                 .Put.Column(0).Into(a => a.Member1)
                 .Put.Column(1).As<int>().Into(a => a.Member2)
-                .GetAll();
+                .GetAll().ResultSet;
 
             resultset.Should().HaveCount(3);      
             resultset.ShouldContainEquivalentTo(
@@ -132,7 +132,7 @@ namespace FluentCsv.Tests
                 .That.ReturnsLinesOf<TestResult>()
                 .Put.Column("Name").Into(a => a.Member1)
                 .Put.Column("Age").As<int>().Into(a => a.Member2)
-                .GetAll();
+                .GetAll().ResultSet;
 
             resultset.Should().HaveCount(3);        
             resultset.ShouldContainEquivalentTo(

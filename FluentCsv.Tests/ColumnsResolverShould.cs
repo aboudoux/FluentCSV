@@ -10,13 +10,13 @@ namespace FluentCsv.Tests
     public class ColumnsResolverShould
     {
         [Test]
-        public void ExtractrSomeColumns()
+        public void ExtractSomeColumns()
         {
             var resolver = new ColumnsResolver<TestResult>();
             resolver.AddColumn(0, a=>a.Member1);
             resolver.AddColumn(1, a=>a.Member2);
             resolver.AddColumn(2, a=>a.Member3, a => DateTime.ParseExact(a,"ddMMyyyy", CultureInfo.CurrentCulture));
-            var result = resolver.GetResult(new[] {"coucou", "5", "01071980"});
+            var result = resolver.GetResult(new[] {"coucou", "5", "01071980"}, 1);
 
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(TestResult.Create("coucou",5, new DateTime(1980, 07, 01)));

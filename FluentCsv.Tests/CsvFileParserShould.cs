@@ -15,7 +15,7 @@ namespace FluentCsv.Tests
 
             var parser = new CsvFileParser<TestResult>(input);
             parser.AddColumn(0, a=>a.Member1);
-            var result = parser.Parse();
+            var result = parser.Parse().ResultSet;
             result.Should().HaveCount(3);            
         }
 
@@ -27,7 +27,7 @@ namespace FluentCsv.Tests
             var parser = new CsvFileParser<TestResult>(input);
             parser.AddColumn(0, a => a.Member1);
             parser.AddColumn(1, a => a.Member2);
-            var result = parser.Parse();
+            var result = parser.Parse().ResultSet;
 
             result.Should().HaveCount(3);
             result.ShouldContainEquivalentTo(
@@ -45,7 +45,7 @@ namespace FluentCsv.Tests
             parser.DeclareFirstLineHasHeader();
             parser.AddColumn(0,a=>a.Member1);
 
-            var result = parser.Parse();
+            var result = parser.Parse().ResultSet;
 
             result.Should().HaveCount(3);
             result[0].Member1.Should().Be("Iven");
@@ -56,13 +56,13 @@ namespace FluentCsv.Tests
         [Test]
         public void UseColumnName()
         {
-            const string input = "Firstname;Age\r\nIven;20\r\nArridano;30\r\nOlivier;40";
+            const string input = "Firstname;Age\r\nIven;20  \r\nArridano;30\r\nOlivier;40";
 
             var parser = new CsvFileParser<TestResult>(input);
             parser.AddColumn("Firstname", a => a.Member1);
             parser.AddColumn("Age", a => a.Member2);
 
-            var result = parser.Parse();
+            var result = parser.Parse().ResultSet;
             result.Should().HaveCount(3);
             result.ShouldContainEquivalentTo(
                 TestResult.Create("Iven", 20),
@@ -100,8 +100,22 @@ namespace FluentCsv.Tests
             var parser = new CsvFileParser<TestResult>(input);
             parser.AddColumn("LastName", a => a.Member1);
 
-            var result = parser.Parse();
+            var result = parser.Parse().ResultSet;
             result.Should().HaveCount(1);
-        }        
+        }
+
+        [Test]
+        public void DontIncludeExtraSpacesInHeader()
+        {
+            const string input = "FirstName   ;   LastName   \r\nBenoit;Durant";
+
+            var parser = new CsvFileParser<TestResult>(input);
+            parser.AddColumn("FirstName", a => a.Member1);            
+
+            var result = parser.Parse().ResultSet;
+
+            result.Should().HaveCount(1);            
+            result.Should().AllBeEquivalentTo(TestResult.Create("Benoit"));
+        }
     }
 }
