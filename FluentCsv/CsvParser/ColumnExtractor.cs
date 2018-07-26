@@ -9,8 +9,14 @@ namespace FluentCsv.CsvParser
         private string _extractMemberName;
         private Func<string, TMember> _inThisWay;
 
-        public ColumnExtractor()
+        public string ColumnName { get; }
+        public int ColumnIndex { get; }
+
+        public ColumnExtractor(int columnIndex, string columnName = null)
         {
+            ColumnIndex = columnIndex;
+            ColumnName = columnName;
+
             var memberType = typeof(TMember);
             var conversionType = Nullable.GetUnderlyingType(memberType) ?? memberType;
 
@@ -42,5 +48,8 @@ namespace FluentCsv.CsvParser
     public interface IColumnExtractor
     {
         void Extract(object result, string columnData);
+
+        int ColumnIndex { get; }
+        string ColumnName { get; }
     }
 }

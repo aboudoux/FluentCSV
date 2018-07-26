@@ -1,3 +1,5 @@
+using FluentCsv.CsvParser.Splitters;
+
 namespace FluentCsv.FluentReader
 {
     public sealed class CsvParameters
@@ -7,5 +9,7 @@ namespace FluentCsv.FluentReader
         public string EndLineDelimiter { get; set; } = "\r\n";
 
         public bool FirstLineHasHeader = false;
+
+        public IColumnSplitter ColumnSplitter { get; set; } = new Rfc4180ColumnSplitter();
     }
 }

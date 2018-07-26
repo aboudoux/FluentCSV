@@ -1,3 +1,5 @@
+using FluentCsv.CsvParser.Splitters;
+
 namespace FluentCsv.FluentReader
 {
     public class FluentFileParameters : CsvParametersContainer
@@ -25,6 +27,12 @@ namespace FluentCsv.FluentReader
         public ChoiceBetweenFileParametersrAndResultsetBuilder FirstLineIsHeader()
         {
             CsvParameters.FirstLineHasHeader = true;
+            return _choice;
+        }
+
+        public ChoiceBetweenFileParametersrAndResultsetBuilder Rfc4180IsNotUsedForParsing()
+        {
+            CsvParameters.ColumnSplitter = new SimpleColumnSplitter();
             return _choice;
         }
     }

@@ -66,10 +66,12 @@
     <Compile Include="CsvFileParserShould.cs" />
     <Compile Include="ErrorsFromCsvFileParserShould.cs" />
     <Compile Include="FluentAssertionsExtensions.cs" />
-    <Compile Include="FluentCsvReadWithErrorShould.cs" />
+    <Compile Include="Pocos\TestResultWithMultiline.cs" />
+    <Compile Include="ReadCsvWithErrorShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadCsvFromStringShould.cs" />
-    <Compile Include="TestResult.cs" />
+    <Compile Include="Pocos\TestResult.cs" />
+    <Compile Include="ColumnsSplitterShould.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

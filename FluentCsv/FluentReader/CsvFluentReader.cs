@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text;
 
 namespace FluentCsv.FluentReader
 {
@@ -6,9 +7,9 @@ namespace FluentCsv.FluentReader
     {
         private readonly CsvParameters _csvParameters = new CsvParameters();
 
-        public ChoiceBetweenFileParametersAndResultSetBuilder FromFile(string fileName)
+        public ChoiceBetweenFileParametersAndResultSetBuilder FromFile(string fileName, Encoding encoding = null)
         {
-            _csvParameters.Source = File.ReadAllText(fileName);
+            _csvParameters.Source = File.ReadAllText(fileName, encoding ?? Encoding.Default);
             return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);
         }
 

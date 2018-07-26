@@ -9,11 +9,11 @@ namespace FluentCsv.CsvParser
     {
         private readonly Dictionary<int, IColumnExtractor> _columns = new Dictionary<int, IColumnExtractor>();
 
-        public void AddColumn<TMember>(int index, Expression<Func<TResult, TMember>> into, Func<string, TMember> setInThisWay = null)
+        public void AddColumn<TMember>(int index, Expression<Func<TResult, TMember>> into, Func<string, TMember> setInThisWay = null, string columnName = null)
         {            
             VerifyColumnIndexIsUnique();
 
-            var extractor = new ColumnExtractor<TResult, TMember>();
+            var extractor = new ColumnExtractor<TResult, TMember>(index, columnName);
             extractor.SetInto(into);
 
             if(setInThisWay != null)
@@ -33,24 +33,28 @@ namespace FluentCsv.CsvParser
             try
             {
                 var result = new TResult();
-                _columns.ForEach(ExtractData);
+                _columns.Values.ForEach(ExtractData);
                 return result;
 
-                void ExtractData(KeyValuePair<int, IColumnExtractor> extractor)
+                void ExtractData(IColumnExtractor extractor)
                 {
                     try
                     {
-                        extractor.Value.Extract(result, rawColumnsData[extractor.Key]);
+                        extractor.Extract(result, rawColumnsData[extractor.ColumnIndex]);
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        throw new CsvExtractException(extractor.ColumnIndex, lineNumber, $"The column at index {extractor.ColumnIndex} does not exists for line number {lineNumber}", extractor.ColumnName);
                     }
                     catch (Exception e)
                     {                        
-                        throw new CsvExtractException(extractor.Key, lineNumber, e.Message);
+                        throw new CsvExtractException(extractor.ColumnIndex, lineNumber, e.Message, extractor.ColumnName);
                     }
                 }
             }
             catch (CsvExtractException parseError)
             {                
-                return new CsvParseError(parseError.LineNumber, parseError.ColumnIndex, "", parseError.Message);
+                return new CsvParseError(parseError.LineNumber, parseError.ColumnIndex, parseError.ColumnName, parseError.Message);
             }
         }
     }
@@ -58,12 +62,14 @@ namespace FluentCsv.CsvParser
     public class CsvExtractException : Exception
     {
         public int ColumnIndex { get; }
+        public string ColumnName { get; }
         public int LineNumber { get; }
 
-        public CsvExtractException(int columnIndex, int lineNumber, string message) : base(message)
+        public CsvExtractException(int columnIndex, int lineNumber, string message, string columnName = null) : base(message)
         {
             ColumnIndex = columnIndex;
             LineNumber = lineNumber;
+            ColumnName = columnName;
         }
     }
 }

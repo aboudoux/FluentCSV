@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using FluentCsv.CsvParser.Splitters;
 using FluentCsv.Exceptions;
 
 namespace FluentCsv.CsvParser
@@ -14,10 +15,12 @@ namespace FluentCsv.CsvParser
         private HeaderIndex _headerIndex;
 
         private readonly string _source;
+        private readonly IColumnSplitter _columnSplitter;
 
-        public CsvFileParser(string source)
+        public CsvFileParser(string source, IColumnSplitter columnSplitter)
         {
             _source = source;
+            _columnSplitter = columnSplitter ?? throw new ArgumentNullException(nameof(columnSplitter));
         }
 
         public void DeclareFirstLineHasHeader()
@@ -26,12 +29,12 @@ namespace FluentCsv.CsvParser
         private readonly ColumnsResolver<TResult> _columns = new ColumnsResolver<TResult>();
 
         public void AddColumn<TMember>(int index, Expression<Func<TResult, TMember>> into, Func<string, TMember> setInThisWay = null) 
-            => _columns.AddColumn(index, into, setInThisWay);
+            => _columns.AddColumn(index, into, setInThisWay, _headerIndex?.GetColumnName(index));
 
         public void AddColumn<TMember>(string columnName, Expression<Func<TResult, TMember>> into, Func<string, TMember> setInThisWay = null)
         {
             DeclareFirstLineHasHeader();
-            _columns.AddColumn(_headerIndex.GetColumnIndex(columnName), into, setInThisWay);
+            _columns.AddColumn(_headerIndex.GetColumnIndex(columnName), into, setInThisWay, columnName);
         }
 
         public ParseCsvResult<TResult> Parse()
@@ -55,15 +58,16 @@ namespace FluentCsv.CsvParser
             }
         }
 
+        public string[] SplitColumns(string line)
+            => _columnSplitter.Split(line, ColumnDelimiter);
+
         private string[] SplitLines(string source) 
             => source.Split(new[] {LineDelimiter}, StringSplitOptions.None);
 
-        private string[] SplitColumns(string source) 
-            => source.Split(new[] { ColumnDelimiter }, StringSplitOptions.None);
-
         private class HeaderIndex
         {
-            private readonly Dictionary<string, int> _headerindex = new Dictionary<string, int>();
+            private readonly Dictionary<string, int> _headerToIndex = new Dictionary<string, int>();
+            private readonly Dictionary<int, string> _indexToHeader = new Dictionary<int, string>();
             private readonly HashSet<string> _duplicateColumnName = new HashSet<string>();
 
             public HeaderIndex(string[] headers)
@@ -75,10 +79,13 @@ namespace FluentCsv.CsvParser
                 void MapHeaderToIndex(string header)
                 {
                     var headerName = header.Trim();
-                    if (_headerindex.ContainsKey(headerName))
+                    if (_headerToIndex.ContainsKey(headerName))
                         _duplicateColumnName.Add(headerName);
                     else
-                        _headerindex.Add(headerName, columnIndex);
+                    {
+                        _headerToIndex.Add(headerName, columnIndex);
+                        _indexToHeader.Add(columnIndex, headerName);
+                    }
                     columnIndex++;
                 }
             }
@@ -89,38 +96,15 @@ namespace FluentCsv.CsvParser
 
                 if (_duplicateColumnName.Contains(headerName))
                     throw new DuplicateColumnNameException(headerName);
-                if(!_headerindex.ContainsKey(headerName))
+                if(!_headerToIndex.ContainsKey(headerName))
                     throw new ColumnNameNotFoundException(headerName);
-                return _headerindex[headerName];
+                return _headerToIndex[headerName];
+            }
+
+            public string GetColumnName(int index)
+            {
+                return _indexToHeader.ContainsKey(index) ? _indexToHeader[index] : null;
             }
         }
-    }
-
-    public class ParseCsvResult<TResult>
-    {
-        public ParseCsvResult(TResult[] resultSet, CsvParseError[] errors)
-        {
-            ResultSet = resultSet;
-            Errors = errors;
-        }
-
-        public TResult[] ResultSet { get; }
-        public CsvParseError[] Errors { get; }
-    }
-
-    public class CsvParseError
-    {
-        public CsvParseError(int lineNumber, int columnNumber, string columnName, string errorMessage)
-        {
-            LineNumber = lineNumber;
-            ColumnNumber = columnNumber;
-            ColumnName = columnName;
-            ErrorMessage = errorMessage;
-        }
-
-        public int LineNumber { get; }
-        public int ColumnNumber { get; }
-        public string ColumnName { get; }
-        public string ErrorMessage { get; }
     }
 }

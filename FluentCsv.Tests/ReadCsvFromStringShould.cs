@@ -11,9 +11,9 @@ namespace FluentCsv.Tests
         [Test]
         public void ReturnsSimpleResultSet()
         {
-            const string csv = "test1;1\r\ntest2;2\r\ntest3;3";
+            const string input = "test1;1\r\ntest2;2\r\ntest3;3";
 
-            var resultSet = Read.Csv.FromString(csv)
+            var resultSet = Read.Csv.FromString(input)
                 .That.ReturnsLinesOf<TestResult>()
                 .Put.Column(0).Into(result => result.Member1)
                 .Put.Column(1).As<int>().Into(result => result.Member2)
@@ -29,9 +29,9 @@ namespace FluentCsv.Tests
         [Test]
         public void ReturnResultSetWithColumnTransformation()
         {
-            const string csv = "01012001\r\n01022002\r\n01032003";
+            const string input = "01012001\r\n01022002\r\n01032003";
 
-            var resultSet = Read.Csv.FromString(csv)
+            var resultSet = Read.Csv.FromString(input)
                 .That.ReturnsLinesOf<TestResult>()
                 .Put.Column(0).As<DateTime>().InThisWay(ParseFromEightDigit).Into(m => m.Member3)
                 .GetAll().ResultSet;
@@ -47,9 +47,9 @@ namespace FluentCsv.Tests
         [Test]
         public void ParseCsvWithCustomColumnSeparator()
         {
-            const string csv = "test1<->1<->01012001\r\ntest2<->2<->01012002\r\ntest3<->3<->01012003";
+            const string input = "test1<->1<->01012001\r\ntest2<->2<->01012002\r\ntest3<->3<->01012003";
 
-            var resultSet = Read.Csv.FromString(csv)
+            var resultSet = Read.Csv.FromString(input)
                 .Where.ColumnsAreDelimitedBy("<->")
                 .That.ReturnsLinesOf<TestResult>()
                 .Put.Column(0).Into(a => a.Member1)
@@ -68,9 +68,9 @@ namespace FluentCsv.Tests
         [Test]
         public void ParseWithCustomLineSeparator()
         {
-            const string csv = "test1<endl>test2<endl>test3";
+            const string input = "test1<endl>test2<endl>test3";
 
-            var resultSet = Read.Csv.FromString(csv)
+            var resultSet = Read.Csv.FromString(input)
                 .Where.LinesEndWith("<endl>")
                 .That.ReturnsLinesOf<TestResult>()
                 .Put.Column(0).Into(a => a.Member1)
@@ -85,9 +85,9 @@ namespace FluentCsv.Tests
         [Test]
         public void ParseWithCustomLineAndColumnSeparator()
         {
-            const string csv = @"test1-1-01012001^test2-2-01012002^test3-3-01012003";
+            const string input = @"test1-1-01012001^test2-2-01012002^test3-3-01012003";
 
-            var resultSet = Read.Csv.FromString(csv)
+            var resultSet = Read.Csv.FromString(input)
                 .Where.LinesEndWith("^").And.ColumnsAreDelimitedBy("-")
                 .That.ReturnsLinesOf<TestResult>()
                 .Put.Column(0).Into(a => a.Member1)
@@ -106,9 +106,9 @@ namespace FluentCsv.Tests
         [Test]
         public void DontReadFirstLineIfHeader()
         {
-            const string csv = "Name,Age\r\nJules,20\r\nGaetan,30\r\nBenoit,40";
+            const string input = "Name,Age\r\nJules,20\r\nGaetan,30\r\nBenoit,40";
 
-            var resultset = Read.Csv.FromString(csv)
+            var resultset = Read.Csv.FromString(input)
                 .Where.ColumnsAreDelimitedBy(",").And.FirstLineIsHeader()
                 .That.ReturnsLinesOf<TestResult>()
                 .Put.Column(0).Into(a => a.Member1)
@@ -125,9 +125,9 @@ namespace FluentCsv.Tests
         [Test]
         public void UseColumnName()
         {
-            const string csv = "Name,Age\r\nJules,20\r\nGaetan,30\r\nBenoit,40";
+            const string input = "Name,Age\r\nJules,20\r\nGaetan,30\r\nBenoit,40";
 
-            var resultset = Read.Csv.FromString(csv)
+            var resultset = Read.Csv.FromString(input)
                 .Where.ColumnsAreDelimitedBy(",").And.FirstLineIsHeader()
                 .That.ReturnsLinesOf<TestResult>()
                 .Put.Column("Name").Into(a => a.Member1)
@@ -143,5 +143,51 @@ namespace FluentCsv.Tests
 
         private static DateTime ParseFromEightDigit(string eightDigitDate)
             => DateTime.ParseExact(eightDigitDate, "ddMMyyyy", CultureInfo.InvariantCulture);
+
+
+        [Test]
+        public void ReadColumnWithColumnSeparator()
+        {
+            const string input = "Firstname;Lastname;Address\r\nAurelien;BOUDOUX;\"9 rue du test;impasse;75001;Paris\"";
+
+            var resultSet = Read.Csv.FromString(input)
+                .That.ReturnsLinesOf<TestResultWithMultiline>()
+                .Put.Column("Firstname").Into(a => a.Firstname)
+                .Put.Column("Lastname").Into(a => a.Lastname)
+                .Put.Column("Address").Into(a => a.Address)
+                .GetAll().ResultSet;
+
+            resultSet.ShouldContainEquivalentTo(TestResultWithMultiline.Create("Aurelien", "BOUDOUX", "9 rue du test;impasse;75001;Paris"));
+        }
+
+        [Test]
+        public void DontUseRfc4180ForParsing()
+        {
+            const string input = "Firstname;Lastname\r\n\"M. B\"OK;Benoit";
+
+            var resultSet = Read.Csv.FromString(input)
+                .Where.Rfc4180IsNotUsedForParsing()
+                .That.ReturnsLinesOf<TestResultWithMultiline>()
+                .Put.Column("Firstname").Into(a => a.Firstname)
+                .Put.Column("Lastname").Into(a => a.Lastname)
+                .GetAll().ResultSet;
+
+            resultSet.ShouldContainEquivalentTo(TestResultWithMultiline.Create("\"M. B\"OK", "Benoit"));
+        }
+
+        [Test]
+        public void ReadColumnWithMultilineAndColumnSeparator()
+        {
+            const string input = "Firstname;Lastname;Address\r\nAurelien;BOUDOUX;\"9\r\nrue du test; impasse\r\n75001\r\nParis";
+
+            var resultSet = Read.Csv.FromString(input)
+                .That.ReturnsLinesOf<TestResultWithMultiline>()
+                .Put.Column("Firstname").Into(a => a.Firstname)
+                .Put.Column("Lastname").Into(a => a.Lastname)
+                .Put.Column("Address").Into(a => a.Address)
+                .GetAll().ResultSet;
+
+            resultSet.ShouldContainEquivalentTo(TestResultWithMultiline.Create("Aurelien","BOUDOUX", "9\r\nrue du test; impasse\r\n75001\r\nParis"));
+        }        
     }
 }
