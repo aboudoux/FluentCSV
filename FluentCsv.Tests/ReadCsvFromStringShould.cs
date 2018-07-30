@@ -178,7 +178,7 @@ namespace FluentCsv.Tests
         [Test]
         public void ReadColumnWithMultilineAndColumnSeparator()
         {
-            const string input = "Firstname;Lastname;Address\r\nAurelien;BOUDOUX;\"9\r\nrue du test; impasse\r\n75001\r\nParis";
+            const string input = "Firstname;Lastname;Address\r\nAurelien;BOUDOUX;\"9\r\nrue du test; impasse\r\n75001\r\nParis\"";
 
             var resultSet = Read.Csv.FromString(input)
                 .That.ReturnsLinesOf<TestResultWithMultiline>()

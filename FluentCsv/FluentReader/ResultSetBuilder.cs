@@ -9,7 +9,7 @@ namespace FluentCsv.FluentReader
 
         public ColumnsBuilder<TLine> ReturnsLinesOf<TLine>() where TLine : new()
         {
-            var parser = new CsvFileParser<TLine>(CsvParameters.Source, CsvParameters.ColumnSplitter)
+            var parser = new CsvFileParser<TLine>(CsvParameters.Source, CsvParameters.DataSplitter)
             {
                 ColumnDelimiter = CsvParameters.ColumnDelimiter,
                 LineDelimiter = CsvParameters.EndLineDelimiter

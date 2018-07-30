@@ -32,7 +32,7 @@ namespace FluentCsv.FluentReader
 
         public ChoiceBetweenFileParametersrAndResultsetBuilder Rfc4180IsNotUsedForParsing()
         {
-            CsvParameters.ColumnSplitter = new SimpleColumnSplitter();
+            CsvParameters.DataSplitter = new SimpleDataSplitter();
             return _choice;
         }
     }

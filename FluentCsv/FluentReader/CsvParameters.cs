@@ -10,6 +10,6 @@ namespace FluentCsv.FluentReader
 
         public bool FirstLineHasHeader = false;
 
-        public IColumnSplitter ColumnSplitter { get; set; } = new Rfc4180ColumnSplitter();
+        public IDataSplitter DataSplitter { get; set; } = new Rfc4180DataSplitter();
     }
 }

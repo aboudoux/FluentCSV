@@ -8,7 +8,7 @@ namespace FluentCsv.Tests
     public class ErrorsFromCsvFileParserShould
     {
         private CsvFileParser<TestResult> GetParser(string input)
-            => new CsvFileParser<TestResult>(input, new SimpleColumnSplitter());
+            => new CsvFileParser<TestResult>(input, new SimpleDataSplitter());
 
         [Test]
         public void ReturnLineAndMessageOfBadDateConversion()

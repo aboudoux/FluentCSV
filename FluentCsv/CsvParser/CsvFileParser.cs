@@ -15,12 +15,12 @@ namespace FluentCsv.CsvParser
         private HeaderIndex _headerIndex;
 
         private readonly string _source;
-        private readonly IColumnSplitter _columnSplitter;
+        private readonly IDataSplitter _dataSplitter;
 
-        public CsvFileParser(string source, IColumnSplitter columnSplitter)
+        public CsvFileParser(string source, IDataSplitter dataSplitter)
         {
             _source = source;
-            _columnSplitter = columnSplitter ?? throw new ArgumentNullException(nameof(columnSplitter));
+            _dataSplitter = dataSplitter ?? throw new ArgumentNullException(nameof(dataSplitter));
         }
 
         public void DeclareFirstLineHasHeader()
@@ -59,10 +59,10 @@ namespace FluentCsv.CsvParser
         }
 
         public string[] SplitColumns(string line)
-            => _columnSplitter.Split(line, ColumnDelimiter);
+            => _dataSplitter.SplitColumns(line, ColumnDelimiter);
 
-        private string[] SplitLines(string source) 
-            => source.Split(new[] {LineDelimiter}, StringSplitOptions.None);
+        private string[] SplitLines(string source)
+            => _dataSplitter.SplitLines(source, LineDelimiter);
 
         private class HeaderIndex
         {
