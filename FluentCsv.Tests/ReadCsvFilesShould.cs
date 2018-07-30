@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Text;
 using FluentAssertions;
 using FluentCsv.FluentReader;
 using NUnit.Framework;
@@ -32,6 +33,26 @@ namespace FluentCsv.Tests
             testLine.NumeroEtLibelle.Should().Be("29 cours de la republique");
             result.Errors.Should().BeEmpty();
         }
+
+        [Test]
+        public void LoadAnnuaireEcolesDoctorales()
+        {
+            var sourceFile = GetTestFilePath
+                .FromDirectory("CsvFiles")
+                .AndFileName("fr-esr-ecoles_doctorales_annuaire.csv");
+
+            var result = Read.Csv.FromFile(sourceFile, Encoding.UTF8)
+                .That.ReturnsLinesOf<AnnuaireEcolesDoctoralesResult>()
+                .Put.Column("adresse_postale").Into(a => a.AddressePostale)
+                .Put.Column("code_etablissement_support").Into(a=>a.CodeEtablissementSupport)
+                .GetAll();
+
+            result.Errors.Should().BeEmpty();
+            result.ResultSet.Should().HaveCount(267);
+            var firstRow = result.ResultSet.First();
+
+            firstRow.AddressePostale.Should().Be("Aix- Marseille Université\r\nFaculté des Sciences de Luminy\r\nCase 901\r\n163, avenue de Luminy");
+        }
     }
 
     public class AnnuaireDebitTabacResult
@@ -42,6 +63,12 @@ namespace FluentCsv.Tests
         public string Complement { get; set; }
         public string CodePostal { get; set; }
         public string Commune { get; set; }
+    }
 
+    public class AnnuaireEcolesDoctoralesResult
+    {
+        public string AddressePostale { get; set; }
+
+        public string CodeEtablissementSupport { get; set; }
     }
 }

@@ -42,6 +42,12 @@ namespace FluentCsv.CsvParser.Splitters
                 return substring;
             }
         }
+        public string GetFirstLine(string input, string lineDelimiter)
+        {
+            return GetAllNewLineDelimiterIndexThatArentBetweenQuotes(input, lineDelimiter)
+                .Select(firstIndex => input.Substring(0, firstIndex))
+                .FirstOrDefault();
+        }
 
         private static IReadOnlyList<int> GetAllNewLineDelimiterIndexThatArentBetweenQuotes(string input, string lineDelimiter)
         {
@@ -65,7 +71,11 @@ namespace FluentCsv.CsvParser.Splitters
             return result;
 
             int GetNewLineDelimiterIndex()
-                => input.IndexOf(lineDelimiter, delimiterIndex + 1, StringComparison.Ordinal);
+            {
+                return input.IsEmpty()
+                    ? notFound
+                    : input.IndexOf(lineDelimiter, delimiterIndex + 1, StringComparison.Ordinal);
+            }
 
             void FeedOnlyBoundedQuotesLowerByDelimiterIndex()
             {

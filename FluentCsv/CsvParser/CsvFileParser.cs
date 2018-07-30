@@ -24,7 +24,7 @@ namespace FluentCsv.CsvParser
         }
 
         public void DeclareFirstLineHasHeader()
-            => _headerIndex = _headerIndex ?? new HeaderIndex(SplitColumns(SplitLines(_source).First()));
+            => _headerIndex = _headerIndex ?? new HeaderIndex(SplitColumns(GetFirstLine(_source)));
 
         private readonly ColumnsResolver<TResult> _columns = new ColumnsResolver<TResult>();
 
@@ -63,6 +63,9 @@ namespace FluentCsv.CsvParser
 
         private string[] SplitLines(string source)
             => _dataSplitter.SplitLines(source, LineDelimiter);
+
+        private string GetFirstLine(string source)
+            => _dataSplitter.GetFirstLine(source, LineDelimiter);
 
         private class HeaderIndex
         {

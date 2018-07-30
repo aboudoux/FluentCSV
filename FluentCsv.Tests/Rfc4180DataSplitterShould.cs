@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace FluentCsv.Tests
 {
-    public class DataSplitterShould
+    public class Rfc4180DataSplitterShould
     {
         [Test]
         [TestCase(";", "Aurelien;BOUDOUX;\"9\r\nrue du test; impasse\r\n75001\r\nParis\"", "Aurelien", "BOUDOUX","9\r\nrue du test; impasse\r\n75001\r\nParis")]
@@ -63,6 +63,19 @@ namespace FluentCsv.Tests
             var splitter = new Rfc4180DataSplitter();
             Action action = () => splitter.SplitLines(input, delimiter);
             action.Should().Throw<MissingQuoteException>();
+        }
+
+        [Test]
+        [TestCase("\r\n","Column1;Column2","Column1;Column2")]
+        [TestCase("\r\n","Column1;Column2\r\ntest;test", "Column1;Column2")]
+        [TestCase("<endl>","Column1;Column2<endl>test;test", "Column1;Column2")]
+        [TestCase("\r\n","\"C1\r\n1\";\"C2\r\n2\"\r\nA;B","\"C1\r\n1\";\"C2\r\n2\"")]
+        [TestCase("\r\n", "", "")]
+        public void ExtractOnlyFirstLine(string delimiter, string input, string expected)
+        {
+            var splitter = new Rfc4180DataSplitter();
+            var firstLine = splitter.GetFirstLine(input, delimiter);
+            firstLine.Should().Be(expected);
         }
     }
 }

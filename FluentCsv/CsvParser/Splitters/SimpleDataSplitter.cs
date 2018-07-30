@@ -9,5 +9,11 @@ namespace FluentCsv.CsvParser.Splitters
 
         public string[] SplitLines(string input, string lineDelimiter)
             => input.Split(new[] { lineDelimiter }, StringSplitOptions.None);
+
+        public string GetFirstLine(string input, string lineDelimiter)
+        {
+            var firstIndex = input.IndexOf(lineDelimiter);
+            return input.Substring(0, firstIndex == -1 ? input.Length : firstIndex );
+        }
     }
 }
