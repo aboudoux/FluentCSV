@@ -2,6 +2,7 @@
 using System.Globalization;
 using FluentAssertions;
 using FluentCsv.FluentReader;
+using FluentCsv.Tests.Results;
 using NUnit.Framework;
 
 namespace FluentCsv.Tests
@@ -188,6 +189,20 @@ namespace FluentCsv.Tests
                 .GetAll().ResultSet;
 
             resultSet.ShouldContainEquivalentTo(TestResultWithMultiline.Create("Aurelien","BOUDOUX", "9\r\nrue du test; impasse\r\n75001\r\nParis"));
-        }        
+        }
+
+        [Test]
+        public void ReadCsvWithColumnThatContainsNewLine()
+        {
+            const string input = "\"FirstName\r\nLastName\";\"Home\r\nAddress\"\r\nMARTIN;\"12\r\nRue test\"";
+
+            var resultSet = Read.Csv.FromString(input)
+                .That.ReturnsLinesOf<TestResultWithMultiline>()
+                .Put.Column("FirstName\r\nLastName").Into(a => a.Firstname)
+                .Put.Column("Home\r\nAddress").Into(a => a.Address)
+                .GetAll().ResultSet;
+
+            resultSet.ShouldContainEquivalentTo(TestResultWithMultiline.Create("MARTIN", address: "12\r\nRue test"));
+        }
     }
 }

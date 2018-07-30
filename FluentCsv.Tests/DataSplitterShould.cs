@@ -32,6 +32,7 @@ namespace FluentCsv.Tests
         [Test]        
         [TestCase("\r\n", "Aurelien;BOUDOUX;\"9\r\nrue du test; impasse\r\n75001\r\nParis\"\r\n\"bonjour\"\r\ntest", "Aurelien;BOUDOUX;\"9\r\nrue du test; impasse\r\n75001\r\nParis\"", "\"bonjour\"", "test")]
         [TestCase("\r\n", "Firstname;Address\r\nTEST1;\"10\r\nrue du test\"\r\n\"TEST2\r\nfirst\r\n\";OK", "Firstname;Address", "TEST1;\"10\r\nrue du test\"", "\"TEST2\r\nfirst\r\n\";OK")]
+        [TestCase("<endl>", "Column1;\"Column2\"<endl>\"test<endl>;test\"<endl>hello;ok", "Column1;\"Column2\"", "\"test<endl>;test\"", "hello;ok")]
         public void ReplaceAllNewLIneWithinDoubleQuotes(string delimiter, string input, string expected1, string expected2, string expected3)
         {
             var splitter = new Rfc4180DataSplitter();

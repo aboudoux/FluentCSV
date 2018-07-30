@@ -24,7 +24,7 @@ namespace FluentCsv.FluentReader
 
         public ChoiceBetweenPutOrGetAll<TLine> Into(Expression<Func<TLine, TMember>> intoMember)
         {
-            if(string.IsNullOrWhiteSpace(_columnName))
+            if(_columnName.IsEmpty())
                 CsvFileParser.AddColumn(_columnIndex, intoMember, _inThisWay);
             else
                 CsvFileParser.AddColumn(_columnName, intoMember, _inThisWay);

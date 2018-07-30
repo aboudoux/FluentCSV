@@ -20,12 +20,9 @@ namespace FluentCsv.CsvParser
             var memberType = typeof(TMember);
             var conversionType = Nullable.GetUnderlyingType(memberType) ?? memberType;
 
-            _inThisWay = dataType =>
-            {
-                if (string.IsNullOrWhiteSpace(dataType))
-                    return default(TMember);
-                return (TMember) Convert.ChangeType(dataType, conversionType);
-            };
+            _inThisWay = dataType => dataType.IsEmpty() ? 
+                                     default(TMember) : 
+                                     (TMember) Convert.ChangeType(dataType, conversionType);
         }
 
         public void SetInto(Expression<Func<TResult, TMember>> into)

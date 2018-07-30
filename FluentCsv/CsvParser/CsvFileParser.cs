@@ -40,7 +40,7 @@ namespace FluentCsv.CsvParser
         public ParseCsvResult<TResult> Parse()
         {
             var currentLineNumber = 1;
-            var resultSet = SplitLines(_source)
+            var resultSet = SplitLines(_source.TrimEnd(LineDelimiter.ToCharArray()))
                 .Skip(HeaderIfExists())
                 .Select(line => _columns.GetResult(SplitColumns(line), currentLineNumber++))
                 .ToList();

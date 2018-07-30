@@ -18,7 +18,7 @@ namespace FluentCsv.FluentReader
 
         public ChoiceBetweenInThisWayAndInto<TLine, T> As<T>()
         {
-            return string.IsNullOrWhiteSpace(_columnName)
+            return _columnName.IsEmpty()
                 ? new ChoiceBetweenInThisWayAndInto<TLine, T>(CsvFileParser, _columnIndex)
                 : new ChoiceBetweenInThisWayAndInto<TLine, T>(CsvFileParser, _columnName);
         }

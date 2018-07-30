@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentCsv.CsvParser;
 using FluentCsv.CsvParser.Splitters;
+using FluentCsv.Tests.Results;
 using NUnit.Framework;
 
 namespace FluentCsv.Tests

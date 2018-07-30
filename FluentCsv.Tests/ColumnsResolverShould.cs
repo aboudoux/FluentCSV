@@ -3,6 +3,7 @@ using System.Globalization;
 using FluentAssertions;
 using FluentCsv.CsvParser;
 using FluentCsv.Exceptions;
+using FluentCsv.Tests.Results;
 using NUnit.Framework;
 
 namespace FluentCsv.Tests

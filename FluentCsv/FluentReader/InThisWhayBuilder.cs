@@ -19,7 +19,7 @@ namespace FluentCsv.FluentReader
 
         public IntoBuilder<TLine, TMember> InThisWay(Func<string, TMember> factory)
         {
-            return string.IsNullOrWhiteSpace(_columnName)
+            return _columnName.IsEmpty()
                 ? new IntoBuilder<TLine, TMember>(CsvFileParser, _columnIndex, factory)
                 : new IntoBuilder<TLine, TMember>(CsvFileParser, _columnName, factory);
         }

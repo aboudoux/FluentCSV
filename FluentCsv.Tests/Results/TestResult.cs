@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FluentCsv.Tests
+namespace FluentCsv.Tests.Results
 {
     public class TestResult
     {
