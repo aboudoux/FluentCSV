@@ -9,13 +9,36 @@ namespace FluentCsv.CsvParser
 {
     public class CsvFileParser<TResult> where TResult : new()
     {
-        public string LineDelimiter { get; set; } = "\r\n";
-        public string ColumnDelimiter { get; set; } = ";";
+        private string _lineDelimiter = "\r\n";
+        private string _columnDelimiter = ";";
 
         private HeaderIndex _headerIndex;
 
         private readonly string _source;
         private readonly IDataSplitter _dataSplitter;
+
+        public string LineDelimiter
+        {
+            get => _lineDelimiter;
+            set
+            {
+                if(value.IsEmptyWithWhiteSpaceAllowed())
+                    throw new EmptyLineDelimiterException();
+                _lineDelimiter = value;
+            }
+        }
+
+        public string ColumnDelimiter
+        {
+            get => _columnDelimiter;
+            set
+            {
+                if(value.IsEmptyWithWhiteSpaceAllowed())
+                    throw new EmptyColumnDelimiterException();
+                _columnDelimiter = value;
+            }
+        }
+
 
         public CsvFileParser(string source, IDataSplitter dataSplitter)
         {
@@ -30,7 +53,7 @@ namespace FluentCsv.CsvParser
         }
 
         private readonly ColumnsResolver<TResult> _columns = new ColumnsResolver<TResult>();
-
+        
         public void AddColumn<TMember>(int index, Expression<Func<TResult, TMember>> into, Func<string, TMember> setInThisWay = null) 
             => _columns.AddColumn(index, into, setInThisWay, _headerIndex?.GetColumnName(index));
 

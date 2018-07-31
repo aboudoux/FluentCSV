@@ -146,7 +146,6 @@ namespace FluentCsv.Tests
         private static DateTime ParseFromEightDigit(string eightDigitDate)
             => DateTime.ParseExact(eightDigitDate, "ddMMyyyy", CultureInfo.InvariantCulture);
 
-
         [Test]
         public void ReadColumnWithColumnSeparator()
         {
@@ -249,6 +248,72 @@ namespace FluentCsv.Tests
 
             var result = Read.Csv.FromString(input)
                 .Where.ColumnsAreDelimitedBy("\"").And.Rfc4180IsNotUsedForParsing()
+                .That.ReturnsLinesOf<TestResultWithMultiline>()
+                .Put.Column("Header1").Into(a => a.Firstname)
+                .Put.Column("Header2").Into(a => a.Lastname)
+                .GetAll().ResultSet;
+
+            result.Should().HaveCount(2);
+            result.ShouldContainEquivalentTo(
+                TestResultWithMultiline.Create("Value1", "Value2"),
+                TestResultWithMultiline.Create("Value3", "Value4"));
+        }
+
+        [Test]
+        public void ThrowErrorIfDefineEmptyColumnsDelimiter()
+        {
+            const string input = "Header1\"Header2\r\nValue1\"Value2\r\nValue3\"Value4";
+
+            Action action = () => Read.Csv.FromString(input)
+                .Where.ColumnsAreDelimitedBy(string.Empty)
+                .That.ReturnsLinesOf<TestResultWithMultiline>()
+                .Put.Column("Header1").Into(a => a.Firstname)
+                .Put.Column("Header2").Into(a => a.Lastname)
+                .GetAll();
+
+            action.Should().Throw<EmptyColumnDelimiterException>();
+        }
+
+        [Test]
+        public void ThrowErrorIfDefineEmptyLinesDelimiter()
+        {
+            const string input = "Header1\"Header2\r\nValue1\"Value2\r\nValue3\"Value4";
+
+            Action action = () => Read.Csv.FromString(input)
+                .Where.LinesEndWith(string.Empty)
+                .That.ReturnsLinesOf<TestResultWithMultiline>()
+                .Put.Column("Header1").Into(a => a.Firstname)
+                .Put.Column("Header2").Into(a => a.Lastname)
+                .GetAll();
+
+            action.Should().Throw<EmptyLineDelimiterException>();
+        }
+
+        [Test]
+        public void AllowWhiteSpaceInLineDelimiter()
+        {
+            const string input = "Header1;Header2 Value1;Value2 Value3;Value4";
+
+            var result = Read.Csv.FromString(input)
+                .Where.LinesEndWith(" ")
+                .That.ReturnsLinesOf<TestResultWithMultiline>()
+                .Put.Column("Header1").Into(a => a.Firstname)
+                .Put.Column("Header2").Into(a => a.Lastname)
+                .GetAll().ResultSet;
+
+            result.Should().HaveCount(2);
+            result.ShouldContainEquivalentTo(
+                TestResultWithMultiline.Create("Value1", "Value2"),
+                TestResultWithMultiline.Create("Value3", "Value4"));
+        }
+
+        [Test]
+        public void AllowWhiteSpaceInColumnsLineDelimiter()
+        {
+            const string input = "Header1 Header2\r\nValue1 Value2\r\nValue3 Value4";
+
+            var result = Read.Csv.FromString(input)
+                .Where.ColumnsAreDelimitedBy(" ")
                 .That.ReturnsLinesOf<TestResultWithMultiline>()
                 .Put.Column("Header1").Into(a => a.Firstname)
                 .Put.Column("Header2").Into(a => a.Lastname)

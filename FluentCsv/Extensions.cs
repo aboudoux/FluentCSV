@@ -14,6 +14,9 @@ namespace FluentCsv
         internal static bool IsEmpty(this string source)
             => string.IsNullOrWhiteSpace(source);
 
+        internal static bool IsEmptyWithWhiteSpaceAllowed(this string source)
+            => string.IsNullOrEmpty(source);
+
         internal static IEnumerable<T> DequeueWhile<T>(this Queue<T> queue, Func<T, bool> predicate)
         {
             while (queue.Count != 0 && predicate(queue.Peek()))

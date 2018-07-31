@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using FluentCsv.Exceptions;
-using FluentCsv;
 
 namespace FluentCsv.CsvParser.Splitters
 {
