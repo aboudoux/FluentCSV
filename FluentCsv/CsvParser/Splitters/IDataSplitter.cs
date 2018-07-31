@@ -7,5 +7,7 @@
         string[] SplitLines(string input, string lineDelimiter);
 
         string GetFirstLine(string input, string lineDelimiter);
+
+        void EnsureDelimitersAreValid(string lineDelimiter, string columnDelimiter);
     }
 }

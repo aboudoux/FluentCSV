@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using FluentCsv.Exceptions;
+using FluentCsv;
 
 namespace FluentCsv.CsvParser.Splitters
 {
@@ -13,6 +14,8 @@ namespace FluentCsv.CsvParser.Splitters
         
         public string[] SplitColumns(string input, string columnDelimiter)
         {
+            EnsureDelimiterIsValid(columnDelimiter);
+
             var regex = string.Format("(?<=(^|{0})(?<quote>\"?))([^\"]|(\"\"))*?(?=\\<quote>(?={0}|$))", columnDelimiter);
 
             return Regex.Matches(input, regex)
@@ -21,12 +24,16 @@ namespace FluentCsv.CsvParser.Splitters
                 .ToArray();
 
             string ArrangeQuotes(string value)
-                => value == DoubleQuote ? string.Empty : value.Replace(DoubleQuote, Quote).Replace(DoubleQuote, Quote);
+                => value == DoubleQuote 
+                    ? string.Empty 
+                    : value.Replace(DoubleQuote, Quote).Replace(DoubleQuote, Quote);
         }
 
         public string[] SplitLines(string input, string lineDelimiter)
-        {            
-            if(input.IsEmpty())
+        {
+            EnsureDelimiterIsValid(lineDelimiter);
+
+            if (input.IsEmpty())
                 return new[]{string.Empty};
 
             var previousIndex = 0;
@@ -42,11 +49,26 @@ namespace FluentCsv.CsvParser.Splitters
                 return substring;
             }
         }
+
         public string GetFirstLine(string input, string lineDelimiter)
         {
+            EnsureDelimiterIsValid(lineDelimiter);
+
             return GetAllNewLineDelimiterIndexThatArentBetweenQuotes(input, lineDelimiter)
                 .Select(firstIndex => input.Substring(0, firstIndex))
                 .FirstOrDefault();
+        }
+
+        public void EnsureDelimitersAreValid(string lineDelimiter, string columnDelimiter)
+        {
+            EnsureDelimiterIsValid(lineDelimiter);
+            EnsureDelimiterIsValid(columnDelimiter);
+        }
+
+        private static void EnsureDelimiterIsValid(string delimiter)
+        {
+            if(delimiter.Contains("\""))
+                throw new BadDelimiterException("\"");
         }
 
         private static IReadOnlyList<int> GetAllNewLineDelimiterIndexThatArentBetweenQuotes(string input, string lineDelimiter)
@@ -78,10 +100,8 @@ namespace FluentCsv.CsvParser.Splitters
             }
 
             void FeedOnlyBoundedQuotesLowerByDelimiterIndex()
-            {
-                while (allQuotes.Count != 0 && allQuotes.Peek().StartQuoteIndex <= delimiterIndex)
-                    quotesToTest.Add(allQuotes.Dequeue());
-            }
+                => quotesToTest.AddRange(
+                    allQuotes.DequeueWhile(a => a.StartQuoteIndex <= delimiterIndex));
 
             void AddDelimiterIfNotBetweenQuotes()
             {
@@ -103,7 +123,7 @@ namespace FluentCsv.CsvParser.Splitters
             var result = new Queue<BoundedQuotes>();
 
             var bq = BoundedQuotes.Empty;
-            while ((bq = ExtractBoundedQuotesIndexes(sanitizedString, bq.EndQuoteIndex+1)) != null)
+            while ((bq = ExtractBoundedQuotesIndexes(sanitizedString, bq.EndQuoteIndex+1)) != BoundedQuotes.NotFound)
                 result.Enqueue(bq);
 
             return result;
@@ -113,17 +133,19 @@ namespace FluentCsv.CsvParser.Splitters
         {            
             var startQuoteIndex = input.IndexOf(Quote, startIndex, StringComparison.Ordinal);
             if (startQuoteIndex < 0)
-                return null;
+                return BoundedQuotes.NotFound;
 
             var stopQuoteIndex = input.IndexOf(Quote, startQuoteIndex+1, StringComparison.Ordinal);
             if(stopQuoteIndex < 0)
                 throw new MissingQuoteException();
+
             return new BoundedQuotes(startQuoteIndex, stopQuoteIndex);
         }
 
         private class BoundedQuotes
         {
             public static BoundedQuotes Empty => new BoundedQuotes(-1, -1);
+            public static BoundedQuotes NotFound => null;
 
             internal int StartQuoteIndex { get; }
             internal int EndQuoteIndex { get; }

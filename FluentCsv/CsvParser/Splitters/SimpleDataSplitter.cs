@@ -15,5 +15,8 @@ namespace FluentCsv.CsvParser.Splitters
             var firstIndex = input.IndexOf(lineDelimiter);
             return input.Substring(0, firstIndex == -1 ? input.Length : firstIndex );
         }
+
+        public void EnsureDelimitersAreValid(string lineDelimiter, string columnDelimiter)
+        { } // Do nothing : all delimiters are valid
     }
 }

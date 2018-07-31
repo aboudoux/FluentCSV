@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using FluentAssertions;
+using FluentCsv.Exceptions;
 using FluentCsv.FluentReader;
 using FluentCsv.Tests.Results;
 using NUnit.Framework;
@@ -203,6 +204,60 @@ namespace FluentCsv.Tests
                 .GetAll().ResultSet;
 
             resultSet.ShouldContainEquivalentTo(TestResultWithMultiline.Create("MARTIN", address: "12\r\nRue test"));
+        }
+
+        [Test]
+        public void ThrowErrorIfUsingQuoteAsLineDelimiterInRfc4810ButWorksIfDisableIt()
+        {
+            const string input = "Header1;Header2\"Value1;Value2\"Value3;Value4";
+
+            Action action = () => Read.Csv.FromString(input)
+                .Where.LinesEndWith("\"")
+                .That.ReturnsLinesOf<TestResultWithMultiline>()
+                .Put.Column("Header1").Into(a => a.Firstname)
+                .Put.Column("Header2").Into(a => a.Lastname)
+                .GetAll();
+
+            action.Should().Throw<BadDelimiterException>();
+
+            var result = Read.Csv.FromString(input)
+                .Where.LinesEndWith("\"").And.Rfc4180IsNotUsedForParsing()
+                .That.ReturnsLinesOf<TestResultWithMultiline>()
+                .Put.Column("Header1").Into(a => a.Firstname)
+                .Put.Column("Header2").Into(a => a.Lastname)
+                .GetAll().ResultSet;
+
+            result.Should().HaveCount(2);
+            result.ShouldContainEquivalentTo(
+                TestResultWithMultiline.Create("Value1", "Value2"),
+                TestResultWithMultiline.Create("Value3", "Value4"));
+        }
+
+        [Test]
+        public void ThrowErrorIfUsingQuoteAsColumnsDelimiterInRfc4810ButWorksIfDisableIt()
+        {
+            const string input = "Header1\"Header2\r\nValue1\"Value2\r\nValue3\"Value4";
+
+            Action action = () => Read.Csv.FromString(input)
+                .Where.ColumnsAreDelimitedBy("\"")
+                .That.ReturnsLinesOf<TestResultWithMultiline>()
+                .Put.Column("Header1").Into(a => a.Firstname)
+                .Put.Column("Header2").Into(a => a.Lastname)
+                .GetAll();
+
+            action.Should().Throw<BadDelimiterException>();
+
+            var result = Read.Csv.FromString(input)
+                .Where.ColumnsAreDelimitedBy("\"").And.Rfc4180IsNotUsedForParsing()
+                .That.ReturnsLinesOf<TestResultWithMultiline>()
+                .Put.Column("Header1").Into(a => a.Firstname)
+                .Put.Column("Header2").Into(a => a.Lastname)
+                .GetAll().ResultSet;
+
+            result.Should().HaveCount(2);
+            result.ShouldContainEquivalentTo(
+                TestResultWithMultiline.Create("Value1", "Value2"),
+                TestResultWithMultiline.Create("Value3", "Value4"));
         }
     }
 }

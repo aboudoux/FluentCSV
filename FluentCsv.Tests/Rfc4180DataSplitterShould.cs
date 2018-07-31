@@ -77,5 +77,38 @@ namespace FluentCsv.Tests
             var firstLine = splitter.GetFirstLine(input, delimiter);
             firstLine.Should().Be(expected);
         }
+
+        [Test]
+        public void ThrowErrorIfUsingDoubleQuoteAsLineDelimiter()
+        {
+            const string input = "Header1;Header2\"Value1;Value2\"";
+
+            var splitter = new Rfc4180DataSplitter();
+            Action action = () => splitter.SplitLines(input, "\"");
+
+            action.Should().Throw<BadDelimiterException>();
+        }
+
+        [Test]
+        public void ThrowErrorIfUsingDoubleQuoteAsColumnsDelimiter()
+        {
+            const string input = "Header1\"Header2\"Value1\"Value2\"";
+
+            var splitter = new Rfc4180DataSplitter();
+            Action action = () => splitter.SplitColumns(input, "\"");
+
+            action.Should().Throw<BadDelimiterException>();
+        }
+
+        [Test]
+        public void ThrowErrorIfUsingDoubleQuoteAsGetFirstLineDelimiter()
+        {
+            const string input = "Header1\"Header2\"Value1\"Value2\"";
+
+            var splitter = new Rfc4180DataSplitter();
+            Action action = () => splitter.GetFirstLine(input, "\"");
+
+            action.Should().Throw<BadDelimiterException>();
+        }
     }
 }

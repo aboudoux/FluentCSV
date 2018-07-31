@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 using FluentAssertions;
 using FluentCsv.FluentReader;
@@ -35,6 +36,33 @@ namespace FluentCsv.Tests
         }
 
         [Test]
+        public void LoadAnnuaireDebitTabacWithError()
+        {
+            var sourceFile = GetTestFilePath
+                .FromDirectory("CsvFiles")
+                .AndFileName("annuaire-des-debits-de-tabac.csv");
+
+            var result = Read.Csv.FromFile(sourceFile)
+                .That.ReturnsLinesOf<AnnuaireDebitTabacResult>()
+                .Put.Column("ID").As<int>().Into(a => a.Id)
+                .Put.Column("ENSEIGNE").InThisWay(CheckIfTabac).Into(a => a.Enseigne)
+                .Put.Column("NUMERO ET LIBELLE DE VOIE").Into(a => a.NumeroEtLibelle)
+                .Put.Column("COMPLEMENT").Into(a => a.Complement)
+                .Put.Column("CODE POSTAL").Into(a => a.CodePostal)
+                .Put.Column("COMMUNE").Into(a => a.Commune)
+                .GetAll();
+
+            result.Errors.Should().HaveCount(14510);
+
+            string CheckIfTabac(string enseigne)
+            {
+                if(enseigne != "Tabac")
+                    throw new Exception("Not a tabac");
+                return enseigne;
+            }
+        }
+
+        [Test]
         public void LoadAnnuaireEcolesDoctorales()
         {
             var sourceFile = GetTestFilePath
@@ -51,8 +79,11 @@ namespace FluentCsv.Tests
             result.ResultSet.Should().HaveCount(267);
             var firstRow = result.ResultSet.First();
 
-            firstRow.AddressePostale.Should().Be("Aix- Marseille Université\r\nFaculté des Sciences de Luminy\r\nCase 901\r\n163, avenue de Luminy");
+            firstRow.AddressePostale.Should().Be("Aix- Marseille Université\nFaculté des Sciences de Luminy\nCase 901\n163, avenue de Luminy");
         }
+
+        
+
     }
 
     public class AnnuaireDebitTabacResult
