@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FluentCsv
 {
@@ -22,5 +23,8 @@ namespace FluentCsv
             while (queue.Count != 0 && predicate(queue.Peek()))
                 yield return queue.Dequeue();
         }
+
+        internal static bool IsEmpty(this string[] source)
+            => source.All(a => a.IsEmpty());
     }
 }

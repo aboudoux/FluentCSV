@@ -39,6 +39,7 @@ namespace FluentCsv.CsvParser
             }
         }
 
+        public bool HeadersAsCaseInsensitive { get; set; } = false;
 
         public CsvFileParser(string source, IDataSplitter dataSplitter)
         {
@@ -49,7 +50,7 @@ namespace FluentCsv.CsvParser
         public void DeclareFirstLineHasHeader()
         {
             _dataSplitter.EnsureDelimitersAreValid(LineDelimiter, ColumnDelimiter);
-            _headerIndex = _headerIndex ?? new HeaderIndex(SplitColumns(GetFirstLine(_source)));
+            _headerIndex = _headerIndex ?? new HeaderIndex(SplitColumns(GetFirstLine(_source)), HeadersAsCaseInsensitive);
         }
 
         private readonly ColumnsResolver<TResult> _columns = new ColumnsResolver<TResult>();
@@ -97,19 +98,22 @@ namespace FluentCsv.CsvParser
 
         private class HeaderIndex
         {
+            private readonly bool _caseInsensitive;
             private readonly Dictionary<string, int> _headerToIndex = new Dictionary<string, int>();
             private readonly Dictionary<int, string> _indexToHeader = new Dictionary<int, string>();
             private readonly HashSet<string> _duplicateColumnName = new HashSet<string>();
 
-            public HeaderIndex(string[] headers)
+            public HeaderIndex(string[] headers, bool caseInsensitive)
             {
+                _caseInsensitive = caseInsensitive;
                 var columnIndex = 0;
 
                 headers.ForEach(MapHeaderToIndex);
 
                 void MapHeaderToIndex(string header)
                 {
-                    var headerName = header.Trim();
+                    var headerName = GetFinalHeaderName(header);
+
                     if (_headerToIndex.ContainsKey(headerName))
                         _duplicateColumnName.Add(headerName);
                     else
@@ -123,7 +127,7 @@ namespace FluentCsv.CsvParser
 
             public int GetColumnIndex(string columnName)
             {
-                var headerName = columnName.Trim();
+                var headerName = GetFinalHeaderName(columnName);
 
                 if (_duplicateColumnName.Contains(headerName))
                     throw new DuplicateColumnNameException(headerName);
@@ -135,6 +139,14 @@ namespace FluentCsv.CsvParser
             public string GetColumnName(int index)
             {
                 return _indexToHeader.ContainsKey(index) ? _indexToHeader[index] : null;
+            }
+
+            private string GetFinalHeaderName(string originalHeaderName)
+            {
+                var headerName = originalHeaderName.Trim();
+                if (_caseInsensitive)
+                    headerName = headerName.ToLower();
+                return headerName;
             }
         }
     }

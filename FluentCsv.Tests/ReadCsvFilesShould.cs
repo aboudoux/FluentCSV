@@ -17,7 +17,7 @@ namespace FluentCsv.Tests
                 .AndFileName("annuaire-des-debits-de-tabac.csv");
 
             var result = Read.Csv.FromFile(sourceFile)
-                .That.ReturnsLinesOf<AnnuaireDebitTabacResult>()
+                .ThatReturns.LinesOf<AnnuaireDebitTabacResult>()
                 .Put.Column("ID").As<int>().Into(a => a.Id)
                 .Put.Column("ENSEIGNE").Into(a => a.Enseigne)
                 .Put.Column("NUMERO ET LIBELLE DE VOIE").Into(a => a.NumeroEtLibelle)
@@ -43,7 +43,7 @@ namespace FluentCsv.Tests
                 .AndFileName("annuaire-des-debits-de-tabac.csv");
 
             var result = Read.Csv.FromFile(sourceFile)
-                .That.ReturnsLinesOf<AnnuaireDebitTabacResult>()
+                .ThatReturns.LinesOf<AnnuaireDebitTabacResult>()
                 .Put.Column("ID").As<int>().Into(a => a.Id)
                 .Put.Column("ENSEIGNE").InThisWay(CheckIfTabac).Into(a => a.Enseigne)
                 .Put.Column("NUMERO ET LIBELLE DE VOIE").Into(a => a.NumeroEtLibelle)
@@ -70,7 +70,7 @@ namespace FluentCsv.Tests
                 .AndFileName("fr-esr-ecoles_doctorales_annuaire.csv");
 
             var result = Read.Csv.FromFile(sourceFile, Encoding.UTF8)
-                .That.ReturnsLinesOf<AnnuaireEcolesDoctoralesResult>()
+                .ThatReturns.LinesOf<AnnuaireEcolesDoctoralesResult>()
                 .Put.Column("adresse_postale").Into(a => a.AddressePostale)
                 .Put.Column("code_etablissement_support").Into(a=>a.CodeEtablissementSupport)
                 .GetAll();
@@ -81,9 +81,6 @@ namespace FluentCsv.Tests
 
             firstRow.AddressePostale.Should().Be("Aix- Marseille Université\nFaculté des Sciences de Luminy\nCase 901\n163, avenue de Luminy");
         }
-
-        
-
     }
 
     public class AnnuaireDebitTabacResult

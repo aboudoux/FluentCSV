@@ -2,7 +2,7 @@
 
 [x] option pour faire désactiver le trim sur les données (le faire par défaut) - Pas la peine, le mec passera par un InThisWay s'il veut faire un trim
 [x] option pour désactiver le trim sur les nom de colonnes (le faire par defaut) - OK, on laisse sans option.
-- option pour ne pas prendre en compte les lignes vides 
+[x] option pour ne pas prendre en compte les lignes vides 
 
 == Erreurs à gérer
 

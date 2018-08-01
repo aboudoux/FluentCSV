@@ -6,7 +6,7 @@ namespace FluentCsv.FluentReader
         {
         }
         
-        public FluentFileParameters Where => new FluentFileParameters(CsvParameters);
-        public ResultSetBuilder That => new ResultSetBuilder(CsvParameters);
+        public FluentFileParameters With => new FluentFileParameters(CsvParameters);
+        public ResultSetBuilder ThatReturns => new ResultSetBuilder(CsvParameters);
     }
 }

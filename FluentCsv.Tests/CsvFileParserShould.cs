@@ -10,8 +10,10 @@ namespace FluentCsv.Tests
 {
     public class CsvFileParserShould
     {
-        private CsvFileParser<TestResult> GetParser(string input)
-            => new CsvFileParser<TestResult>(input, new SimpleDataSplitter());
+        private readonly IDataSplitter _defaultDataSplitter = new SimpleDataSplitter();
+
+        private CsvFileParser<TestResult> GetParser(string input, IDataSplitter splitter = null)
+            => new CsvFileParser<TestResult>(input, splitter ?? _defaultDataSplitter);
 
         [Test]
         public void ParseSimpleCsvFromString()
@@ -121,6 +123,34 @@ namespace FluentCsv.Tests
 
             result.Should().HaveCount(1);            
             result.Should().AllBeEquivalentTo(TestResult.Create("Benoit"));
+        }
+
+        [Test]
+        public void ThrowErrorForEmptyLine()
+        {
+            const string input = "header1;header2\r\ntest1;test2\r\n\r\ntest3;test4";
+
+            var parser = GetParser(input);
+            parser.AddColumn("header1", a=>a.Member1);
+
+            var result = parser.Parse();
+            result.Errors.Should().HaveCount(1);
+            result.Errors.ShouldContainEquivalentTo(new CsvParseError(3,0,null,"The line is empty"));
+        }
+
+        [Test]
+        public void AcceptHeaderCaseUnsensitive()
+        {
+            const string input = "header1;header2\r\ntest1;test2\r\n\r\ntest3;test4";
+
+            var parser = GetParser(input);
+            parser.HeadersAsCaseInsensitive = true;
+            parser.AddColumn("HEADER1", a => a.Member1);
+
+            var result = parser.Parse();
+            result.ResultSet.ShouldContainEquivalentTo(
+                TestResult.Create("test1"),
+                TestResult.Create("test3"));
         }
     }
 }

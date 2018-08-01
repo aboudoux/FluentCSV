@@ -3,12 +3,12 @@ namespace FluentCsv.FluentReader
     public class ChoiceBetweenFileParametersrAndResultsetBuilder : CsvParametersContainer
     {
         public FluentFileParameters And { get; }
-        public ResultSetBuilder That { get; }
+        public ResultSetBuilder AndReturn { get; }
 
         internal ChoiceBetweenFileParametersrAndResultsetBuilder(CsvParameters csvParameters, FluentFileParameters fileParameters) : base(csvParameters)
         {
             And = fileParameters;
-            That = new ResultSetBuilder(csvParameters);
+            AndReturn = new ResultSetBuilder(csvParameters);
         }
     }
 }

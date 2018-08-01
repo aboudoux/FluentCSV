@@ -32,6 +32,9 @@ namespace FluentCsv.CsvParser
         {
             try
             {
+                if(rawColumnsData.IsEmpty())
+                    throw new CsvExtractException(0, lineNumber, "The line is empty");
+
                 var result = new TResult();
                 _columns.Values.ForEach(ExtractData);
                 return result;
