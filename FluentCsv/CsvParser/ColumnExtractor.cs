@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using FluentCsv.Exceptions;
 
 namespace FluentCsv.CsvParser
 {
     public class ColumnExtractor<TResult, TMember> : IColumnExtractor
     {
-        private string _extractMemberName;
+        private PropertyInfo[] _propertiesInfos;
         private Func<string, TMember> _inThisWay;
 
         public string ColumnName { get; }
@@ -27,26 +29,38 @@ namespace FluentCsv.CsvParser
 
         public void SetInto(Expression<Func<TResult, TMember>> into)
         {
-            _extractMemberName = GetMemberName();
-            string GetMemberName() => into.Body.ToString().Split('.').Last();
+            var target = typeof(TResult);
+            _propertiesInfos = GetMemberName().Select(CorrespondingPropertyInfo).ToArray();
+
+            string[] GetMemberName() => into.Body.ToString().Split('.').Skip(1).ToArray();
+
+            PropertyInfo CorrespondingPropertyInfo(string memberName)
+            {
+                var propertyInfo = target.GetProperty(memberName);
+                target = propertyInfo.PropertyType;
+                return propertyInfo;
+            }
         }
 
         public void SetInThisWay(Func<string, TMember> parseFunc)
-        {
-            _inThisWay = parseFunc ?? throw new ArgumentNullException(nameof(parseFunc));
-        }
+           => _inThisWay = parseFunc ?? throw new ArgumentNullException(nameof(parseFunc));
 
         public void Extract(object result, string columnData)
         {
-            result.GetType().GetProperty(_extractMemberName)?.SetValue(result, _inThisWay(columnData));
+            var instance = result;
+            if (_propertiesInfos.Length > 1)
+                _propertiesInfos
+                    .WithoutLastElement()
+                    .ForEach(SetInstance);
+
+            _propertiesInfos.Last().SetValue(instance, _inThisWay(columnData));
+
+            void SetInstance(PropertyInfo propertyInfo)
+            {
+                instance = propertyInfo.GetValue(instance);
+                if (instance == null)
+                    throw new NullPropertyInstanceException(propertyInfo);
+            }
         }
-    }
-
-    public interface IColumnExtractor
-    {
-        void Extract(object result, string columnData);
-
-        int ColumnIndex { get; }
-        string ColumnName { get; }
     }
 }

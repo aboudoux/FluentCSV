@@ -26,5 +26,17 @@ namespace FluentCsv
 
         internal static bool IsEmpty(this string[] source)
             => source.All(a => a.IsEmpty());
+
+        internal static IEnumerable<T> WithoutLastElement<T>(this IEnumerable<T> enumerable)
+        {
+            if (enumerable == null) throw new ArgumentNullException(nameof(enumerable));
+            var elementsCount = enumerable.Count();
+            var currentCount = 1;
+            foreach (var element in enumerable)
+            {
+                if (currentCount++ < elementsCount)
+                    yield return element;
+            }
+        }
     }
 }

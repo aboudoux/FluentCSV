@@ -47,7 +47,13 @@ namespace FluentCsv.CsvParser
                     }
                     catch (IndexOutOfRangeException)
                     {
-                        throw new CsvExtractException(extractor.ColumnIndex, lineNumber, $"The column at index {extractor.ColumnIndex} does not exists for line number {lineNumber}", extractor.ColumnName);
+                        throw new CsvExtractException(extractor.ColumnIndex, lineNumber,
+                            $"The column at index {extractor.ColumnIndex} does not exists for line number {lineNumber}",
+                            extractor.ColumnName);
+                    }
+                    catch (NullPropertyInstanceException)
+                    {
+                        throw;
                     }
                     catch (Exception e)
                     {                        

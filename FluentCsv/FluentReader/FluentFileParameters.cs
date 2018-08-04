@@ -2,7 +2,7 @@ using FluentCsv.CsvParser.Splitters;
 
 namespace FluentCsv.FluentReader
 {
-    public enum Is
+    public enum ThatIs
     {
         CaseSensitive = 1,
         CaseInsensitive = 2,
@@ -29,10 +29,10 @@ namespace FluentCsv.FluentReader
             return _choice;
         }
 
-        public ChoiceBetweenFileParametersrAndResultsetBuilder Header(Is option = Is.CaseSensitive)
+        public ChoiceBetweenFileParametersrAndResultsetBuilder Header(ThatIs option = ThatIs.CaseSensitive)
         {
             CsvParameters.FirstLineHasHeader = true;
-            if (option == Is.CaseInsensitive)
+            if (option == ThatIs.CaseInsensitive)
                 CsvParameters.HeaderCaseInsensitive = true;
             return _choice;
         }

@@ -31,5 +31,41 @@ namespace FluentCsv.Tests
             Action error = () => resolver.AddColumn(0, a => a.Member1);
             error.Should().Throw<ColumnWithSameIndexAlreadyDeclaredException>();
         }
+
+        [Test]
+        public void IncludeDeeperProperties()
+        {
+            var resolver = new ColumnsResolver<DeepResult>();
+            resolver.AddColumn(0, a=>a.Contact.Firstname);
+
+            var result = resolver.GetResult(new[] {"MARTIN"}, 1) as DeepResult;
+
+            result.Should().NotBeNull();
+            result.Contact.Firstname.Should().Be("MARTIN");
+        }
+
+        [Test]
+        public void IncludeDeeperPropertiesWithMoreLevel()
+        {
+            var resolver = new ColumnsResolver<DeepResult>();
+            resolver.AddColumn(0, a => a.Contact.Infos.Comment);
+
+            var result = resolver.GetResult(new[] { "MARTIN" }, 1) as DeepResult;
+
+            result.Should().NotBeNull();
+            result.Contact.Infos.Comment.Should().Be("MARTIN");
+        }
+
+        [Test]
+        public void ThrowErrorIfDeeperPropertiesIsNullInstance()
+        {
+            var resolver = new ColumnsResolver<DeepResult>();
+            resolver.AddColumn(0, a => a.Address.City);
+
+            Action action = () => resolver.GetResult(new[] {"MARTIN"}, 1);
+
+            action.Should().Throw<NullPropertyInstanceException>()
+                .Which.Message.Should().Be("A property of type class or struct of your resultset is null. Please, set all your subclass in your resultset with the new keyword. PropertyName : Address - PropertyType : FluentCsv.Tests.Results.AddressResult");
+        }
     }
 }

@@ -13,12 +13,15 @@
 == Fonctionnalités
 
 [x] gérer le RFC avec les doubles quotes
-- possibilité de commenter des lignes en ajoutant un caractère (par defaut #)
+x possibilité de commenter des lignes en ajoutant un caractère (par defaut #)
 [x] resultat avec liste des erreurs et resultset
 [x] lire depuis un fichier
 - lire depuis une ressource d'assembly
 [x] Gestion de l'encoding
 - Gestion de la culture
+[x] gestion des propriétés incluses (Address.Name.Subname)
 
 == Autre
 [x] Voir si timespan peut être utilisé en type natif (pas en natif)
+[x] test avec un value object a assigner
+- test le header case insensitive avec doublon : Header - header (voir ce qu'il est preferable de faire par defaut)

@@ -68,6 +68,8 @@
     <Compile Include="FluentAssertionsExtensions.cs" />
     <Compile Include="GetTestFilePath.cs" />
     <Compile Include="ReadCsvFilesShould.cs" />
+    <Compile Include="Results\DeepResult.cs" />
+    <Compile Include="Results\ResultWithValueObject.cs" />
     <Compile Include="Results\TestResultWithMultiline.cs" />
     <Compile Include="ReadCsvWithErrorShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

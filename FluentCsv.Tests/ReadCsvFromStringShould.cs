@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Globalization;
 using FluentAssertions;
+using FluentCsv.CsvParser;
 using FluentCsv.Exceptions;
 using FluentCsv.FluentReader;
 using FluentCsv.Tests.Results;
 using NUnit.Framework;
-using Is = FluentCsv.FluentReader.Is;
 
 namespace FluentCsv.Tests
 {
@@ -332,12 +332,29 @@ namespace FluentCsv.Tests
             const string input = "HeAder1\r\ntest1";
 
             var result = Read.Csv.FromString(input)
-                .With.Header(Is.CaseInsensitive)
+                .With.Header(ThatIs.CaseInsensitive)
                 .AndReturn.LinesOf<TestResult>()
                 .Put.Column("header1").Into(a => a.Member1)
                 .GetAll().ResultSet;
 
             result.ShouldContainEquivalentTo(TestResult.Create("test1"));
+        }
+
+        [Test]
+        public void WorkWithDeepStructureThatContainsValueObject()
+        {
+            const string input = "Name;Phone\r\nDUPONT;0187225445\r\nMARTIN;0655457676\r\nERROR;078872129\r\n";
+
+            var result = Read.Csv.FromString(input)
+                .ThatReturns.LinesOf<ResultWithDeepValueObject>()
+                .Put.Column("Name").Into(a => a.Contact.Name)
+                .Put.Column("Phone").As<Phone>().InThisWay(phone => new Phone(phone)).Into(r => r.Contact.Phone)
+                .GetAll();
+
+            result.Errors.Should().HaveCount(1);
+            result.ResultSet.Should().HaveCount(2);
+
+            result.Errors.ShouldContainEquivalentTo(new CsvParseError(4,1,"Phone", "078872129 is not a valid phone number"));
         }
     }
 }
