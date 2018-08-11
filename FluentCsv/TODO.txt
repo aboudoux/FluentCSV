@@ -24,4 +24,4 @@ x possibilité de commenter des lignes en ajoutant un caractère (par defaut #)
 == Autre
 [x] Voir si timespan peut être utilisé en type natif (pas en natif)
 [x] test avec un value object a assigner
-- test le header case insensitive avec doublon : Header - header (voir ce qu'il est preferable de faire par defaut)
+[x] test le header case insensitive avec doublon : Header - header (voir ce qu'il est preferable de faire par defaut)

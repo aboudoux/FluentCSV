@@ -9,7 +9,7 @@ namespace FluentCsv.FluentReader
         public string EndLineDelimiter { get; set; } = "\r\n";
 
         public bool FirstLineHasHeader = false;
-        public bool HeaderCaseInsensitive = false;
+        public bool HeaderCaseInsensitive = true;
 
         public IDataSplitter DataSplitter { get; set; } = new Rfc4180DataSplitter();
     }

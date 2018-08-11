@@ -327,14 +327,41 @@ namespace FluentCsv.Tests
         }
 
         [Test]
-        public void ReadHeaderCaseInsensitive()
+        public void ReadHeaderCaseSensitive()
         {
             const string input = "HeAder1\r\ntest1";
 
-            var result = Read.Csv.FromString(input)
-                .With.Header(ThatIs.CaseInsensitive)
+            Action action = () => Read.Csv.FromString(input)
+                .With.Header(As.CaseSensitive)
                 .AndReturn.LinesOf<TestResult>()
                 .Put.Column("header1").Into(a => a.Member1)
+                .GetAll();
+
+            action.Should().Throw<ColumnNameNotFoundException>();
+        }
+
+        [Test]
+        public void ThrowErrorIfDuplicateCaseInsensitiveHeader()
+        {
+            const string input = "header;HEADER\r\ntest;TEST";
+
+            Action action = () => Read.Csv.FromString(input)
+                .ThatReturns.LinesOf<TestResult>()
+                .Put.Column("header").Into(a => a.Member1)
+                .GetAll();
+
+            action.Should().Throw<DuplicateColumnNameException>();
+        }
+
+        [Test]
+        public void DontThrowErrorIfDuplicateCaseSensitiveHeader()
+        {
+            const string input = "header;HEADER\r\ntest1;TEST2";
+
+            var result = Read.Csv.FromString(input)
+                .With.Header(As.CaseSensitive)
+                .AndReturn.LinesOf<TestResult>()
+                .Put.Column("header").Into(a => a.Member1)
                 .GetAll().ResultSet;
 
             result.ShouldContainEquivalentTo(TestResult.Create("test1"));
@@ -347,14 +374,14 @@ namespace FluentCsv.Tests
 
             var result = Read.Csv.FromString(input)
                 .ThatReturns.LinesOf<ResultWithDeepValueObject>()
-                .Put.Column("Name").Into(a => a.Contact.Name)
-                .Put.Column("Phone").As<Phone>().InThisWay(phone => new Phone(phone)).Into(r => r.Contact.Phone)
+                .Put.Column("name").Into(a => a.Contact.Name)
+                .Put.Column("phone").As<Phone>().InThisWay(phone => new Phone(phone)).Into(r => r.Contact.Phone)
                 .GetAll();
 
             result.Errors.Should().HaveCount(1);
             result.ResultSet.Should().HaveCount(2);
 
-            result.Errors.ShouldContainEquivalentTo(new CsvParseError(4,1,"Phone", "078872129 is not a valid phone number"));
+            result.Errors.ShouldContainEquivalentTo(new CsvParseError(4,1,"phone", "078872129 is not a valid phone number"));
         }
     }
 }
