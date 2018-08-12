@@ -54,7 +54,7 @@ namespace FluentCsv.Tests
 
             var resultSet = Read.Csv.FromString(input)
                 .With.ColumnsDelimiter("<->")
-                .AndReturn.LinesOf<TestResult>()
+                .ThatReturns.LinesOf<TestResult>()
                 .Put.Column(0).Into(a => a.Member1)
                 .Put.Column(1).As<int>().Into(a => a.Member2)
                 .Put.Column(2).As<DateTime>().InThisWay(ParseFromEightDigit).Into(a => a.Member3)
@@ -75,7 +75,7 @@ namespace FluentCsv.Tests
 
             var resultSet = Read.Csv.FromString(input)
                 .With.EndOfLineDelimiter("<endl>")
-                .AndReturn.LinesOf<TestResult>()
+                .ThatReturns.LinesOf<TestResult>()
                 .Put.Column(0).Into(a => a.Member1)
                 .GetAll().ResultSet;
 
@@ -92,7 +92,7 @@ namespace FluentCsv.Tests
 
             var resultSet = Read.Csv.FromString(input)
                 .With.EndOfLineDelimiter("^").And.ColumnsDelimiter("-")
-                .AndReturn.LinesOf<TestResult>()
+                .ThatReturns.LinesOf<TestResult>()
                 .Put.Column(0).Into(a => a.Member1)
                 .Put.Column(1).As<int>().Into(a => a.Member2)
                 .Put.Column(2).As<DateTime>().InThisWay(ParseFromEightDigit).Into(a => a.Member3)
@@ -113,7 +113,7 @@ namespace FluentCsv.Tests
 
             var resultset = Read.Csv.FromString(input)
                 .With.ColumnsDelimiter(",").And.Header()
-                .AndReturn.LinesOf<TestResult>()
+                .ThatReturns.LinesOf<TestResult>()
                 .Put.Column(0).Into(a => a.Member1)
                 .Put.Column(1).As<int>().Into(a => a.Member2)
                 .GetAll().ResultSet;
@@ -132,7 +132,7 @@ namespace FluentCsv.Tests
 
             var resultset = Read.Csv.FromString(input)
                 .With.ColumnsDelimiter(",").And.Header()
-                .AndReturn.LinesOf<TestResult>()
+                .ThatReturns.LinesOf<TestResult>()
                 .Put.Column("Name").Into(a => a.Member1)
                 .Put.Column("Age").As<int>().Into(a => a.Member2)
                 .GetAll().ResultSet;
@@ -168,8 +168,8 @@ namespace FluentCsv.Tests
             const string input = "Firstname;Lastname\r\n\"M. B\"OK;Benoit";
 
             var resultSet = Read.Csv.FromString(input)
-                .With.SimpleParsing()
-                .AndReturn.LinesOf<TestResultWithMultiline>()
+                .With.SimpleParsingMode()
+                .ThatReturns.LinesOf<TestResultWithMultiline>()
                 .Put.Column("Firstname").Into(a => a.Firstname)
                 .Put.Column("Lastname").Into(a => a.Lastname)
                 .GetAll().ResultSet;
@@ -213,7 +213,7 @@ namespace FluentCsv.Tests
 
             Action action = () => Read.Csv.FromString(input)
                 .With.EndOfLineDelimiter("\"")
-                .AndReturn.LinesOf<TestResultWithMultiline>()
+                .ThatReturns.LinesOf<TestResultWithMultiline>()
                 .Put.Column("Header1").Into(a => a.Firstname)
                 .Put.Column("Header2").Into(a => a.Lastname)
                 .GetAll();
@@ -221,8 +221,8 @@ namespace FluentCsv.Tests
             action.Should().Throw<BadDelimiterException>();
 
             var result = Read.Csv.FromString(input)
-                .With.EndOfLineDelimiter("\"").And.SimpleParsing()
-                .AndReturn.LinesOf<TestResultWithMultiline>()
+                .With.EndOfLineDelimiter("\"").And.SimpleParsingMode()
+                .ThatReturns.LinesOf<TestResultWithMultiline>()
                 .Put.Column("Header1").Into(a => a.Firstname)
                 .Put.Column("Header2").Into(a => a.Lastname)
                 .GetAll().ResultSet;
@@ -240,7 +240,7 @@ namespace FluentCsv.Tests
 
             Action action = () => Read.Csv.FromString(input)
                 .With.ColumnsDelimiter("\"")
-                .AndReturn.LinesOf<TestResultWithMultiline>()
+                .ThatReturns.LinesOf<TestResultWithMultiline>()
                 .Put.Column("Header1").Into(a => a.Firstname)
                 .Put.Column("Header2").Into(a => a.Lastname)
                 .GetAll();
@@ -248,8 +248,8 @@ namespace FluentCsv.Tests
             action.Should().Throw<BadDelimiterException>();
 
             var result = Read.Csv.FromString(input)
-                .With.ColumnsDelimiter("\"").And.SimpleParsing()
-                .AndReturn.LinesOf<TestResultWithMultiline>()
+                .With.ColumnsDelimiter("\"").And.SimpleParsingMode()
+                .ThatReturns.LinesOf<TestResultWithMultiline>()
                 .Put.Column("Header1").Into(a => a.Firstname)
                 .Put.Column("Header2").Into(a => a.Lastname)
                 .GetAll().ResultSet;
@@ -267,7 +267,7 @@ namespace FluentCsv.Tests
 
             Action action = () => Read.Csv.FromString(input)
                 .With.ColumnsDelimiter(string.Empty)
-                .AndReturn.LinesOf<TestResultWithMultiline>()
+                .ThatReturns.LinesOf<TestResultWithMultiline>()
                 .Put.Column("Header1").Into(a => a.Firstname)
                 .Put.Column("Header2").Into(a => a.Lastname)
                 .GetAll();
@@ -282,7 +282,7 @@ namespace FluentCsv.Tests
 
             Action action = () => Read.Csv.FromString(input)
                 .With.EndOfLineDelimiter(string.Empty)
-                .AndReturn.LinesOf<TestResultWithMultiline>()
+                .ThatReturns.LinesOf<TestResultWithMultiline>()
                 .Put.Column("Header1").Into(a => a.Firstname)
                 .Put.Column("Header2").Into(a => a.Lastname)
                 .GetAll();
@@ -297,7 +297,7 @@ namespace FluentCsv.Tests
 
             var result = Read.Csv.FromString(input)
                 .With.EndOfLineDelimiter(" ")
-                .AndReturn.LinesOf<TestResultWithMultiline>()
+                .ThatReturns.LinesOf<TestResultWithMultiline>()
                 .Put.Column("Header1").Into(a => a.Firstname)
                 .Put.Column("Header2").Into(a => a.Lastname)
                 .GetAll().ResultSet;
@@ -315,7 +315,7 @@ namespace FluentCsv.Tests
 
             var result = Read.Csv.FromString(input)
                 .With.ColumnsDelimiter(" ")
-                .AndReturn.LinesOf<TestResultWithMultiline>()
+                .ThatReturns.LinesOf<TestResultWithMultiline>()
                 .Put.Column("Header1").Into(a => a.Firstname)
                 .Put.Column("Header2").Into(a => a.Lastname)
                 .GetAll().ResultSet;
@@ -333,7 +333,7 @@ namespace FluentCsv.Tests
 
             Action action = () => Read.Csv.FromString(input)
                 .With.Header(As.CaseSensitive)
-                .AndReturn.LinesOf<TestResult>()
+                .ThatReturns.LinesOf<TestResult>()
                 .Put.Column("header1").Into(a => a.Member1)
                 .GetAll();
 
@@ -360,7 +360,7 @@ namespace FluentCsv.Tests
 
             var result = Read.Csv.FromString(input)
                 .With.Header(As.CaseSensitive)
-                .AndReturn.LinesOf<TestResult>()
+                .ThatReturns.LinesOf<TestResult>()
                 .Put.Column("header").Into(a => a.Member1)
                 .GetAll().ResultSet;
 

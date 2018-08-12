@@ -65,6 +65,7 @@
     <Compile Include="ColumnsResolverShould.cs" />
     <Compile Include="CsvFileParserShould.cs" />
     <Compile Include="ErrorsFromCsvFileParserShould.cs" />
+    <Compile Include="Examples.cs" />
     <Compile Include="FluentAssertionsExtensions.cs" />
     <Compile Include="GetTestFilePath.cs" />
     <Compile Include="ReadCsvFilesShould.cs" />
@@ -82,7 +83,16 @@
     <None Include="CsvFiles\annuaire-des-debits-de-tabac.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="CsvFiles\ExampleA.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="CsvFiles\ExampleC.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="CsvFiles\fr-esr-ecoles_doctorales_annuaire.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="CsvFiles\Sample1.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

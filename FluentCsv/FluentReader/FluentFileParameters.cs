@@ -37,7 +37,7 @@ namespace FluentCsv.FluentReader
             return _choice;
         }
 
-        public ChoiceBetweenFileParametersrAndResultsetBuilder SimpleParsing()
+        public ChoiceBetweenFileParametersrAndResultsetBuilder SimpleParsingMode()
         {
             CsvParameters.DataSplitter = new SimpleDataSplitter();
             return _choice;
