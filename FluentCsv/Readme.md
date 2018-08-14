@@ -1,4 +1,5 @@
 ﻿
+
 **
 
 # Fluent CSV 
@@ -10,7 +11,7 @@
  - Implements  [RFC 4180](https://tools.ietf.org/html/rfc4180)
  - Open source
  - Ease of reading and writing code
- - Detailled parse error reporting
+ - Error handling included for a best data debug experience
 
 ##  Basic usage
 
@@ -59,7 +60,7 @@ Output
 
 > Select a way to read your csv data
 
-| Method| Arguments | Comment |
+| Method| Argument(s) | Comment |
 |--|--|--|
 | `FromString`  | [CsvString] (encoding) | Read a csv directly from a string. |
 | `FromFile` | [FilePath] (encoding) | Read a csv from a file.
@@ -67,59 +68,64 @@ Output
 
 ### With.
 
-> Define optionnal CSV configuration which can be combined with the `And` keyword
+> Define optional CSV configuration which can be combined with the `And` keyword
 
-|Method | Arguments  | Comment
-|--|--|--|
-| `ColumnsDelimiter` | [DelimiterString] |Define the string used  as columns delimiter. |
-| `EndOfLineDelimiter` | [DelimiterString] | Define the string used as new line delimiter. |
-| `Header` | (CaseMode) |Declare the first line as header. You can specify if  you treat it as case sensitive or case insensitive when putting columns in properties.   |
-| `SimpleParsingMode` | no argument | By default, FluentCsv use the RFC 4180 for parse your csv file. You can use SimpleParsingMode if your file dosen't respect it and you notice some problem with double quote |
-| `CultureInfo` | [CultureString] look at  | Some data like date or decimal numbers are not the same according to the culture. For example french people use a commat as decimal separator while US people use a dot character.  |
+|Method | Argument(s)  | Comment | Usage | Default value |
+|--|--|--|--|--|
+| `ColumnsDelimiter` | [DelimiterString] |Define the string used  as columns delimiter. | Optional | ;
+| `EndOfLineDelimiter` | [DelimiterString] | Define the string used as new line delimiter. | Optional | \r\n
+| `Header` | (CaseMode) |Declare the first line as header. You can specify if  you treat it as case sensitive or case insensitive when putting columns in properties.   | Optional | CaseInsensitive |
+| `SimpleParsingMode` | no argument | By default, FluentCsv use the RFC 4180 for parse your csv file. You can use SimpleParsingMode if your file dosen't respect it and you notice some problem with double quote. | Optional | NC
+| `CultureInfo` | [[CultureCode]](https://msdn.microsoft.com/en-us/library/hh441729.aspx) | Some data like date or decimal numbers are not the same according to the culture. For example french people use a comma as decimal separator while US people use a dot character. By defining the culture code, you can tel to FluentCsv how to parse this types. | Optional | CurrentCulture
 
 ### ThatReturns.
 
 > Define what kind of objects to return as resultset and how to populate them.
 
-|Method| Arguments  | Comment |
-|--|--|--|
-| `ArrayOf<T>` | Type of class that we must use to store csv data | The class must have a parameterless constructor, and contains properties with get; set;
+|Method| Argument(s)  | Comment | Usage |
+|--|--|--|--|
+| `ArrayOf<T>` | Type of class that we must use to store csv data | The class must have a parameterless constructor, and contains properties with public getter and setter. | Mendatory
 
 ### Put.
 
 > Define how to map each column with a property
 
-|Method| Arguments | Comment |
-|--|--|--|
-| Column | [Index or HeaderName] | 
+|Method| Argument(s) | Comment | Usage | 
+|--|--|--|--|--|
+| `Column` | [Index or HeaderName] | When a column is defined by HeaderName, FluentCsv consider implicitly that the first line is a header. If all columns are defined by index and you want to skip the first line, you can use the `When.Header()` method to do it. | Mendatory |
 
 ##### SubMethods
 
-|Method| Arguments  |
-|--|--|
-| As  |  |
-| InThisWay |
-|Into
+|Method| Argument(s)  | Comment | Usage | Default Value |
+|--|--|--|--|--|
+| `As<T>`  | [DestinationType] | Define the destination type. | Optional | string
+| `InThisWay` | [ConversionFunction] | Set how to convert the csv column string data into the destination type. If not defined, a default conversion depending on cuture info is applied. | Optional | `Convert.ChangeType`
+|`Into` | [TargetProperty] | Set in which property to put the converted data. The property must be the same type of `As<T>` and have a public setter. Also, you can define a property localised in a subclass of your result providing that it's correcty instancied. (see example A) | Mendatory | NC
 
 ### GetAll()
 
 > Execute the csv parsing and return two collections
+
+This returns an object with two collections :
+
+- `ResultSet` : Contains all lines of your csv that are correcty parsed.
+- `Errors` : Contains all errors while parsing your file, including line number, column zero base index, column name (if csv contains header line) and exception message. 
 
 ## Some scenarios
 
 ### Example A
 
 - A csv file with contact informations
-- BirthDate is encoded as MMddyy
+- BirthDate is in US format (Month/day/year)
 - We want to store Firstname,Lastname and Birthdate in a subclass named `Contact`
-- We want to store Address, City and ZipCode in an other subclass named `Address`
+- We want to store Street, City and ZipCode in an other subclass named `Address`
 
 #### Csv file
 
-    FirstName;LastName;BirthDate;Address;City;ZipCode
-    Rosemary;Berube;100483;2435 Leverton Cove Road;Springfield;01103
-    Richard;Lewis;121144;1509 Big Elm;64110
-    Michael;Lindquist;122139;1334 Clark Street;Chicago;60607
+    FirstName;LastName;BirthDate;Street;City;ZipCode
+    Rosemary;Berube;04/10/1983;2435 Leverton Cove Road;Springfield;01103
+    Richard;Lewis;12/11/1944;1509 Big Elm;New York;64110
+    Michael;Lindquist;12/21/1939;1334 Clark Street;Chicago;60607
 
 #### POCO
 
@@ -127,13 +133,17 @@ Output
     {
         public Contact Contact { get; } = new Contact();
         public Address Address { get; } = new Address();
+    
+        public override string ToString() => $"{Contact} - {Address}";
     }
-     
+
     public class Contact
     {
         public string Firstname { get; set; }
         public string Lastname { get; set; }
         public DateTime BirthDate { get; set; }
+
+        public override string ToString() => $"{Firstname} {Lastname} ({BirthDate:d})";
     }
 
     public class Address
@@ -141,23 +151,32 @@ Output
         public string Street { get; set; }
         public string City { get; set; }
         public string ZipCode { get; set; }
+
+        public override string ToString() => $"City : {City}";
     }
 
 #### API Call
 
- 
+    var csv = Read.Csv.FromFile("exampleA.csv")
+             .With.CultureInfo("en-US")
+             .ThatReturns.ArrayOf<CsvInfos>()
+             .Put.Column("FirstName").Into(p => p.Contact.Firstname)
+             .Put.Column("LastName").Into(p => p.Contact.Lastname)
+             .Put.Column("BirthDate").As<DateTime>().Into(p => p.Contact.BirthDate)
+             .Put.Column("Street").Into(p => p.Address.Street)
+             .Put.Column("City").Into(p => p.Address.City)
+             .Put.Column("ZipCode").Into(p => p.Address.ZipCode)
+             .GetAll();
 
-    var csvData = Read.Csv.FromFile(file)
-                    .ThatReturns.ArrayOf<CsvInfos>()
-                    .Put.Column("FirstName").Into(p => p.Contact.Firstname)
-                    .Put.Column("LastName").Into(p => p.Contact.Lastname)
-                    .Put.Column("BirthDate").As<DateTime>()
-                    .InThisWay(a => DateTime.ParseExact(a, "MMddyy", CultureInfo.CurrentCulture))
-                    .Into(p => p.Contact.BirthDate)
-                    .Put.Column("Address").Into(p => p.Address.Street)
-                    .Put.Column("City").Into(p => p.Address.City)
-                    .Put.Column("ZipCode").Into(p => p.Address.ZipCode)
-                    .GetAll();
+    Console.WriteLine("CSV DATA");
+    csv.ResultSet.ForEach(Console.WriteLine);
+
+#### Output
+
+    CSV DATA
+    Rosemary Berube (10/04/1983) - City : Springfield
+    Richard Lewis (11/12/1944) - City : New York
+    Michael Lindquist (21/12/1939) - City : Chicago
 
 ---
 
@@ -172,13 +191,17 @@ Output
 
 #### POCO
 
-    public class CsvName {
-	    public string LastName { get; set; }
-	    public string FirstName { get; set; }
-	}
+    public class CsvName
+        {
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+    
+            public override string ToString() => $"{FirstName} {LastName}";
+        }
+
 #### API Call
 
-    var result = Read.Csv.FromFile("example.csv")
+    var csv = Read.Csv.FromFile("exampleB.csv")
                 .With.EndOfLineDelimiter("#")
                 .And.ColumnsDelimiter("-")
                 .And.Header(As.CaseSensitive)
@@ -187,6 +210,16 @@ Output
                 .Put.Column("NAME").Into(a => a.FirstName)
                 .Put.Column("name").Into(a => a.LastName)
                 .GetAll();
+                
+     Console.WriteLine("CSV DATA");
+     csv.ResultSet.ForEach(Console.WriteLine);
+
+#### Output
+
+    CSV DATA
+    Smith Bob
+    Rob"in Wiliam
+
 ---
 ### Example C
 
@@ -266,20 +299,20 @@ Output
 
 #### API Call
 
-    var csvData = Read.Csv.FromFile(file)
-                    .With.ColumnsDelimiter("\t")
-                    .ThatReturns.ArrayOf<LineExampleC>()
-                    .Put.Column(0).As<int>().Into(a => a.Id)
-                    .Put.Column(1).As<PhoneNumber>().InThisWay(s => new PhoneNumber(s)).Into(a => a.PhoneNumber)
-                    .Put.Column(2).As<CustomEnum>().InThisWay(s => new CustomEnum(s)).Into(a => a.CustomEnum)
-                    .Put.Column(3).Into(a => a.Address)
-                    .GetAll();
+    var csv = Read.Csv.FromFile("exampleC.csv")
+              .With.ColumnsDelimiter("\t")
+              .ThatReturns.ArrayOf<LineExampleC>()
+              .Put.Column(0).As<int>().Into(a => a.Id)
+              .Put.Column(1).As<PhoneNumber>().InThisWay(s => new PhoneNumber(s)).Into(a => a.PhoneNumber)
+              .Put.Column(2).As<CustomEnum>().InThisWay(s => new CustomEnum(s)).Into(a => a.CustomEnum)
+              .Put.Column(3).Into(a => a.Address)
+              .GetAll();
     
-                Console.WriteLine("CSV DATA");
-                csvData.ResultSet.ForEach(Console.WriteLine);
+    Console.WriteLine("CSV DATA");
+    csv.ResultSet.ForEach(Console.WriteLine);
     
-                Console.WriteLine("ERRORS");
-                csvData.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column index {e.ColumnZeroBasedIndex} : {e.ErrorMessage}"));
+    Console.WriteLine("ERRORS");
+    csv.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column index {e.ColumnZeroBasedIndex} : {e.ErrorMessage}"));
 
 #### Output
 
@@ -305,4 +338,6 @@ Output
     Error at line 7 column index 1 : Phone number is invalid
 
 # Licensing
-FluentCsv is free for use in all your product, including commercial software.
+FluentCsv is free for use in all your products, including commercial software.
+
+

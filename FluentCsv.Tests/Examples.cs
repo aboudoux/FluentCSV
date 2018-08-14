@@ -19,17 +19,17 @@ namespace FluentCsv.Tests
             var file = GetTestFilePath.FromDirectory(CsvFiles)
                 .AndFileName("Sample1.csv");
 
-            var csvData = Read.Csv.FromFile(file)
+            var csv = Read.Csv.FromFile(file)
                 .ThatReturns.ArrayOf<CsvData>()
                 .Put.Column("name").Into(a => a.Name)
                 .Put.Column("age").As<int>().Into(a => a.Age)
                 .GetAll();
 
             Console.WriteLine("CSV DATA");
-            csvData.ResultSet.ForEach(r=> Console.WriteLine($"Name : {r.Name} - Age : {r.Age}"));
+            csv.ResultSet.ForEach(r=> Console.WriteLine($"Name : {r.Name} - Age : {r.Age}"));
 
             Console.WriteLine("ERRORS");
-            csvData.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column index {e.ColumnZeroBasedIndex} : {e.ErrorMessage}"));
+            csv.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column index {e.ColumnZeroBasedIndex} : {e.ErrorMessage}"));
         }
 
         [Test]
@@ -38,18 +38,38 @@ namespace FluentCsv.Tests
             var file = GetTestFilePath.FromDirectory(CsvFiles)
                 .AndFileName("ExampleA.csv");
 
-            var csvData = Read.Csv.FromFile(file)
+            var csv = Read.Csv.FromFile(file)
+                .With.CultureInfo("en-US")
                 .ThatReturns.ArrayOf<CsvInfos>()
                 .Put.Column("FirstName").Into(p => p.Contact.Firstname)
                 .Put.Column("LastName").Into(p => p.Contact.Lastname)
-                .Put.Column("BirthDate").As<DateTime>()
-                .InThisWay(a => DateTime.ParseExact(a, "MMddyy", CultureInfo.CurrentCulture))
-                .Into(p => p.Contact.BirthDate)
-                .Put.Column("Address").Into(p => p.Address.Street)
+                .Put.Column("BirthDate").As<DateTime>().Into(p => p.Contact.BirthDate)
+                .Put.Column("Street").Into(p => p.Address.Street)
                 .Put.Column("City").Into(p => p.Address.City)
                 .Put.Column("ZipCode").Into(p => p.Address.ZipCode)
                 .GetAll();
 
+            Console.WriteLine("CSV DATA");
+            csv.ResultSet.ForEach(Console.WriteLine);
+        }
+
+        [Test]
+        public void ExampleB()
+        {
+            const string input = "NAME-name#Smith-Bob#Rob\"in-Wiliam";
+
+            var csv = Read.Csv.FromString(input)
+                .With.EndOfLineDelimiter("#")
+                .And.ColumnsDelimiter("-")
+                .And.Header(As.CaseSensitive)
+                .And.SimpleParsingMode()
+                .ThatReturns.ArrayOf<CsvName>()
+                .Put.Column("NAME").Into(a => a.FirstName)
+                .Put.Column("name").Into(a => a.LastName)
+                .GetAll();
+
+            Console.WriteLine("CSV DATA");
+            csv.ResultSet.ForEach(Console.WriteLine);
         }
 
         [Test]
@@ -58,7 +78,7 @@ namespace FluentCsv.Tests
             var file = GetTestFilePath.FromDirectory(CsvFiles)
                 .AndFileName("ExampleC.csv");
 
-            var csvData = Read.Csv.FromFile(file)
+            var csv = Read.Csv.FromFile(file)
                 .With.ColumnsDelimiter("\t")
                 .ThatReturns.ArrayOf<LineExampleC>()
                 .Put.Column(0).As<int>().Into(a => a.Id)
@@ -68,10 +88,10 @@ namespace FluentCsv.Tests
                 .GetAll();
 
             Console.WriteLine("CSV DATA");
-            csvData.ResultSet.ForEach(Console.WriteLine);
+            csv.ResultSet.ForEach(Console.WriteLine);
 
             Console.WriteLine("ERRORS");
-            csvData.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column index {e.ColumnZeroBasedIndex} : {e.ErrorMessage}"));
+            csv.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column index {e.ColumnZeroBasedIndex} : {e.ErrorMessage}"));
 
         }
     }
@@ -82,10 +102,20 @@ namespace FluentCsv.Tests
         public int Age { get; set; }
     }
 
+    public class CsvName
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+
+        public override string ToString() => $"{FirstName} {LastName}";
+    }
+
     public class CsvInfos
     {
         public Contact Contact { get; } = new Contact();
         public Address Address { get; } = new Address();
+
+        public override string ToString() => $"{Contact} - {Address}";
     }
 
     public class Contact
@@ -93,6 +123,8 @@ namespace FluentCsv.Tests
         public string Firstname { get; set; }
         public string Lastname { get; set; }
         public DateTime BirthDate { get; set; }
+
+        public override string ToString() => $"{Firstname} {Lastname} ({BirthDate:d})";
     }
 
     public class Address
@@ -100,6 +132,8 @@ namespace FluentCsv.Tests
         public string Street { get; set; }
         public string City { get; set; }
         public string ZipCode { get; set; }
+
+        public override string ToString() => $"City : {City}";
     }
 
     public class LineExampleC
