@@ -15,7 +15,7 @@ namespace FluentCsv.Tests
         {
             Action action = () =>
              Read.Csv.FromString("")
-                .ThatReturns.LinesOf<TestResult>()
+                .ThatReturns.ArrayOf<TestResult>()
                 .Put.Column("UnknowHeader").Into(a => a.Member1)
                 .GetAll();
 
@@ -26,7 +26,7 @@ namespace FluentCsv.Tests
         public void ReturnProperErrorIfColumnIndexNotFound()
         {
             var result = Read.Csv.FromString("test;test2")
-                .ThatReturns.LinesOf<TestResult>()
+                .ThatReturns.ArrayOf<TestResult>()
                 .Put.Column(5).Into(a => a.Member1)
                 .GetAll();
 
@@ -40,7 +40,7 @@ namespace FluentCsv.Tests
             const string input = "Header\r\ntest1\r\ntest2\r\nbad\r\ntest3";
 
             var result = Read.Csv.FromString(input)
-                .ThatReturns.LinesOf<TestResult>()
+                .ThatReturns.ArrayOf<TestResult>()
                 .Put.Column("Header").InThisWay(CheckBadString).Into(a => a.Member1)
                 .GetAll();
 

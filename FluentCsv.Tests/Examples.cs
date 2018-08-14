@@ -20,7 +20,7 @@ namespace FluentCsv.Tests
                 .AndFileName("Sample1.csv");
 
             var csvData = Read.Csv.FromFile(file)
-                .ThatReturns.LinesOf<CsvData>()
+                .ThatReturns.ArrayOf<CsvData>()
                 .Put.Column("name").Into(a => a.Name)
                 .Put.Column("age").As<int>().Into(a => a.Age)
                 .GetAll();
@@ -39,7 +39,7 @@ namespace FluentCsv.Tests
                 .AndFileName("ExampleA.csv");
 
             var csvData = Read.Csv.FromFile(file)
-                .ThatReturns.LinesOf<CsvInfos>()
+                .ThatReturns.ArrayOf<CsvInfos>()
                 .Put.Column("FirstName").Into(p => p.Contact.Firstname)
                 .Put.Column("LastName").Into(p => p.Contact.Lastname)
                 .Put.Column("BirthDate").As<DateTime>()
@@ -60,7 +60,7 @@ namespace FluentCsv.Tests
 
             var csvData = Read.Csv.FromFile(file)
                 .With.ColumnsDelimiter("\t")
-                .ThatReturns.LinesOf<LineExampleC>()
+                .ThatReturns.ArrayOf<LineExampleC>()
                 .Put.Column(0).As<int>().Into(a => a.Id)
                 .Put.Column(1).As<PhoneNumber>().InThisWay(s => new PhoneNumber(s)).Into(a => a.PhoneNumber)
                 .Put.Column(2).As<CustomEnum>().InThisWay(s => new CustomEnum(s)).Into(a => a.CustomEnum)

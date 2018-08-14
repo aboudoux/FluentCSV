@@ -7,13 +7,13 @@ namespace FluentCsv.FluentReader
     {        
         internal ResultSetBuilder(CsvParameters csvParameters) : base(csvParameters){}                
 
-        public ColumnsBuilder<TLine> LinesOf<TLine>() where TLine : new()
+        public ColumnsBuilder<TLine> ArrayOf<TLine>() where TLine : new()
         {
-            var parser = new CsvFileParser<TLine>(CsvParameters.Source, CsvParameters.DataSplitter)
+            var parser = new CsvFileParser<TLine>(CsvParameters.Source, CsvParameters.DataSplitter, CsvParameters.CultureInfo)
             {
                 ColumnDelimiter = CsvParameters.ColumnDelimiter,
                 LineDelimiter = CsvParameters.EndLineDelimiter,
-                HeadersAsCaseInsensitive = CsvParameters.HeaderCaseInsensitive
+                HeadersAsCaseInsensitive = CsvParameters.HeaderCaseInsensitive,
             };
 
             if(CsvParameters.FirstLineHasHeader)

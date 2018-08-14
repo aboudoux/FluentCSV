@@ -8,7 +8,7 @@
  - Written in .NET Standard 2.0
  - Implements  [RFC 4180](https://tools.ietf.org/html/rfc4180)
  - Open source
- - Easy write and read your code 
+ - Ease of reading and writing code
  - Detailled parse error reporting
 
 ##  Basic usage
@@ -30,7 +30,7 @@ At first, create a POCO class for represent each csv line
 then read your file using Fluent CSV
 
      var csvData = Read.Csv.FromFile("sample1.csv")
-                .ThatReturns.LinesOf<CsvData>()
+                .ThatReturns.ArrayOf<CsvData>()
                 .Put.Column("name").Into(a => a.Name)
                 .Put.Column("age").As<int>().Into(a => a.Age)
                 .GetAll();
@@ -81,7 +81,7 @@ Output
 
 |Method| Arguments  | Comment |
 |--|--|--|
-| `ListOf<T>` | Type of class that we must use to store csv data | The class must have a parameterless constructor, and contains properties with get; set;
+| `ArrayOf<T>` | Type of class that we must use to store csv data | The class must have a parameterless constructor, and contains properties with get; set;
 
 ### Put.
 
@@ -146,7 +146,7 @@ Output
  
 
     var csvData = Read.Csv.FromFile(file)
-                    .ThatReturns.LinesOf<CsvInfos>()
+                    .ThatReturns.ArrayOf<CsvInfos>()
                     .Put.Column("FirstName").Into(p => p.Contact.Firstname)
                     .Put.Column("LastName").Into(p => p.Contact.Lastname)
                     .Put.Column("BirthDate").As<DateTime>()
@@ -181,7 +181,7 @@ Output
                 .And.ColumnsDelimiter("-")
                 .And.Header(As.CaseSensitive)
                 .And.SimpleParsingMode()
-                .ThatReturns.LinesOf<CsvName>()
+                .ThatReturns.ArrayOf<CsvName>()
                 .Put.Column("NAME").Into(a => a.FirstName)
                 .Put.Column("name").Into(a => a.LastName)
                 .GetAll();
@@ -266,7 +266,7 @@ Output
 
     var csvData = Read.Csv.FromFile(file)
                     .With.ColumnsDelimiter("\t")
-                    .ThatReturns.LinesOf<LineExampleC>()
+                    .ThatReturns.ArrayOf<LineExampleC>()
                     .Put.Column(0).As<int>().Into(a => a.Id)
                     .Put.Column(1).As<PhoneNumber>().InThisWay(s => new PhoneNumber(s)).Into(a => a.PhoneNumber)
                     .Put.Column(2).As<CustomEnum>().InThisWay(s => new CustomEnum(s)).Into(a => a.CustomEnum)

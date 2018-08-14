@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -14,7 +15,7 @@ namespace FluentCsv.CsvParser
         public string ColumnName { get; }
         public int ColumnIndex { get; }
 
-        public ColumnExtractor(int columnIndex, string columnName = null)
+        public ColumnExtractor(int columnIndex, CultureInfo cultureInfo, string columnName = null)
         {
             ColumnIndex = columnIndex;
             ColumnName = columnName;
@@ -24,7 +25,7 @@ namespace FluentCsv.CsvParser
 
             _inThisWay = dataType => dataType.IsEmpty() ? 
                                      default(TMember) : 
-                                     (TMember) Convert.ChangeType(dataType, conversionType);
+                                     (TMember) Convert.ChangeType(dataType, conversionType, cultureInfo);
         }
 
         public void SetInto(Expression<Func<TResult, TMember>> into)

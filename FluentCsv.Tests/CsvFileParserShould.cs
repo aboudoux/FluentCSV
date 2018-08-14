@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using FluentAssertions;
 using FluentCsv.CsvParser;
 using FluentCsv.CsvParser.Splitters;
@@ -13,7 +14,7 @@ namespace FluentCsv.Tests
         private readonly IDataSplitter _defaultDataSplitter = new SimpleDataSplitter();
 
         private CsvFileParser<TestResult> GetParser(string input, IDataSplitter splitter = null)
-            => new CsvFileParser<TestResult>(input, splitter ?? _defaultDataSplitter);
+            => new CsvFileParser<TestResult>(input, splitter ?? _defaultDataSplitter, new CultureInfo("fr-FR"));
 
         [Test]
         public void ParseSimpleCsvFromString()

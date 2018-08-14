@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using FluentAssertions;
 using FluentCsv.CsvParser;
 using FluentCsv.Tests.Results;
@@ -13,7 +14,7 @@ namespace FluentCsv.Tests
         public void ExtractStringAndPutInField()
         {
             var result = new TestResult();
-            var extractor = new ColumnExtractor<TestResult, string>(0);
+            var extractor = new ColumnExtractor<TestResult, string>(0, CultureInfo.CurrentCulture);
             extractor.SetInto(a=>a.Member1);
 
             extractor.Extract(result,"bonjour");
@@ -24,7 +25,7 @@ namespace FluentCsv.Tests
         public void ExtractIntAndPutInField()
         {
             var result = new TestResult();
-            var extractor = new ColumnExtractor<TestResult, int>(0);
+            var extractor = new ColumnExtractor<TestResult, int>(0, CultureInfo.CurrentCulture);
             extractor.SetInto(a => a.Member2);
 
             extractor.Extract(result, "25");
@@ -35,7 +36,7 @@ namespace FluentCsv.Tests
         public void ExtractDateAndPutInField()
         {
             var result = new TestResult();
-            var extractor = new ColumnExtractor<TestResult, DateTime>(0);
+            var extractor = new ColumnExtractor<TestResult, DateTime>(0, CultureInfo.CurrentCulture);
             extractor.SetInto(a => a.Member3);
 
             extractor.Extract(result, "01/07/1980");
@@ -48,7 +49,7 @@ namespace FluentCsv.Tests
         public void ExtractNullableDecimalInField(string source, decimal? expected)
         {
             var result = new TestResult();
-            var extractor = new ColumnExtractor<TestResult, decimal?>(0);
+            var extractor = new ColumnExtractor<TestResult, decimal?>(0, CultureInfo.CurrentCulture);
             extractor.SetInto(a => a.Member4);
 
             extractor.Extract(result, source);
@@ -59,7 +60,7 @@ namespace FluentCsv.Tests
         public void ExtractObjectInSpecialWay()
         {
             var result = new TestResult();
-            var extractor = new ColumnExtractor<TestResult, string>(0);
+            var extractor = new ColumnExtractor<TestResult, string>(0, CultureInfo.CurrentCulture);
             extractor.SetInto(a => a.Member1);
             extractor.SetInThisWay(a=>$"[TEST]{a}");
 
@@ -73,11 +74,37 @@ namespace FluentCsv.Tests
             const string input = "test1\r\ntest2\r\ntest3";
 
             var result = new TestResult();
-            var extractor = new ColumnExtractor<TestResult, string>(0);
+            var extractor = new ColumnExtractor<TestResult, string>(0, CultureInfo.CurrentCulture);
             extractor.SetInto(a => a.Member1);
 
             extractor.Extract(result, input);
             result.Member1.Should().Be(input);
+        }
+
+        [Test]
+        [TestCase("1,1","fr-FR", 1.1)]
+        [TestCase("1.1","en-GB", 1.1)]
+        public void ExtractDecimalDependingCultureInfo(string input, string culture, decimal expected)
+        {
+            var result = new TestResult();
+            var extractor = new ColumnExtractor<TestResult, decimal?>(0, new CultureInfo(culture));
+            extractor.SetInto(a=>a.Member4);
+
+            extractor.Extract(result, input);
+            result.Member4.Should().Be(expected);
+        }
+
+        [Test]
+        [TestCase("01/07/1980", "fr-FR", 1980, 7, 1)]
+        [TestCase("07/01/1980", "en-US", 1980, 7, 1)]
+        public void ExtractDateTimeDependingCultureInfo(string input, string culture, int year, int month, int day)
+        {
+            var result = new TestResult();
+            var extractor = new ColumnExtractor<TestResult, DateTime>(0, new CultureInfo(culture));
+            extractor.SetInto(a => a.Member3);
+
+            extractor.Extract(result, input);
+            result.Member3.Should().Be(new DateTime(year, month, day));
         }
     }
 }

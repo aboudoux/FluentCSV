@@ -1,3 +1,4 @@
+using System.Globalization;
 using FluentCsv.CsvParser.Splitters;
 
 namespace FluentCsv.FluentReader
@@ -40,6 +41,12 @@ namespace FluentCsv.FluentReader
         public ChoiceBetweenFileParametersrAndResultsetBuilder SimpleParsingMode()
         {
             CsvParameters.DataSplitter = new SimpleDataSplitter();
+            return _choice;
+        }
+
+        public ChoiceBetweenFileParametersrAndResultsetBuilder CultureInfo(string culture)
+        {
+            CsvParameters.CultureInfo = new CultureInfo(culture);
             return _choice;
         }
     }

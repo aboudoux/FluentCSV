@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using FluentCsv.CsvParser;
 using FluentCsv.CsvParser.Splitters;
 using FluentCsv.Tests.Results;
@@ -9,7 +10,7 @@ namespace FluentCsv.Tests
     public class ErrorsFromCsvFileParserShould
     {
         private CsvFileParser<TestResult> GetParser(string input)
-            => new CsvFileParser<TestResult>(input, new SimpleDataSplitter());
+            => new CsvFileParser<TestResult>(input, new SimpleDataSplitter(), new CultureInfo("fr-FR"));
 
         [Test]
         public void ReturnLineAndMessageOfBadDateConversion()

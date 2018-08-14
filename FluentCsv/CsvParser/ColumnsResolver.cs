@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq.Expressions;
 using FluentCsv.Exceptions;
 
@@ -7,13 +8,20 @@ namespace FluentCsv.CsvParser
 {
     public class ColumnsResolver<TResult> where TResult : new()
     {
+        private readonly CultureInfo _culture;
+
+        public ColumnsResolver(CultureInfo culture)
+        {
+            _culture = culture ?? throw new ArgumentNullException(nameof(culture));
+        }
+
         private readonly Dictionary<int, IColumnExtractor> _columns = new Dictionary<int, IColumnExtractor>();
 
         public void AddColumn<TMember>(int index, Expression<Func<TResult, TMember>> into, Func<string, TMember> setInThisWay = null, string columnName = null)
         {            
             VerifyColumnIndexIsUnique();
 
-            var extractor = new ColumnExtractor<TResult, TMember>(index, columnName);
+            var extractor = new ColumnExtractor<TResult, TMember>(index, _culture, columnName);
             extractor.SetInto(into);
 
             if(setInThisWay != null)

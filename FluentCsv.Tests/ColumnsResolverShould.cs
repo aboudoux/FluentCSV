@@ -10,10 +10,12 @@ namespace FluentCsv.Tests
 {
     public class ColumnsResolverShould
     {
+        private CultureInfo TestCulture = new CultureInfo("fr-FR");
+
         [Test]
         public void ExtractSomeColumns()
         {
-            var resolver = new ColumnsResolver<TestResult>();
+            var resolver = new ColumnsResolver<TestResult>(TestCulture);
             resolver.AddColumn(0, a=>a.Member1);
             resolver.AddColumn(1, a=>a.Member2);
             resolver.AddColumn(2, a=>a.Member3, a => DateTime.ParseExact(a,"ddMMyyyy", CultureInfo.CurrentCulture));
@@ -26,7 +28,7 @@ namespace FluentCsv.Tests
         [Test]
         public void ThrowErrorIfAddColumnWithSameIndex()
         {
-            var resolver = new ColumnsResolver<TestResult>();
+            var resolver = new ColumnsResolver<TestResult>(TestCulture);
             resolver.AddColumn(0, a=>a.Member1);
             Action error = () => resolver.AddColumn(0, a => a.Member1);
             error.Should().Throw<ColumnWithSameIndexAlreadyDeclaredException>();
@@ -35,7 +37,7 @@ namespace FluentCsv.Tests
         [Test]
         public void IncludeDeeperProperties()
         {
-            var resolver = new ColumnsResolver<DeepResult>();
+            var resolver = new ColumnsResolver<DeepResult>(TestCulture);
             resolver.AddColumn(0, a=>a.Contact.Firstname);
 
             var result = resolver.GetResult(new[] {"MARTIN"}, 1) as DeepResult;
@@ -47,7 +49,7 @@ namespace FluentCsv.Tests
         [Test]
         public void IncludeDeeperPropertiesWithMoreLevel()
         {
-            var resolver = new ColumnsResolver<DeepResult>();
+            var resolver = new ColumnsResolver<DeepResult>(TestCulture);
             resolver.AddColumn(0, a => a.Contact.Infos.Comment);
 
             var result = resolver.GetResult(new[] { "MARTIN" }, 1) as DeepResult;
@@ -59,7 +61,7 @@ namespace FluentCsv.Tests
         [Test]
         public void ThrowErrorIfDeeperPropertiesIsNullInstance()
         {
-            var resolver = new ColumnsResolver<DeepResult>();
+            var resolver = new ColumnsResolver<DeepResult>(TestCulture);
             resolver.AddColumn(0, a => a.Address.City);
 
             Action action = () => resolver.GetResult(new[] {"MARTIN"}, 1);

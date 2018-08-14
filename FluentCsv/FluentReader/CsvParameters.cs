@@ -1,3 +1,4 @@
+using System.Globalization;
 using FluentCsv.CsvParser.Splitters;
 
 namespace FluentCsv.FluentReader
@@ -12,5 +13,6 @@ namespace FluentCsv.FluentReader
         public bool HeaderCaseInsensitive = true;
 
         public IDataSplitter DataSplitter { get; set; } = new Rfc4180DataSplitter();
+        public CultureInfo CultureInfo { get; set; } = CultureInfo.CurrentCulture;
     }
 }

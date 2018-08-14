@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using FluentCsv.CsvParser.Splitters;
@@ -41,10 +42,11 @@ namespace FluentCsv.CsvParser
 
         public bool HeadersAsCaseInsensitive { get; set; } = false;
 
-        public CsvFileParser(string source, IDataSplitter dataSplitter)
+        public CsvFileParser(string source, IDataSplitter dataSplitter, CultureInfo cultureInfo)
         {
             _source = source;
             _dataSplitter = dataSplitter ?? throw new ArgumentNullException(nameof(dataSplitter));
+            _columns = new ColumnsResolver<TResult>(cultureInfo);
         }
 
         public void DeclareFirstLineHasHeader()
@@ -53,7 +55,7 @@ namespace FluentCsv.CsvParser
             _headerIndex = _headerIndex ?? new HeaderIndex(SplitColumns(GetFirstLine(_source)), HeadersAsCaseInsensitive);
         }
 
-        private readonly ColumnsResolver<TResult> _columns = new ColumnsResolver<TResult>();
+        private readonly ColumnsResolver<TResult> _columns;
         
         public void AddColumn<TMember>(int index, Expression<Func<TResult, TMember>> into, Func<string, TMember> setInThisWay = null) 
             => _columns.AddColumn(index, into, setInThisWay, _headerIndex?.GetColumnName(index));
