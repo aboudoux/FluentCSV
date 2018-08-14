@@ -1,4 +1,5 @@
-﻿**
+﻿
+**
 
 # Fluent CSV 
  A .NET library for read your csv files in a fluent way.
@@ -62,7 +63,7 @@ Output
 |--|--|--|
 | `FromString`  | [CsvString] (encoding) | Read a csv directly from a string. |
 | `FromFile` | [FilePath] (encoding) | Read a csv from a file.
-| `FromAssemblyResource` | [ResourceName] (Assembly) | Read a csv from an assembly resource.
+| `FromAssemblyResource` | [ResourceName] (Assembly) (Encoding) | Read a csv from an assembly resource. If assembly is not defined, the API get the resource from the calling assembly.
 
 ### With.
 
@@ -70,10 +71,11 @@ Output
 
 |Method | Arguments  | Comment
 |--|--|--|
-| `ColumnsDelimiter` | [DelimiterString] |Define the string used  as columns delimiter |
-| `EndOfLineDelimiter` | [DelimiterString] | Define the string used as new line delimiter |
+| `ColumnsDelimiter` | [DelimiterString] |Define the string used  as columns delimiter. |
+| `EndOfLineDelimiter` | [DelimiterString] | Define the string used as new line delimiter. |
 | `Header` | (CaseMode) |Declare the first line as header. You can specify if  you treat it as case sensitive or case insensitive when putting columns in properties.   |
-| `SimpleParsingMode` | |
+| `SimpleParsingMode` | no argument | By default, FluentCsv use the RFC 4180 for parse your csv file. You can use SimpleParsingMode if your file dosen't respect it and you notice some problem with double quote |
+| `CultureInfo` | [CultureString] look at  | Some data like date or decimal numbers are not the same according to the culture. For example french people use a commat as decimal separator while US people use a dot character.  |
 
 ### ThatReturns.
 

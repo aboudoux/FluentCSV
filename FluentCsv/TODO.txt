@@ -16,9 +16,9 @@
 x possibilité de commenter des lignes en ajoutant un caractère (par defaut #)
 [x] resultat avec liste des erreurs et resultset
 [x] lire depuis un fichier
-- lire depuis une ressource d'assembly
+[x] lire depuis une ressource d'assembly
 [x] Gestion de l'encoding
-- Gestion de la culture
+[x] Gestion de la culture
 [x] gestion des propriétés incluses (Address.Name.Subname)
 
 == Autre

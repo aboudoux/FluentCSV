@@ -69,6 +69,7 @@
     <Compile Include="FluentAssertionsExtensions.cs" />
     <Compile Include="GetTestFilePath.cs" />
     <Compile Include="ReadCsvFilesShould.cs" />
+    <Compile Include="ReadCsvFromAssemblyResourceShould.cs" />
     <Compile Include="Results\DeepResult.cs" />
     <Compile Include="Results\ResultWithValueObject.cs" />
     <Compile Include="Results\TestResultWithMultiline.cs" />
@@ -92,6 +93,7 @@
     <None Include="CsvFiles\fr-esr-ecoles_doctorales_annuaire.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <EmbeddedResource Include="CsvFiles\resource1.csv" />
     <None Include="CsvFiles\Sample1.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
