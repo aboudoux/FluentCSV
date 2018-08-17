@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Aurelien BOUDOUX</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>A .NET library for read your csv files in a fluent way.</Description>
+    <Company />
+    <PackageProjectUrl>https://github.com/aboudoux/FluentCSV</PackageProjectUrl>
   </PropertyGroup>
 
 </Project>
