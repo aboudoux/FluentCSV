@@ -79,7 +79,7 @@ namespace FluentCsv.Tests
             result.ResultSet.Should().HaveCount(267);
             var firstRow = result.ResultSet.First();
 
-            firstRow.AddressePostale.Should().Be("Aix- Marseille Université\nFaculté des Sciences de Luminy\nCase 901\n163, avenue de Luminy");
+            firstRow.AddressePostale.Should().Be("Aix- Marseille Université\r\nFaculté des Sciences de Luminy\r\nCase 901\r\n163, avenue de Luminy");
         }
     }
 
