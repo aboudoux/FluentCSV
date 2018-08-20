@@ -10,6 +10,12 @@
  - Ease of reading and writing code
  - Error handling included for a best data debug experience
 
+## Adding FluentCSV to your project
+
+You can use NuGet to quickly add FluentCSV to your project. Just search for 'FluentCSV' and install the package, or type the following command into 'Package Manager Console'
+
+`PM> Install-Package FluentCsv`
+ 
 ##  Basic usage
 
 Imagine a csv file named "sample1.csv"
