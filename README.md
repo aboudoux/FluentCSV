@@ -355,6 +355,16 @@ csv.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column 
     Error at line 3 column index 0 : The format of the input string is incorrect.
     Error at line 5 column index 2 : Invalid enum character
     Error at line 7 column index 1 : Phone number is invalid
+	
+# Change log
+
+### 1.0.1
+- [BugFix] Incorrect parsing if string start with UTF8 BOM 
+- [BugFix] Error when using a pipe as column delimiter
+
+### 1.0.0
+- First release of the library
+
 
 # Licensing
 FluentCsv is free for use in all your products, including commercial software.

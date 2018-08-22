@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using FluentAssertions;
 using FluentCsv.CsvParser.Splitters;
 using FluentCsv.Exceptions;
@@ -13,6 +14,7 @@ namespace FluentCsv.Tests
         [TestCase("<->", "Aurelien<->BOUDOUX<->\"9\r\nrue du test; <-> impasse <->\r\n75001\r\nParis\"", "Aurelien","BOUDOUX", "9\r\nrue du test; <-> impasse <->\r\n75001\r\nParis")]
         [TestCase(",", "\"M. Aurelien BOUDOUX, TEST\",,", "M. Aurelien BOUDOUX, TEST", "", "")]
         [TestCase(",", "\"TEST1\",\"TEST2\",\"TEST3\"", "TEST1", "TEST2", "TEST3")]
+        [TestCase("|", "\"TEST1\"|\"TEST2\"|\"TEST3\"", "TEST1", "TEST2", "TEST3")]
         [TestCase(",", "TEST1,TEST2,TEST3", "TEST1", "TEST2", "TEST3")]
         [TestCase(",", "TEST1,\"TEST2,TEST3\",TEST4", "TEST1", "TEST2,TEST3", "TEST4")]
         [TestCase(",", "TEST1,\"TEST2,TEST3\",", "TEST1", "TEST2,TEST3", "")]
@@ -110,5 +112,18 @@ namespace FluentCsv.Tests
 
             action.Should().Throw<BadDelimiterException>();
         }
+
+		[Test]
+	    public void RemoveIfStringContainsBom()
+		{
+			const string input = "\uFEFF\"TEST1\",\"TEST2\",\"TEST3\"\r\nA,B,C";
+
+			var splitter = new Rfc4180DataSplitter();
+			var firstLine = splitter.GetFirstLine(input, "\r\n");
+			var columns = splitter.SplitColumns(firstLine,",");
+
+			columns.Should().HaveCount(3);
+			columns[0].Should().Be("TEST1");
+		}
     }
 }

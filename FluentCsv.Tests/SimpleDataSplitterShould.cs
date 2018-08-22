@@ -17,5 +17,17 @@ namespace FluentCsv.Tests
             var firstLine = splitter.GetFirstLine(input, delimiter);
             firstLine.Should().Be(expected);
         }
-    }
+
+	    [Test]
+	    public void RemoveIfStringContainsBom() {
+		    const string input = "\uFEFFTEST1,TEST2,TEST3\r\nA,B,C";
+
+		    var splitter = new SimpleDataSplitter();
+		    var firstLine = splitter.GetFirstLine(input, "\r\n");
+		    var columns = splitter.SplitColumns(firstLine, ",");
+
+		    columns.Should().HaveCount(3);
+		    columns[0].Should().Be("TEST1");
+	    }
+	}
 }

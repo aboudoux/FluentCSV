@@ -38,5 +38,14 @@ namespace FluentCsv
                     yield return element;
             }
         }
+
+	    internal static string RemoveBomIfExists(this string source)
+	    {
+		    const string utf8Bom = "\uFEFF";
+
+			if (source.IsEmpty())
+			    return source;
+		    return source.StartsWith(utf8Bom) ? source.Replace(utf8Bom,string.Empty) : source;
+	    }
     }
 }

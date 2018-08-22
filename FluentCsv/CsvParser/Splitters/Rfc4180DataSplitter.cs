@@ -15,7 +15,7 @@ namespace FluentCsv.CsvParser.Splitters
         {
             EnsureDelimiterIsValid(columnDelimiter);
 
-            var regex = string.Format("(?<=(^|{0})(?<quote>\"?))([^\"]|(\"\"))*?(?=\\<quote>(?={0}|$))", columnDelimiter);
+            var regex = string.Format("(?<=(^|\\{0})(?<quote>\"?))([^\"]|(\"\"))*?(?=\\<quote>(?=\\{0}|$))", columnDelimiter);
 
             return Regex.Matches(input, regex)
                 .Cast<Match>()
@@ -35,15 +35,16 @@ namespace FluentCsv.CsvParser.Splitters
             if (input.IsEmpty())
                 return new[]{string.Empty};
 
-            var previousIndex = 0;
+	        var inputWithoutBom = input.RemoveBomIfExists();
+			var previousIndex = 0;
 
-            return GetAllNewLineDelimiterIndexThatArentBetweenQuotes(input, lineDelimiter)
+            return GetAllNewLineDelimiterIndexThatArentBetweenQuotes(inputWithoutBom, lineDelimiter)
                   .Select(SplittedLine)
                   .ToArray();
 
             string SplittedLine(int delimiterIndex)
             {
-                var substring = input.Substring(previousIndex, delimiterIndex - previousIndex);
+                var substring = inputWithoutBom.Substring(previousIndex, delimiterIndex - previousIndex);
                 previousIndex = delimiterIndex + lineDelimiter.Length;
                 return substring;
             }
@@ -53,8 +54,10 @@ namespace FluentCsv.CsvParser.Splitters
         {
             EnsureDelimiterIsValid(lineDelimiter);
 
-            return GetAllNewLineDelimiterIndexThatArentBetweenQuotes(input, lineDelimiter)
-                .Select(firstIndex => input.Substring(0, firstIndex))
+	        var inputWithoutBom = input.RemoveBomIfExists();
+
+            return GetAllNewLineDelimiterIndexThatArentBetweenQuotes(inputWithoutBom, lineDelimiter)
+                .Select(firstIndex => inputWithoutBom.Substring(0, firstIndex))
                 .FirstOrDefault();
         }
 
