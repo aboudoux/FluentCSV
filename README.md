@@ -358,6 +358,9 @@ csv.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column 
 	
 # Change log
 
+### 1.0.2
+- [BugFix] Bad parsing for quadruple quotes
+
 ### 1.0.1
 - [BugFix] Incorrect parsing if string start with UTF8 BOM 
 - [BugFix] Error when using a pipe as column delimiter

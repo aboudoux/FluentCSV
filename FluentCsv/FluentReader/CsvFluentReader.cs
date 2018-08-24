@@ -11,13 +11,13 @@ namespace FluentCsv.FluentReader
 
         public ChoiceBetweenFileParametersAndResultSetBuilder FromFile(string fileName, Encoding encoding = null)
         {
-            _csvParameters.Source = File.ReadAllText(fileName, encoding ?? Encoding.Default);
+            _csvParameters.Source = File.ReadAllText(fileName, encoding ?? Encoding.Default).RemoveBomIfExists();
             return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);
         }
 
         public ChoiceBetweenFileParametersAndResultSetBuilder FromString(string @string)
         {
-            _csvParameters.Source = @string;
+            _csvParameters.Source = @string.RemoveBomIfExists();
             return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);
         }
 
@@ -36,7 +36,7 @@ namespace FluentCsv.FluentReader
 
                     using (var reader = new StreamReader(stream, encoding ?? Encoding.Default))
                     {
-                        return reader.ReadToEnd();
+                        return reader.ReadToEnd().RemoveBomIfExists();
                     }
                 }
             }

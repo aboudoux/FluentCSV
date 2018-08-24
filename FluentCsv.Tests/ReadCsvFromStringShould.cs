@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using FluentAssertions;
 using FluentCsv.CsvParser;
 using FluentCsv.Exceptions;
@@ -398,5 +399,19 @@ namespace FluentCsv.Tests
 
             csv.ResultSet.ShouldContainEquivalentTo(TestResult.Create(member3: new DateTime(2018,07,01), member4: 1.2m));
         }
+
+		[Test]
+		[TestCase("\uFEFFHEADER1;HEADER2;HEADER3\r\nTEST1;TEST2;TEST3")]
+		[TestCase("\uFEFF\"HEADER1\";\"HEADER2\";\"HEADER3\"\r\nTEST1;TEST2;TEST3")]
+	    public void ReadUtf8StringWithBom(string csvData)
+		{
+			var csv = Read.Csv.FromString(csvData)
+				.ThatReturns.ArrayOf<TestResult>()
+				.Put.Column("HEADER1").Into(a => a.Member1)
+				.GetAll();
+
+			csv.ResultSet.Should().HaveCount(1);
+			csv.ResultSet.First().Member1.Should().Be("TEST1");
+		}
     }
 }

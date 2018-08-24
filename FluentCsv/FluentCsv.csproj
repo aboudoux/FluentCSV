@@ -7,8 +7,8 @@
     <Description>A .NET library for read your csv files in a fluent way.</Description>
     <Company />
     <PackageProjectUrl>https://github.com/aboudoux/FluentCSV</PackageProjectUrl>
-    <Version>1.0.1</Version>
-    <PackageReleaseNotes>[BugFix] - Incorrect parsing if string start with UTF8 BOM - Error when using a pipe as column delimiter</PackageReleaseNotes>
+    <Version>1.0.2</Version>
+    <PackageReleaseNotes>[BugFix] - Bad parsing for quadruple quotes</PackageReleaseNotes>
   </PropertyGroup>
 
 </Project>

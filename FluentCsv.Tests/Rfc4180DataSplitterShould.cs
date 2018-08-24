@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using FluentAssertions;
 using FluentCsv.CsvParser.Splitters;
 using FluentCsv.Exceptions;
@@ -15,11 +14,14 @@ namespace FluentCsv.Tests
         [TestCase(",", "\"M. Aurelien BOUDOUX, TEST\",,", "M. Aurelien BOUDOUX, TEST", "", "")]
         [TestCase(",", "\"TEST1\",\"TEST2\",\"TEST3\"", "TEST1", "TEST2", "TEST3")]
         [TestCase("|", "\"TEST1\"|\"TEST2\"|\"TEST3\"", "TEST1", "TEST2", "TEST3")]
+        [TestCase("^", "\"TEST1\"^\"TEST2\"^\"TEST3\"", "TEST1", "TEST2", "TEST3")]
+        [TestCase("$", "\"TEST1\"$\"TEST2\"$\"TEST3\"", "TEST1", "TEST2", "TEST3")]
         [TestCase(",", "TEST1,TEST2,TEST3", "TEST1", "TEST2", "TEST3")]
         [TestCase(",", "TEST1,\"TEST2,TEST3\",TEST4", "TEST1", "TEST2,TEST3", "TEST4")]
         [TestCase(",", "TEST1,\"TEST2,TEST3\",", "TEST1", "TEST2,TEST3", "")]
         [TestCase(",", "\"Aurelien, \"\"BOUDOUX\"\"\",TEST,", "Aurelien, \"BOUDOUX\"", "TEST", "")]
-        [TestCase(",", "\"\"\"\",\"\",\" \"\" \"", "\"", "", " \" ")]
+        [TestCase(",", "\"\"\"ok\",\"\",\" \"\" \"", "\"ok", "", " \" ")]
+        [TestCase(",", "\"\"\"ok\"\"\",\"\",\" \"\" \"", "\"ok\"", "", " \" ")]        
         public void SplitColumnsInRfc4180(string delimiter, string input, string expected1, string expected2, string expected3)
         {
             var splitter = new Rfc4180DataSplitter();
@@ -114,16 +116,25 @@ namespace FluentCsv.Tests
         }
 
 		[Test]
-	    public void RemoveIfStringContainsBom()
+	    public void TestReplace()
 		{
-			const string input = "\uFEFF\"TEST1\",\"TEST2\",\"TEST3\"\r\nA,B,C";
+			const string doubleQuote = "\"\"";
+			const string simpleQuote = "\"";
 
-			var splitter = new Rfc4180DataSplitter();
-			var firstLine = splitter.GetFirstLine(input, "\r\n");
-			var columns = splitter.SplitColumns(firstLine,",");
-
-			columns.Should().HaveCount(3);
-			columns[0].Should().Be("TEST1");
+			var data = doubleQuote + doubleQuote;
+			var result = data.Replace(doubleQuote, simpleQuote);
+			result.Should().Be(doubleQuote);
 		}
-    }
+
+		[Test]
+	    public void DoubleQuoteTest()
+	    {
+		    const string input = @"277;237C3989-4D81-4F62-9581-A19516D08D86;2018-07-16 09:56:08.780;37;""{""""AggregateId"""":""""237c3989-4d81-4f62-9581-a19516d08d86"""",""""SiteId"""":""""237c3989-4d81-4f62-9581-a19516d08d86"""",""""Contact"""":{""""ContactId"""":""""42497b38-f0e4-497c-918f-61fb27d5a208"""",""""Nom"""":""""BRUCKER"""",""""Prenom"""":"""""""",""""TypeContactSiteId"""":""""7bfa472a-ab24-44d8-917b-360d1204364b"""",""""MoyensDeContact"""":{""""TelephoneFixe"""":"""""""",""""TelephonePortable"""":""""+33603644655"""",""""Email"""":"""""""",""""AdressePostale"""":{""""NumeroEtVoie"""":""""10 Rue du Lac"""",""""Complement"""":"""""""",""""CodePostal"""":""""67114"""",""""Commune"""":""""Eschau"""",""""Pays"""":""""France""""}},""""AutresInformations"""":""""""""},""""HorodateCreationUtc"""":""""2018-07-16T09:56:08.6962731Z"""",""""Journalisation"""":{""""UtilisateurId"""":""""00000000-0000-0000-0000-000000000000"""",""""TacheId"""":-1,""""Horodate"""":""""0001-01-01T00:00:00""""}}""";
+
+		    var splitter = new Rfc4180DataSplitter();
+
+		    var colums =splitter.SplitColumns(input, ";");
+		    colums[4].Should().Contain("\"Complement\":\"\"");
+	    }
+	}
 }
