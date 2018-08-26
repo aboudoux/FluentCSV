@@ -15,7 +15,24 @@ namespace FluentCsv.FluentReader
             return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);
         }
 
-        public ChoiceBetweenFileParametersAndResultSetBuilder FromString(string @string)
+	    public ChoiceBetweenFileParametersAndResultSetBuilder FromBytes(byte[] array, Encoding encoding = null)
+	    {
+		    var selectedEncoding = encoding ?? Encoding.Default;
+		    _csvParameters.Source = selectedEncoding.GetString(array).RemoveBomIfExists();
+		    return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);
+	    }
+
+	    public ChoiceBetweenFileParametersAndResultSetBuilder FromStream(Stream stream, Encoding encoding = null) {
+
+		    using (var reader = new StreamReader(stream, encoding ?? Encoding.Default))
+		    {
+			    reader.ReadToEnd();
+			    _csvParameters.Source = reader.ReadToEnd().RemoveBomIfExists();
+			    return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);
+			}
+	    }
+
+		public ChoiceBetweenFileParametersAndResultSetBuilder FromString(string @string)
         {
             _csvParameters.Source = @string.RemoveBomIfExists();
             return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);

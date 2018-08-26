@@ -1,0 +1,9 @@
+# New feature for 1.1
+
+-> ThatReturns.DictionaryOf<T>(a=>a.Key)
+-> Read.Csv.FromBytes(bytes[] data, Encoding)
+-> Read.Csv.FromStream(Stream input, Encoding)
+
+-> ResultSet.SaveErrorsInFile(string csvFilePath)
+Line;ColumnZeroBaseIndex;ColumnName;Message
+1;0;"test";"number ""1"" is invalid"
