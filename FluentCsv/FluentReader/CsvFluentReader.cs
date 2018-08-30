@@ -8,25 +8,33 @@ namespace FluentCsv.FluentReader
     public class CsvFluentReader
     {
         private readonly CsvParameters _csvParameters = new CsvParameters();
+		private readonly Encoding _encoding;
 
-        public ChoiceBetweenFileParametersAndResultSetBuilder FromFile(string fileName, Encoding encoding = null)
+	    public CsvFluentReader(Encoding encoding)
+	    {
+		    _encoding = encoding;
+	    }
+
+	    public CsvFluentReader() : this(Encoding.Default)
+	    {
+	    }
+
+        public ChoiceBetweenFileParametersAndResultSetBuilder FromFile(string fileName)
         {
-            _csvParameters.Source = File.ReadAllText(fileName, encoding ?? Encoding.Default).RemoveBomIfExists();
+            _csvParameters.Source = File.ReadAllText(fileName, _encoding).RemoveBomIfExists();
             return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);
         }
 
-	    public ChoiceBetweenFileParametersAndResultSetBuilder FromBytes(byte[] array, Encoding encoding = null)
+	    public ChoiceBetweenFileParametersAndResultSetBuilder FromBytes(byte[] array)
 	    {
-		    var selectedEncoding = encoding ?? Encoding.Default;
-		    _csvParameters.Source = selectedEncoding.GetString(array).RemoveBomIfExists();
+		    _csvParameters.Source = _encoding.GetString(array).RemoveBomIfExists();
 		    return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);
 	    }
 
-	    public ChoiceBetweenFileParametersAndResultSetBuilder FromStream(Stream stream, Encoding encoding = null) {
+	    public ChoiceBetweenFileParametersAndResultSetBuilder FromStream(Stream stream) {
 
-		    using (var reader = new StreamReader(stream, encoding ?? Encoding.Default))
+		    using (var reader = new StreamReader(stream, _encoding))
 		    {
-			    reader.ReadToEnd();
 			    _csvParameters.Source = reader.ReadToEnd().RemoveBomIfExists();
 			    return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);
 			}
@@ -38,7 +46,7 @@ namespace FluentCsv.FluentReader
             return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);
         }
 
-        public ChoiceBetweenFileParametersAndResultSetBuilder FromAssemblyResource(string resourceName, Assembly assembly = null, Encoding encoding = null)
+        public ChoiceBetweenFileParametersAndResultSetBuilder FromAssemblyResource(string resourceName, Assembly assembly = null)
         {
             var currentAssembly = assembly ?? Assembly.GetCallingAssembly();
             _csvParameters.Source = ReadAllText(currentAssembly, resourceName);
@@ -51,7 +59,7 @@ namespace FluentCsv.FluentReader
                     if (stream == null)
                         throw new AssemblyResourceNotFoundException(asm, resource);
 
-                    using (var reader = new StreamReader(stream, encoding ?? Encoding.Default))
+                    using (var reader = new StreamReader(stream, _encoding))
                     {
                         return reader.ReadToEnd().RemoveBomIfExists();
                     }
@@ -59,4 +67,10 @@ namespace FluentCsv.FluentReader
             }
         }
     }
+
+	public class CsvFluentReaderWithEncoding : CsvFluentReader
+	{
+		public CsvFluentReader EncodedIn(Encoding encoding)
+		 => new CsvFluentReader(encoding);
+	}
 }

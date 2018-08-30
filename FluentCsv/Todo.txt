@@ -1,8 +1,10 @@
 # New feature for 1.1
 
+[x] Read.Csv.EncodedIn()
+[x] Read.Csv.FromBytes(bytes[] data)
+[x] Read.Csv.FromStream(Stream input)
+
 -> ThatReturns.DictionaryOf<T>(a=>a.Key)
--> Read.Csv.FromBytes(bytes[] data, Encoding)
--> Read.Csv.FromStream(Stream input, Encoding)
 
 -> ResultSet.SaveErrorsInFile(string csvFilePath)
 Line;ColumnZeroBaseIndex;ColumnName;Message

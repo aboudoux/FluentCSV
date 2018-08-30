@@ -41,7 +41,7 @@ namespace FluentCsv.Tests
 		{			
 			var input = testValue.encoding.GetBytes(testValue.input);
 
-			var csv = Read.Csv.FromBytes(input, testValue.encoding)
+			var csv = Read.Csv.EncodedIn(testValue.encoding).FromBytes(input)
 				.ThatReturns.ArrayOf<TestResult>()
 				.Put.Column("test").Into(a => a.Member1)
 				.GetAll();

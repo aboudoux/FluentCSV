@@ -71,6 +71,7 @@
     <Compile Include="ReadCsvFilesShould.cs" />
     <Compile Include="ReadCsvFromAssemblyResourceShould.cs" />
     <Compile Include="ReadCsvFromBytesShould.cs" />
+    <Compile Include="ReadCsvFromStreamShould.cs" />
     <Compile Include="Results\DeepResult.cs" />
     <Compile Include="Results\ResultWithValueObject.cs" />
     <Compile Include="Results\TestResultWithMultiline.cs" />

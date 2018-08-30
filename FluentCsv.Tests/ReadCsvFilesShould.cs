@@ -69,7 +69,7 @@ namespace FluentCsv.Tests
                 .FromDirectory("CsvFiles")
                 .AndFileName("fr-esr-ecoles_doctorales_annuaire.csv");
 
-            var result = Read.Csv.FromFile(sourceFile, Encoding.UTF8)
+            var result = Read.Csv.EncodedIn(Encoding.UTF8).FromFile(sourceFile)
                 .ThatReturns.ArrayOf<AnnuaireEcolesDoctoralesResult>()
                 .Put.Column("adresse_postale").Into(a => a.AddressePostale)
                 .Put.Column("code_etablissement_support").Into(a=>a.CodeEtablissementSupport)

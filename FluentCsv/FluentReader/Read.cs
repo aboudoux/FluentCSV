@@ -2,6 +2,6 @@
 {
     public static class Read
     {
-        public static CsvFluentReader Csv => new CsvFluentReader();
+        public static CsvFluentReaderWithEncoding Csv => new CsvFluentReaderWithEncoding();
     }
 }
