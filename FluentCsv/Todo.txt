@@ -6,6 +6,6 @@
 
 -> ThatReturns.DictionaryOf<T>(a=>a.Key)
 
--> ResultSet.SaveErrorsInFile(string csvFilePath)
+[x] ResultSet.SaveErrorsInFile(string csvFilePath)
 Line;ColumnZeroBaseIndex;ColumnName;Message
 1;0;"test";"number ""1"" is invalid"

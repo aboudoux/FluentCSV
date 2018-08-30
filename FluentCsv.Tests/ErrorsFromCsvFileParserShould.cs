@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Globalization;
+using System.Text;
+using FluentAssertions;
 using FluentCsv.CsvParser;
 using FluentCsv.CsvParser.Splitters;
 using FluentCsv.Tests.Results;
@@ -43,5 +45,42 @@ namespace FluentCsv.Tests
                 return source;
             }
         }
+
+		[Test]
+	    public void WriteErrorInFile()
+	    {
+			var fakeFile = new FakeFileWriter();
+			var result = new ParseCsvResult<TestResult>(
+				Array.Empty<TestResult>(), 
+				new[]
+				{
+					new CsvParseError(0,0,"TEST0", "this is a test 0"),
+					new CsvParseError(1,1,"TEST1", "this is \"a\" test 1"),
+					new CsvParseError(2,2,"TEST2", "this is a test 2"),
+				}, fakeFile);
+
+		    const string expectedoutput = @"Line;ColumnZeroBaseIndex;ColumnName;Message
+0;0;""TEST0"";""this is a test 0""
+1;1;""TEST1"";""this is """"a"""" test 1""
+2;2;""TEST2"";""this is a test 2""
+";
+
+			result.SaveErrorsInFile("test.csv");
+		    fakeFile.Data.Should().Be(expectedoutput);
+	    }
     }
+
+	public class FakeFileWriter : IFileWriter
+	{
+		public string FilePath { get; private set; }
+		public string Data { get; private set; }
+		public Encoding Encoding { get; private set; }
+
+		public void Write(string filePath, string data, Encoding encoding)
+		{
+			FilePath = filePath;
+			Data = data;
+			Encoding = encoding;
+		}
+	}
 }
