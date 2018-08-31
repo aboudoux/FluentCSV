@@ -1,8 +1,8 @@
 namespace FluentCsv.FluentReader
 {
-    public class ChoiceBetweenFileParametersAndResultSetBuilder : CsvParametersContainer
+    public class FromConstraints : CsvParametersContainer
     {
-        internal ChoiceBetweenFileParametersAndResultSetBuilder(CsvParameters csvParameters) : base(csvParameters)
+        internal FromConstraints(CsvParameters csvParameters) : base(csvParameters)
         {
         }
         

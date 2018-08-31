@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using FluentCsv.CsvParser.Results;
 using FluentCsv.CsvParser.Splitters;
 using FluentCsv.Exceptions;
 
@@ -66,7 +67,7 @@ namespace FluentCsv.CsvParser
             _columns.AddColumn(_headerIndex.GetColumnIndex(columnName), into, setInThisWay, columnName);
         }
 
-        public ParseCsvResult<TResult> Parse()
+        public T Parse<T>(T result) where T : ICsvResult<TResult>
         {
             _dataSplitter.EnsureDelimitersAreValid(LineDelimiter, ColumnDelimiter);
 
@@ -76,9 +77,11 @@ namespace FluentCsv.CsvParser
                 .Select(line => _columns.GetResult(SplitColumns(line), currentLineNumber++))
                 .ToList();
 
-            return new ParseCsvResult<TResult>(
-                resultSet.OfType<TResult>().ToArray(), 
-                resultSet.OfType<CsvParseError>().ToArray());
+			result.Fill(
+				resultSet.OfType<TResult>(), 
+				resultSet.OfType<CsvParseError>().ToArray());
+
+	        return result;
 
             int HeaderIfExists()
             {

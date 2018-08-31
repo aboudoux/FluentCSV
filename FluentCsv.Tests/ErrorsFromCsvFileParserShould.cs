@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text;
 using FluentAssertions;
 using FluentCsv.CsvParser;
+using FluentCsv.CsvParser.Results;
 using FluentCsv.CsvParser.Splitters;
 using FluentCsv.Tests.Results;
 using NUnit.Framework;
@@ -21,7 +22,7 @@ namespace FluentCsv.Tests
 
             var parser = GetParser(input);
             parser.AddColumn(0, a=>a.Member3);
-            var result = parser.Parse();
+            var result = parser.Parse(new ArrayCsvResult<TestResult>());
 
             result.Errors.ShouldContainEquivalentTo(new CsvParseError(3,0,null, "La chaîne n'a pas été reconnue en tant que DateTime valide."));
         }
@@ -35,7 +36,7 @@ namespace FluentCsv.Tests
             parser.DeclareFirstLineHasHeader();
             parser.AddColumn(0, a => a.Member1, CheckBadString);
 
-            var result = parser.Parse();
+            var result = parser.Parse(new ArrayCsvResult<TestResult>());
             result.Errors.ShouldContainEquivalentTo(new CsvParseError(4, 0, "Header", "bad string found"));
 
             string CheckBadString(string source)
@@ -50,14 +51,14 @@ namespace FluentCsv.Tests
 	    public void WriteErrorInFile()
 	    {
 			var fakeFile = new FakeFileWriter();
-			var result = new ParseCsvResult<TestResult>(
-				Array.Empty<TestResult>(), 
+			var result = new ArrayCsvResult<TestResult>(fakeFile);
+			result.Fill(Array.Empty<TestResult>(),
 				new[]
 				{
 					new CsvParseError(0,0,"TEST0", "this is a test 0"),
 					new CsvParseError(1,1,"TEST1", "this is \"a\" test 1"),
 					new CsvParseError(2,2,"TEST2", "this is a test 2"),
-				}, fakeFile);
+				});
 
 		    const string expectedoutput = @"Line;ColumnZeroBaseIndex;ColumnName;Message
 0;0;""TEST0"";""this is a test 0""

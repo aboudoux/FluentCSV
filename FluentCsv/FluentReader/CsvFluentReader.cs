@@ -19,38 +19,38 @@ namespace FluentCsv.FluentReader
 	    {
 	    }
 
-        public ChoiceBetweenFileParametersAndResultSetBuilder FromFile(string fileName)
+        public FromConstraints FromFile(string fileName)
         {
             _csvParameters.Source = File.ReadAllText(fileName, _encoding).RemoveBomIfExists();
-            return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);
+            return new FromConstraints(_csvParameters);
         }
 
-	    public ChoiceBetweenFileParametersAndResultSetBuilder FromBytes(byte[] array)
+	    public FromConstraints FromBytes(byte[] array)
 	    {
 		    _csvParameters.Source = _encoding.GetString(array).RemoveBomIfExists();
-		    return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);
+		    return new FromConstraints(_csvParameters);
 	    }
 
-	    public ChoiceBetweenFileParametersAndResultSetBuilder FromStream(Stream stream) {
+	    public FromConstraints FromStream(Stream stream) {
 
 		    using (var reader = new StreamReader(stream, _encoding))
 		    {
 			    _csvParameters.Source = reader.ReadToEnd().RemoveBomIfExists();
-			    return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);
+			    return new FromConstraints(_csvParameters);
 			}
 	    }
 
-		public ChoiceBetweenFileParametersAndResultSetBuilder FromString(string @string)
+		public FromConstraints FromString(string @string)
         {
             _csvParameters.Source = @string.RemoveBomIfExists();
-            return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);
+            return new FromConstraints(_csvParameters);
         }
 
-        public ChoiceBetweenFileParametersAndResultSetBuilder FromAssemblyResource(string resourceName, Assembly assembly = null)
+        public FromConstraints FromAssemblyResource(string resourceName, Assembly assembly = null)
         {
             var currentAssembly = assembly ?? Assembly.GetCallingAssembly();
             _csvParameters.Source = ReadAllText(currentAssembly, resourceName);
-            return new ChoiceBetweenFileParametersAndResultSetBuilder(_csvParameters);
+            return new FromConstraints(_csvParameters);
 
             string ReadAllText(Assembly asm, string resource)
             {

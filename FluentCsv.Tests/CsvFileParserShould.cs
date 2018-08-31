@@ -2,6 +2,7 @@
 using System.Globalization;
 using FluentAssertions;
 using FluentCsv.CsvParser;
+using FluentCsv.CsvParser.Results;
 using FluentCsv.CsvParser.Splitters;
 using FluentCsv.Exceptions;
 using FluentCsv.Tests.Results;
@@ -23,7 +24,7 @@ namespace FluentCsv.Tests
 
             var parser = GetParser(input);
             parser.AddColumn(0, a=>a.Member1);
-            var result = parser.Parse().ResultSet;
+            var result = parser.Parse(new ArrayCsvResult<TestResult>()).ResultSet;
             result.Should().HaveCount(3);            
         }
 
@@ -35,7 +36,7 @@ namespace FluentCsv.Tests
             var parser = GetParser(input);
             parser.AddColumn(0, a => a.Member1);
             parser.AddColumn(1, a => a.Member2);
-            var result = parser.Parse().ResultSet;
+            var result = parser.Parse(new ArrayCsvResult<TestResult>()).ResultSet;
 
             result.Should().HaveCount(3);
             result.ShouldContainEquivalentTo(
@@ -53,7 +54,7 @@ namespace FluentCsv.Tests
             parser.DeclareFirstLineHasHeader();
             parser.AddColumn(0,a=>a.Member1);
 
-            var result = parser.Parse().ResultSet;
+            var result = parser.Parse(new ArrayCsvResult<TestResult>()).ResultSet;
 
             result.Should().HaveCount(3);
             result[0].Member1.Should().Be("Iven");
@@ -70,7 +71,7 @@ namespace FluentCsv.Tests
             parser.AddColumn("Firstname", a => a.Member1);
             parser.AddColumn("Age", a => a.Member2);
 
-            var result = parser.Parse().ResultSet;
+            var result = parser.Parse(new ArrayCsvResult<TestResult>()).ResultSet;
             result.Should().HaveCount(3);
             result.ShouldContainEquivalentTo(
                 TestResult.Create("Iven", 20),
@@ -108,7 +109,7 @@ namespace FluentCsv.Tests
             var parser = GetParser(input);
             parser.AddColumn("LastName", a => a.Member1);
 
-            var result = parser.Parse().ResultSet;
+            var result = parser.Parse(new ArrayCsvResult<TestResult>()).ResultSet;
             result.Should().HaveCount(1);
         }
 
@@ -120,7 +121,7 @@ namespace FluentCsv.Tests
             var parser = GetParser(input);
             parser.AddColumn("FirstName", a => a.Member1);            
 
-            var result = parser.Parse().ResultSet;
+            var result = parser.Parse(new ArrayCsvResult<TestResult>()).ResultSet;
 
             result.Should().HaveCount(1);            
             result.Should().AllBeEquivalentTo(TestResult.Create("Benoit"));
@@ -134,7 +135,7 @@ namespace FluentCsv.Tests
             var parser = GetParser(input);
             parser.AddColumn("header1", a=>a.Member1);
 
-            var result = parser.Parse();
+            var result = parser.Parse(new ArrayCsvResult<TestResult>());
             result.Errors.Should().HaveCount(1);
             result.Errors.ShouldContainEquivalentTo(new CsvParseError(3,0,null,"The line is empty"));
         }
@@ -148,7 +149,7 @@ namespace FluentCsv.Tests
             parser.HeadersAsCaseInsensitive = true;
             parser.AddColumn("HEADER1", a => a.Member1);
 
-            var result = parser.Parse();
+            var result = parser.Parse(new ArrayCsvResult<TestResult>());
             result.ResultSet.ShouldContainEquivalentTo(
                 TestResult.Create("test1"),
                 TestResult.Create("test3"));

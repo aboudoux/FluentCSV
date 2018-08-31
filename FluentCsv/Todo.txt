@@ -4,7 +4,7 @@
 [x] Read.Csv.FromBytes(bytes[] data)
 [x] Read.Csv.FromStream(Stream input)
 
--> ThatReturns.DictionaryOf<T>(a=>a.Key)
+[x] ThatReturns.DictionaryOf<T>(a=>a.Key)
 
 [x] ResultSet.SaveErrorsInFile(string csvFilePath)
 Line;ColumnZeroBaseIndex;ColumnName;Message

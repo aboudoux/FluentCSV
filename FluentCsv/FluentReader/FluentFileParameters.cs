@@ -11,26 +11,26 @@ namespace FluentCsv.FluentReader
 
     public class FluentFileParameters : CsvParametersContainer
     {
-        private readonly ChoiceBetweenFileParametersrAndResultsetBuilder _choice;
+        private readonly FileParametersConstraints _choice;
 
         internal FluentFileParameters(CsvParameters csvParameters) : base(csvParameters)
         {
-            _choice = new ChoiceBetweenFileParametersrAndResultsetBuilder(csvParameters, this);
+            _choice = new FileParametersConstraints(csvParameters, this);
         }
 
-        public ChoiceBetweenFileParametersrAndResultsetBuilder ColumnsDelimiter(string delimiter)
+        public FileParametersConstraints ColumnsDelimiter(string delimiter)
         {
             CsvParameters.ColumnDelimiter = delimiter;
             return _choice;
         }
 
-        public ChoiceBetweenFileParametersrAndResultsetBuilder EndOfLineDelimiter(string lineDelimiter)
+        public FileParametersConstraints EndOfLineDelimiter(string lineDelimiter)
         {
             CsvParameters.EndLineDelimiter = lineDelimiter;
             return _choice;
         }
 
-        public ChoiceBetweenFileParametersrAndResultsetBuilder Header(As option = As.CaseInsensitive)
+        public FileParametersConstraints Header(As option = As.CaseInsensitive)
         {
             CsvParameters.FirstLineHasHeader = true;
             if (option == As.CaseSensitive)
@@ -38,13 +38,13 @@ namespace FluentCsv.FluentReader
             return _choice;
         }
 
-        public ChoiceBetweenFileParametersrAndResultsetBuilder SimpleParsingMode()
+        public FileParametersConstraints SimpleParsingMode()
         {
             CsvParameters.DataSplitter = new SimpleDataSplitter();
             return _choice;
         }
 
-        public ChoiceBetweenFileParametersrAndResultsetBuilder CultureInfo(string culture)
+        public FileParametersConstraints CultureInfo(string culture)
         {
             CsvParameters.CultureInfo = new CultureInfo(culture);
             return _choice;

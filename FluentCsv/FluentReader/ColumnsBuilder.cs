@@ -1,14 +1,17 @@
 using FluentCsv.CsvParser;
+using FluentCsv.CsvParser.Results;
 
 namespace FluentCsv.FluentReader
 {
-    public class ColumnsBuilder<TLine> where TLine : new()
+    public class ColumnsBuilder<TLine, TResultSet> 
+        where TLine : new()
+        where TResultSet : class, ICsvResult<TLine>
     {
-        public ColumnsBuilder(CsvFileParser<TLine> parser)
+        public ColumnsBuilder(CsvFileParser<TLine> parser, TResultSet resultSet)
         {
-            Put = new ColumnFluentBuilder<TLine>(parser);
+            Put = new ColumnFluentBuilder<TLine, TResultSet>(parser, resultSet);
         }
 
-        public ColumnFluentBuilder<TLine> Put { get; }
+        public ColumnFluentBuilder<TLine, TResultSet> Put { get; }
     }
 }
