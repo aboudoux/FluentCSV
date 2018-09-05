@@ -1,14 +1,15 @@
 
+
 # Fluent CSV 
  A .NET library for read your csv files in a fluent way.
  
-## Benefit
+## Benefits
 
- - Written in .NET Standard 2.0
+ - Written in .NET Standard 2.0 (can be used in all your .NET projects including .NET Core, Xamarin, Mono, and other...)
  - Implements  [RFC 4180](https://tools.ietf.org/html/rfc4180)
- - Open source
- - Ease of reading and writing code
- - Error handling included for a best data debug experience
+ - Free and Open source
+ - Ease of reading and writing code (don't just do the right thing, but also says the right thing)
+ - Generate error lines for create reports
 
 ## Adding FluentCSV to your project
 
@@ -65,14 +66,25 @@ Output
 
 ### Read.Csv.
 
-> Select a way to read your csv data
+> Choose the encoding of your data.
+> This method is optional.
+> Default encoding is UTF8
+
+| Method| Argument(s) | 
+|--|--|
+| EncodedIn | [Encoding] |
+ 
+
+> Select a way to read your csv data.
+> You can choose only one of the following methods
 
 | Method| Argument(s) | Comment |
 |--|--|--|
-| FromString  | [CsvString] (encoding) | Read a csv directly from a string. |
-| FromFile | [FilePath] (encoding) | Read a csv from a file.
-| FromAssemblyResource | [ResourceName] (Assembly) (Encoding) | Read a csv from an assembly resource. If assembly is not defined, the API get the resource from the calling assembly.
-
+| FromString  | [CsvString] | Read a csv directly from a string. |
+| FromFile | [FilePath] | Read a csv from a file.
+| FromAssemblyResource | [ResourceName] (Assembly) | Read a csv from an assembly resource. If assembly is not defined, the API get the resource from the calling assembly.
+| FromStream | [Stream] | Read a csv from a stream.
+| FromBytes | [ByteArray] | Read a csv from a byte array.
 ### With.
 
 > Define optional CSV configuration which can be combined with the `And` keyword
@@ -87,25 +99,28 @@ Output
 
 ### ThatReturns.
 
-> Define what kind of objects to return as resultset and how to populate them.
+> Define what kind of object to returns as resultset and how to populate them.
+> The type must be a class with a parameterless constructor, and contains properties with public getter and setter.
+> You must choose one of the following methods.
 
-|Method| Argument(s)  | Comment | Usage |
-|--|--|--|--|
-| ArrayOf<T> | Type of class that we must use to store csv data | The class must have a parameterless constructor, and contains properties with public getter and setter. | Mendatory
+|Method| Argument(s) | Comment |
+|--|--|--|
+| ArrayOf<`T`> | [Type of class used to store csv data] | Define the result set as a T[] array |
+| DictionaryOf<`T`> | [Type of class used to store csv data] [Member to use as a Key] | Define the result set as a Dictionary<object,T>. The Key will be the member passed as argument. |
 
 ### Put.
 
-> Define how to map each column with a property
+> Define how to map each column with a property.
 
 |Method| Argument(s) | Comment | Usage | 
 |--|--|--|--|
-| Column | [Index or HeaderName] | When a column is defined by HeaderName, FluentCsv consider implicitly that the first line is a header. If all columns are defined by index and you want to skip the first line, you can use the `When.Header()` method to do it. | Mendatory |
+| Column | [Index or HeaderName] | When a column is defined by HeaderName, FluentCsv consider implicitly that the first line is a header. If all columns are defined by index and you want to skip the first line, you can use the `With.Header()` method to do it. | Mendatory |
 
 ##### SubMethods
 
 |Method| Argument(s)  | Comment | Usage | Default Value |
 |--|--|--|--|--|
-| As<T>  | [DestinationType] | Define the destination type. | Optional | string
+| As<`T`>  | [DestinationType] | Define the destination type. | Optional | string
 | InThisWay | [ConversionFunction] | Set how to convert the csv column string data into the destination type. If not defined, a default conversion depending on cuture info is applied. | Optional | `Convert.ChangeType`
 | Into | [TargetProperty] | Set in which property to put the converted data. The property must be the same type of `As<T>` and have a public setter. Also, you can define a property localised in a subclass of your result providing that it's correcty instancied. (see example A) | Mendatory | NC
 
@@ -113,10 +128,15 @@ Output
 
 > Execute the csv parsing and return two collections
 
-This returns an object with two collections :
-
 - `ResultSet` : Contains all lines of your csv that are correcty parsed.
 - `Errors` : Contains all errors while parsing your file, including line number, column zero base index, column name (if csv contains header line) and exception message. 
+
+
+You can call the `SaveErrorsInFile(filePath)` methods to write all errors in a simple file report.
+The output is a csv file structured as follow  :
+
+    Line;ColumnZeroBaseIndex;ColumnName;Message
+    1;0;"test";"number ""1"" is invalid"
 
 ## Some scenarios
 
@@ -358,6 +378,14 @@ csv.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column 
 	
 # Change log
 
+### 1.1.0
+
+- [Feature] Read.Csv.EncodedIn
+- [Feature] Read.Csv.FromBytes
+- [Feature] Read.Csv.FromStream
+- [Feature] ThatReturns.DictionaryOf<`T`>(d => d.KeyMember)
+- [Feature] SaveErrorsInFile method.
+
 ### 1.0.2
 - [BugFix] Bad parsing for quadruple quotes
 
@@ -370,6 +398,5 @@ csv.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column 
 
 
 # Licensing
-FluentCsv is free for use in all your products, including commercial software.
-
+FluentCSV is free for use in all your products, including commercial software.
 
