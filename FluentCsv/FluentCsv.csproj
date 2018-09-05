@@ -7,8 +7,14 @@
     <Description>A .NET library for read your csv files in a fluent way.</Description>
     <Company />
     <PackageProjectUrl>https://github.com/aboudoux/FluentCSV</PackageProjectUrl>
-    <Version>1.0.2</Version>
-    <PackageReleaseNotes>[BugFix] - Bad parsing for quadruple quotes</PackageReleaseNotes>
+    <Version>1.1.0</Version>
+    <PackageReleaseNotes>[Feature] Read.Csv.EncodedIn
+[Feature] Read.Csv.FromBytes
+[Feature] Read.Csv.FromStream
+[Feature] ThatReturns.DictionaryOf&lt;T&gt;(d =&gt; d.KeyMember)
+[Feature] SaveErrorsInFile method.</PackageReleaseNotes>
+    <PackageId>FluentCSV</PackageId>
+    <Product>FluentCSV</Product>
   </PropertyGroup>
 
 </Project>
