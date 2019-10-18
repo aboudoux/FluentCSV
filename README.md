@@ -3,6 +3,8 @@
 # Fluent CSV 
  A .NET library for read your csv files in a fluent way.
  
+ [![](https://img.shields.io/nuget/v/FluentCsv)](https://www.nuget.org/packages/FluentCsv/)
+ 
 ## Benefits
 
  - Written in .NET Standard 2.0 (can be used in all your .NET projects including .NET Core, Xamarin, Mono, and other...)
