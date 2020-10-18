@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Linq.Expressions;
 using FluentCsv.Exceptions;
+using FluentCsv.FluentReader;
 
 namespace FluentCsv.CsvParser
 {
@@ -17,7 +19,7 @@ namespace FluentCsv.CsvParser
 
         private readonly Dictionary<int, IColumnExtractor> _columns = new Dictionary<int, IColumnExtractor>();
 
-        public void AddColumn<TMember>(int index, Expression<Func<TResult, TMember>> into, Func<string, TMember> setInThisWay = null, string columnName = null)
+        public void AddColumn<TMember>(int index, Expression<Func<TResult, TMember>> into, Func<string, TMember> setInThisWay = null, string columnName = null, Func<string, Data> dataValidator = null)
         {            
             VerifyColumnIndexIsUnique();
 
@@ -26,6 +28,9 @@ namespace FluentCsv.CsvParser
 
             if(setInThisWay != null)
                 extractor.SetInThisWay(setInThisWay);
+
+            if(dataValidator != null)
+                extractor.SetValidator(dataValidator);
             
             _columns.Add(index, extractor);
 
@@ -44,14 +49,17 @@ namespace FluentCsv.CsvParser
                     throw new CsvExtractException(0, lineNumber, "The line is empty");
 
                 var result = new TResult();
-                _columns.Values.ForEach(ExtractData);
-                return result;
+                var error = _columns.Values.Select(ExtractData).FirstOrDefault(a=>a != null);
+                return error ?? (object) result;
 
-                void ExtractData(IColumnExtractor extractor)
+                CsvParseError ExtractData(IColumnExtractor extractor)
                 {
                     try
                     {
-                        extractor.Extract(result, rawColumnsData[extractor.ColumnIndex]);
+                        var validation = extractor.Extract(result, rawColumnsData[extractor.ColumnIndex]);
+                        if(validation is InvalidData invalid)
+							return new CsvParseError(lineNumber, extractor.ColumnIndex, extractor.ColumnName, invalid.Reason);
+                        return null;
                     }
                     catch (IndexOutOfRangeException)
                     {

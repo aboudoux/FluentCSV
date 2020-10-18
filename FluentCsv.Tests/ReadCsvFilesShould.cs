@@ -83,7 +83,8 @@ namespace FluentCsv.Tests
         }
     }
 
-	public class AnnuaireDebitTabacResult
+
+    public class AnnuaireDebitTabacResult
     {
         public int Id { get; set; }
         public string Enseigne { get; set; }

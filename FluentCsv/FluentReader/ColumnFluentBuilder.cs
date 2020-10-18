@@ -11,14 +11,14 @@ namespace FluentCsv.FluentReader
         {
         }
 
-        public ChoiceBetweenAsAndInto<TLine, TResultSet> Column(int index)
+        public ChooseWithValidation<TLine, TResultSet> Column(int index)
         {
-            return new ChoiceBetweenAsAndInto<TLine, TResultSet>(CsvFileParser, index, ResultSet);
+            return new ChooseWithValidation<TLine, TResultSet>(CsvFileParser, index, ResultSet);
         }
 
-        public ChoiceBetweenAsAndInto<TLine, TResultSet> Column(string columnName)
+        public ChooseWithValidation<TLine, TResultSet> Column(string columnName)
         {
-            return new ChoiceBetweenAsAndInto<TLine, TResultSet>(CsvFileParser, columnName, ResultSet);
+            return new ChooseWithValidation<TLine, TResultSet>(CsvFileParser, columnName, ResultSet);
         }
     }
 }

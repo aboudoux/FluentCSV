@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using FluentCsv.Exceptions;
+using FluentCsv.FluentReader;
 
 namespace FluentCsv.CsvParser
 {
@@ -11,6 +12,7 @@ namespace FluentCsv.CsvParser
     {
         private PropertyInfo[] _propertiesInfos;
         private Func<string, TMember> _inThisWay;
+        private Func<string, Data> _validator = s => Data.Valid;
 
         public string ColumnName { get; }
         public int ColumnIndex { get; }
@@ -46,8 +48,15 @@ namespace FluentCsv.CsvParser
         public void SetInThisWay(Func<string, TMember> parseFunc)
            => _inThisWay = parseFunc ?? throw new ArgumentNullException(nameof(parseFunc));
 
-        public void Extract(object result, string columnData)
+        public void SetValidator(Func<string, Data> dataValidator)
+			=> _validator = dataValidator ?? throw new ArgumentNullException(nameof(dataValidator));
+
+        public Data Extract(object result, string columnData)
         {
+	        var validationResult = _validator(columnData);
+	        if (validationResult is InvalidData)
+		        return validationResult;
+
             var instance = result;
             if (_propertiesInfos.Length > 1)
                 _propertiesInfos
@@ -55,6 +64,7 @@ namespace FluentCsv.CsvParser
                     .ForEach(SetInstance);
 
             _propertiesInfos.Last().SetValue(instance, _inThisWay(columnData));
+            return Data.Valid;
 
             void SetInstance(PropertyInfo propertyInfo)
             {

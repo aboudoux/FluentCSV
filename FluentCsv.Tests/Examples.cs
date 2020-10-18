@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using FluentAssertions;
 using FluentCsv.FluentReader;
 using NUnit.Framework;
 
@@ -92,7 +93,6 @@ namespace FluentCsv.Tests
 
             Console.WriteLine("ERRORS");
             csv.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column index {e.ColumnZeroBasedIndex} : {e.ErrorMessage}"));
-
         }
     }
 
