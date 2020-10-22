@@ -81,9 +81,37 @@ namespace FluentCsv.Tests
 
             firstRow.AddressePostale.Should().Be("Aix- Marseille Université\r\nFaculté des Sciences de Luminy\r\nCase 901\r\n163, avenue de Luminy");
         }
+
+        [Test]
+        public void LoadAnnuaireDebitTabacWithTuple() {
+	        var sourceFile = GetTestFilePath
+		        .FromDirectory("CsvFiles")
+		        .AndFileName("annuaire-des-debits-de-tabac.csv");
+
+	        var result = Read.Csv.FromFile(sourceFile)
+		        .ThatReturns.ArrayOf<(int Id,string Enseigne, string Cp)>()
+		        .Put.Column("ID").As<int>().Into(a => a.Id)
+		        .Put.Column("ENSEIGNE").MakingSureThat(IsTabac).Into(a => a.Enseigne)
+		        .Put.Column("CODE POSTAL").Into(a => a.Cp)
+		        .GetAll();
+
+	        result.Errors.Should().HaveCount(14510);
+            result.ResultSet.Should().HaveCount(11263);
+
+            var testLine = result.ResultSet.First(a => a.Id == 565);
+
+            testLine.Id.Should().Be(565);
+	        testLine.Enseigne.Should().Be("Tabac");
+	        testLine.Cp.Should().Be("03800");
+
+	        Data IsTabac(string arg) 
+		        => arg == "Tabac"
+			        ? Data.Valid
+			        : Data.Invalid("is not a tabac");
+        }
     }
 
-	public class AnnuaireDebitTabacResult
+    public class AnnuaireDebitTabacResult
     {
         public int Id { get; set; }
         public string Enseigne { get; set; }

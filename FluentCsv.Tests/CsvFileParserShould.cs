@@ -154,5 +154,21 @@ namespace FluentCsv.Tests
                 TestResult.Create("test1"),
                 TestResult.Create("test3"));
         }
+
+        [Test]
+        public void WorkWithTuple() 
+        {
+	        const string input = "header1;header2\r\ntest1;test2\r\n\r\ntest3;test4";
+
+            var parser = new CsvFileParser<(string h1, string h2)>(input, _defaultDataSplitter, new CultureInfo("fr-FR"));
+            parser.AddColumn("header1", a=>a.h1);
+            parser.AddColumn("header2", a=>a.h2);
+            var result = parser.Parse(new ArrayCsvResult<(string h1, string h2)>());
+            result.ResultSet.Length.Should().Be(2);
+            result.ResultSet[0].h1.Should().Be("test1");
+            result.ResultSet[0].h2.Should().Be("test2");
+            result.ResultSet[1].h1.Should().Be("test3");
+            result.ResultSet[1].h2.Should().Be("test4");
+        }
     }
 }

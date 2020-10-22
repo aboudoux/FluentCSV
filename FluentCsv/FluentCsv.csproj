@@ -7,14 +7,15 @@
     <Description>A .NET library for read your csv files in a fluent way.</Description>
     <Company />
     <PackageProjectUrl>https://github.com/aboudoux/FluentCSV</PackageProjectUrl>
-    <Version>1.1.0</Version>
-    <PackageReleaseNotes>[Feature] Read.Csv.EncodedIn
-[Feature] Read.Csv.FromBytes
-[Feature] Read.Csv.FromStream
-[Feature] ThatReturns.DictionaryOf&lt;T&gt;(d =&gt; d.KeyMember)
-[Feature] SaveErrorsInFile method.</PackageReleaseNotes>
+    <Version>2.0.0</Version>
+    <PackageReleaseNotes>[Feature] MakingSureThat
+[Improvement] Accepting Tuple as resultset
+
+Please, visit https://github.com/aboudoux/FluentCSV for more details on this new version !</PackageReleaseNotes>
     <PackageId>FluentCSV</PackageId>
     <Product>FluentCSV</Product>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
 </Project>

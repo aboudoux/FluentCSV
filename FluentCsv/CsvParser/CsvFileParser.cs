@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using FluentCsv.CsvParser.Results;
 using FluentCsv.CsvParser.Splitters;
 using FluentCsv.Exceptions;
+using FluentCsv.FluentReader;
 
 namespace FluentCsv.CsvParser
 {
@@ -58,13 +59,13 @@ namespace FluentCsv.CsvParser
 
         private readonly ColumnsResolver<TResult> _columns;
         
-        public void AddColumn<TMember>(int index, Expression<Func<TResult, TMember>> into, Func<string, TMember> setInThisWay = null) 
-            => _columns.AddColumn(index, into, setInThisWay, _headerIndex?.GetColumnName(index));
+        public void AddColumn<TMember>(int index, Expression<Func<TResult, TMember>> into, Func<string, TMember> setInThisWay = null, Func<string, Data> dataValidator = null) 
+            => _columns.AddColumn(index, into, setInThisWay, _headerIndex?.GetColumnName(index), dataValidator);
 
-        public void AddColumn<TMember>(string columnName, Expression<Func<TResult, TMember>> into, Func<string, TMember> setInThisWay = null)
+        public void AddColumn<TMember>(string columnName, Expression<Func<TResult, TMember>> into, Func<string, TMember> setInThisWay = null, Func<string, Data> dataValidator = null)
         {
             DeclareFirstLineHasHeader();
-            _columns.AddColumn(_headerIndex.GetColumnIndex(columnName), into, setInThisWay, columnName);
+            _columns.AddColumn(_headerIndex.GetColumnIndex(columnName), into, setInThisWay, columnName, dataValidator);
         }
 
         public T Parse<T>(T result) where T : ICsvResult<TResult>

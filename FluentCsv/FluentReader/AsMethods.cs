@@ -9,12 +9,12 @@ namespace FluentCsv.FluentReader
         where TLine : new()
         where TResultSet : class , ICsvResult<TLine>
     {
-        private readonly InThisWhayBuilder<TLine, TMember, TResultSet> _inThisWhayBuilder;
+        private readonly InThisWayBuilder<TLine, TMember, TResultSet> _inThisWayBuilder;
         private readonly IntoBuilder<TLine, TMember, TResultSet> _intoBuilder;
 
         public IntoBuilder<TLine, TMember, TResultSet> InThisWay(Func<string, TMember> factory)
         {
-            return _inThisWhayBuilder.InThisWay(factory);
+            return _inThisWayBuilder.InThisWay(factory);
         }
 
         public IntoConstraints<TLine, TResultSet> Into(Expression<Func<TLine, TMember>> intoMember)
@@ -22,15 +22,15 @@ namespace FluentCsv.FluentReader
             return _intoBuilder.Into(intoMember);
         }
 
-        internal AsMethods(CsvFileParser<TLine> parser, int columnIndex, TResultSet resultSet) : base(parser, resultSet)
+        internal AsMethods(CsvFileParser<TLine> parser, int columnIndex, TResultSet resultSet, Func<string, Data> dataValidator = null) : base(parser, resultSet)
         {
-            _inThisWhayBuilder = new InThisWhayBuilder<TLine, TMember, TResultSet>(CsvFileParser, columnIndex, resultSet);
-            _intoBuilder = new IntoBuilder<TLine, TMember, TResultSet>(CsvFileParser, columnIndex, resultSet);
+            _inThisWayBuilder = new InThisWayBuilder<TLine, TMember, TResultSet>(CsvFileParser, columnIndex, resultSet, dataValidator);
+            _intoBuilder = new IntoBuilder<TLine, TMember, TResultSet>(CsvFileParser, columnIndex, resultSet, validator:dataValidator);
         }
-        internal AsMethods(CsvFileParser<TLine> parser, string columnName, TResultSet resultset) : base(parser, resultset)
+        internal AsMethods(CsvFileParser<TLine> parser, string columnName, TResultSet resultSet, Func<string, Data> dataValidator = null) : base(parser, resultSet)
         {
-            _inThisWhayBuilder = new InThisWhayBuilder<TLine, TMember, TResultSet>(CsvFileParser, columnName, resultset);
-            _intoBuilder = new IntoBuilder<TLine, TMember, TResultSet>(CsvFileParser, columnName, resultset);
+            _inThisWayBuilder = new InThisWayBuilder<TLine, TMember, TResultSet>(CsvFileParser, columnName, resultSet, dataValidator);
+            _intoBuilder = new IntoBuilder<TLine, TMember, TResultSet>(CsvFileParser, columnName, resultSet, validator:dataValidator);
         }
     }
 }
