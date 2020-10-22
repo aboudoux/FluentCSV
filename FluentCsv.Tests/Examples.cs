@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -21,16 +22,16 @@ namespace FluentCsv.Tests
                 .AndFileName("Sample1.csv");
 
             var csv = Read.Csv.FromFile(file)
-                .ThatReturns.ArrayOf<CsvData>()
-                .Put.Column("name").Into(a => a.Name)
-                .Put.Column("age").As<int>().Into(a => a.Age)
-                .GetAll();
+	            .ThatReturns.ArrayOf<(string Name, int Age)>()
+	            .Put.Column("name").Into(a => a.Name)
+	            .Put.Column("age").As<int>().Into(a => a.Age)
+	            .GetAll();
 
-            Console.WriteLine("CSV DATA");
-            csv.ResultSet.ForEach(r=> Console.WriteLine($"Name : {r.Name} - Age : {r.Age}"));
+            Debug.WriteLine("CSV DATA");
+            csv.ResultSet.ForEach(r=> Debug.WriteLine($"Name : {r.Name} - Age : {r.Age}"));
 
-            Console.WriteLine("ERRORS");
-            csv.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column index {e.ColumnZeroBasedIndex} : {e.ErrorMessage}"));
+            Debug.WriteLine("ERRORS");
+            csv.Errors.ForEach(e => Debug.WriteLine($"Error at line {e.LineNumber} column index {e.ColumnZeroBasedIndex} : {e.ErrorMessage}"));
         }
 
         [Test]
@@ -60,17 +61,17 @@ namespace FluentCsv.Tests
             const string input = "NAME-name#Smith-Bob#Rob\"in-Wiliam";
 
             var csv = Read.Csv.FromString(input)
-                .With.EndOfLineDelimiter("#")
-                .And.ColumnsDelimiter("-")
-                .And.Header(As.CaseSensitive)
-                .And.SimpleParsingMode()
-                .ThatReturns.ArrayOf<CsvName>()
-                .Put.Column("NAME").Into(a => a.FirstName)
-                .Put.Column("name").Into(a => a.LastName)
-                .GetAll();
+	            .With.EndOfLineDelimiter("#")
+	            .And.ColumnsDelimiter("-")
+	            .And.Header(As.CaseSensitive)
+	            .And.SimpleParsingMode()
+	            .ThatReturns.ArrayOf<(string FirstName, string LastName)>()
+	            .Put.Column("NAME").Into(a => a.FirstName)
+	            .Put.Column("name").Into(a => a.LastName)
+	            .GetAll();
 
-            Console.WriteLine("CSV DATA");
-            csv.ResultSet.ForEach(Console.WriteLine);
+            Debug.WriteLine("CSV DATA");
+            csv.ResultSet.ForEach(a=> Debug.WriteLine($"{a.FirstName} {a.LastName}"));
         }
 
         [Test]
@@ -93,6 +94,37 @@ namespace FluentCsv.Tests
 
             Console.WriteLine("ERRORS");
             csv.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column index {e.ColumnZeroBasedIndex} : {e.ErrorMessage}"));
+        }
+
+        [Test]
+        public void ExampleC1() {
+	        var file = GetTestFilePath.FromDirectory(CsvFiles)
+		        .AndFileName("ExampleC.csv");
+
+	        var csv = Read.Csv.FromFile(file)
+		        .With.ColumnsDelimiter("\t")
+		        .ThatReturns.ArrayOf<(int Id, string PhoneNumber, string CustomEnum, string Address)>()
+		        .Put.Column(0).As<int>().Into(a => a.Id)
+		        .Put.Column(1).MakingSureThat(PhoneNumberIsValid).Into(a => a.PhoneNumber)
+		        .Put.Column(2).MakingSureThat(EnumIsValid).InThisWay(a=>a.Replace("|"," and ")).Into(a => a.CustomEnum)
+		        .Put.Column(3).Into(a => a.Address)
+		        .GetAll();
+
+	        Debug.WriteLine("CSV DATA");
+	        csv.ResultSet.ForEach(a=>Debug.WriteLine($"id = {a.Id}, Phone = {a.PhoneNumber}, Enum = {a.CustomEnum}, Address = {a.Address}"));
+
+	        Debug.WriteLine("ERRORS");
+	        csv.Errors.ForEach(e => Debug.WriteLine($"Error at line {e.LineNumber} column index {e.ColumnZeroBasedIndex} : {e.ErrorMessage}"));
+
+            Data PhoneNumberIsValid(string phone)
+                =>  Regex.IsMatch(phone, "[0-9]{10}")
+                ? Data.Valid 
+                : Data.Invalid("Phone number is invalid");
+
+            Data EnumIsValid(string @enum)
+            => @enum.Split('|').ToList().TrueForAll(a => a == "A" || a == "B" || a == "F")
+		            ? Data.Valid
+		            : Data.Invalid("Invalid enum character");
         }
     }
 

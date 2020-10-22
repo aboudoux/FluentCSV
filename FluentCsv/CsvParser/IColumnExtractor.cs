@@ -2,10 +2,9 @@
 
 namespace FluentCsv.CsvParser
 {
-    public interface IColumnExtractor
+    public interface IColumnExtractor<TResult>
     {
-        Data Extract(object result, string columnData);
-
+        Data Extract(object source, string columnData, out object result);
         int ColumnIndex { get; }
         string ColumnName { get; }
     }

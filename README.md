@@ -9,7 +9,17 @@
  - Implements  [RFC 4180](https://tools.ietf.org/html/rfc4180)
  - Free and Open source
  - Ease of reading and writing code (don't just do the right thing, but also says the right thing)
- - Generate error lines for create reports
+ - Automatically generates error lines based on your validation rules
+
+## What's new ?
+FluentCsv 2.0 is now available with two new features !
+
+- First, you can now use a tuple for your resultset instead of a POCO, which makes writing code easier.
+- And second, a new API member called "MakingSureThat" allows you to check the integrity of your data faster than the previous method based on exception handling.
+
+Do not hesitate to declare an issue if you find a bug or have an idea of improvement.
+
+Thanks you for using FluentCsv!
 
 ## Adding FluentCSV to your project
 
@@ -26,20 +36,11 @@ Imagine a csv file named "sample1.csv"
     Robin;38
     Test;NA
 
-At first, create a POCO class for represent each csv line
-
-```c#
-public class CsvData {
-	public string Name {get; set;}
-	public int Age {get; set;}
-}
-```
-
-then read your file using Fluent CSV
+This is how to read your file using Fluent CSV
 
 ```c#
 var csv = Read.Csv.FromFile("sample1.csv")
-	.ThatReturns.ArrayOf<CsvData>()
+	.ThatReturns.ArrayOf<(string Name, int Age)>()
 	.Put.Column("name").Into(a => a.Name)
 	.Put.Column("age").As<int>().Into(a => a.Age)
 	.GetAll();
@@ -62,8 +63,6 @@ Output
  And VOILA !
 ## API Structure
 
-
-
 ### Read.Csv.
 
 > Choose the encoding of your data.
@@ -72,9 +71,8 @@ Output
 
 | Method| Argument(s) | 
 |--|--|
-| EncodedIn | [Encoding] |
+| EncodedIn | [[Encoding]](https://docs.microsoft.com/en-gb/dotnet/api/system.text.encoding?view=netcore-3.1) |
  
-
 > Select a way to read your csv data.
 > You can choose only one of the following methods
 
@@ -100,7 +98,7 @@ Output
 ### ThatReturns.
 
 > Define what kind of object to returns as resultset and how to populate them.
-> The type must be a class with a parameterless constructor, and contains properties with public getter and setter.
+> The type must be a class with a parameterless constructor, and contains properties with public getter and setter, or a tuple like `(string a,int b)`
 > You must choose one of the following methods.
 
 |Method| Argument(s) | Comment |
@@ -114,15 +112,16 @@ Output
 
 |Method| Argument(s) | Comment | Usage | 
 |--|--|--|--|
-| Column | [Index or HeaderName] | When a column is defined by HeaderName, FluentCsv consider implicitly that the first line is a header. If all columns are defined by index and you want to skip the first line, you can use the `With.Header()` method to do it. | Mendatory |
+| Column | [Index or HeaderName] | When a column is defined by HeaderName, FluentCsv consider implicitly that the first line is a header. If all columns are defined by index and you want to skip the first line, you can use the `With.Header()` method to do it. | Mandatory |
 
 ##### SubMethods
 
 |Method| Argument(s)  | Comment | Usage | Default Value |
 |--|--|--|--|--|
+| MakingSureThat | [ValidationFunction] | Set a function which validate the format of the column data. Using this method is more readable and increase performance for data validation instead of throwing exceptions. |Optional | `Data.Valid`
 | As<`T`>  | [DestinationType] | Define the destination type. | Optional | string
 | InThisWay | [ConversionFunction] | Set how to convert the csv column string data into the destination type. If not defined, a default conversion depending on cuture info is applied. | Optional | `Convert.ChangeType`
-| Into | [TargetProperty] | Set in which property to put the converted data. The property must be the same type of `As<T>` and have a public setter. Also, you can define a property localised in a subclass of your result providing that it's correcty instancied. (see example A) | Mendatory | NC
+| Into | [TargetProperty] | Set in which property to put the converted data. The property must be the same type of `As<T>` and have a public setter. Also, you can define a property localised in a subclass of your result providing that it's correcty instancied. (see example A) | Mandatory | NC
 
 ### GetAll()
 
@@ -140,7 +139,7 @@ The output is a csv file structured as follow  :
 
 ## Some scenarios
 
-### Example A
+### Example A - Populate POCO with hierarchical objects
 
 - A csv file with contact informations
 - BirthDate is in US format (Month/day/year)
@@ -211,7 +210,7 @@ csv.ResultSet.ForEach(Console.WriteLine);
 
 ---
 
-### Example B
+### Example B - Parse a csv file that look crazy
 - A csv file where columns are separed with '-' and lines end with '#'.
 - There are two columns where headers have same name (but not same case)
 - Some data have a double quote, and we want to get it
@@ -220,17 +219,7 @@ csv.ResultSet.ForEach(Console.WriteLine);
 
     NAME-name#Smith-Bob#Rob"in-Wiliam
 
-#### POCO
 
-```C#
-public class CsvName
-{
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-
-    public override string ToString() => $"{FirstName} {LastName}";
-}
-```
 
 #### API Call
 
@@ -240,13 +229,13 @@ var csv = Read.Csv.FromFile("exampleB.csv")
 	.And.ColumnsDelimiter("-")
 	.And.Header(As.CaseSensitive)
 	.And.SimpleParsingMode()
-	.ThatReturns.ArrayOf<CsvName>()
+	.ThatReturns.ArrayOf<(string FirstName, string LastName)>()
 	.Put.Column("NAME").Into(a => a.FirstName)
 	.Put.Column("name").Into(a => a.LastName)
 	.GetAll();
 
 Console.WriteLine("CSV DATA");
-csv.ResultSet.ForEach(Console.WriteLine);
+csv.ResultSet.ForEach(a=>Console.WriteLine($"{a.FirstName} {a.LastName}"));
 ```
 
 #### Output
@@ -256,7 +245,7 @@ csv.ResultSet.ForEach(Console.WriteLine);
     Rob"in Wiliam
 
 ---
-### Example C
+### Example C - Data validation
 
 - A csv file without header that contains informations with validation rules and structured data
 - The file is a csv generated by excel, with columns separed by tabulation
@@ -288,7 +277,9 @@ csv.ResultSet.ForEach(Console.WriteLine);
     10	0487876876	F	"1081 Brookview Drive
     Beaumont, TX 77701"
 
-#### POCO
+## First possibility : using POCOs, Value objects and Exceptions
+
+#### POCOs
 
 ```C#
 public class LineExampleC
@@ -353,7 +344,36 @@ Console.WriteLine("ERRORS");
 csv.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column index {e.ColumnZeroBasedIndex} : {e.ErrorMessage}"));
 ```
 
-#### Output
+## Second possibility (since version 2.0) : using MakingSureThat and Tuple
+#### API Call
+```C#
+ var csv = Read.Csv.FromFile(file)
+    .With.ColumnsDelimiter("\t")
+    .ThatReturns.ArrayOf<(int Id, string PhoneNumber, string CustomEnum, string Address)>()
+    .Put.Column(0).As<int>().Into(a => a.Id)
+    .Put.Column(1).MakingSureThat(PhoneNumberIsValid).Into(a => a.PhoneNumber)
+    .Put.Column(2).MakingSureThat(EnumIsValid).InThisWay(a=>a.Replace("|"," and ")).Into(a => a.CustomEnum)
+    .Put.Column(3).Into(a => a.Address)
+    .GetAll();
+
+Console.WriteLine("CSV DATA");
+csv.ResultSet.ForEach(a=>Console.WriteLine($"id = {a.Id}, Phone = {a.PhoneNumber}, Enum = {a.CustomEnum}, Address = {a.Address}"));
+
+Console.WriteLine("ERRORS");
+csv.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column index {e.ColumnZeroBasedIndex} : {e.ErrorMessage}"));
+
+Data PhoneNumberIsValid(string phone)
+    =>  Regex.IsMatch(phone, "[0-9]{10}")
+            ? Data.Valid 
+            : Data.Invalid("Phone number is invalid");
+
+Data EnumIsValid(string @enum)
+    => @enum.Split('|').ToList().TrueForAll(a => a == "A" || a == "B" || a == "F")
+        ? Data.Valid
+        : Data.Invalid("Invalid enum character");
+```
+
+#### Output (in both case)
 
     CSV DATA
     id = 1, Phone = 0309545655, Enum = A, Address = 1344 Wright Court
@@ -378,6 +398,10 @@ csv.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column 
 	
 # Change log
 
+### 2.0.0
+- [Feature] MakingSureThat
+- [Improvement] Accepting Tuple as resultset
+
 ### 1.1.0
 
 - [Feature] Read.Csv.EncodedIn
@@ -397,6 +421,6 @@ csv.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column 
 - First release of the library
 
 
-# Licensing
-FluentCSV is free for use in all your products, including commercial software.
+# License
+FluentCSV is licensed under MIT License, which means it is free for all of your products, including commercial software.
 
