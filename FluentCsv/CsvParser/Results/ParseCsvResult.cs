@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace FluentCsv.CsvParser.Results
@@ -25,7 +26,7 @@ namespace FluentCsv.CsvParser.Results
 
         public void SaveErrorsInFile(string csvFilePath, Encoding encoding = null)
 	    {
-		    const string header = "Line;ColumnZeroBaseIndex;ColumnName;Message\r\n";
+		    var header = $"Line;ColumnZeroBaseIndex;ColumnName;Message{Environment.NewLine}";
 
 			var fileData = new StringBuilder(header);
 			Errors.ForEach(e=>
