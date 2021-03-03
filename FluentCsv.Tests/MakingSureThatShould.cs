@@ -46,7 +46,7 @@ namespace FluentCsv.Tests
 
 			Data IsTabac(string source) => source == "Tabac" ? Data.Valid : Data.Invalid("N'est pas un tabac");
 			result.Errors.Count().Should().Be(14510);
-			}).ExecutionTime().Should().BeLessOrEqualTo(TimeSpan.FromSeconds(1));
+			}).ExecutionTime().Should().BeLessOrEqualTo(TimeSpan.FromSeconds(2));
 		}
 
 		[Test]

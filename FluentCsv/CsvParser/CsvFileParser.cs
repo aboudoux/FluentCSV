@@ -12,7 +12,7 @@ namespace FluentCsv.CsvParser
 {
     public class CsvFileParser<TResult> where TResult : new()
     {
-        private string _lineDelimiter = "\r\n";
+        private string _lineDelimiter = Environment.NewLine;
         private string _columnDelimiter = ";";
 
         private HeaderIndex _headerIndex;

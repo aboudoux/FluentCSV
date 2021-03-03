@@ -90,7 +90,7 @@ Output
 |Method | Argument(s)  | Comment | Usage | Default value |
 |--|--|--|--|--|
 | ColumnsDelimiter | [DelimiterString] |Define the string used  as columns delimiter. | Optional | ;
-| EndOfLineDelimiter | [DelimiterString] | Define the string used as new line delimiter. | Optional | \r\n
+| EndOfLineDelimiter | [DelimiterString] | Define the string used as new line delimiter. | Optional | Environment.NewLine
 | Header | (CaseMode) |Declare the first line as header. You can specify if  you treat it as case sensitive or case insensitive when putting columns in properties.   | Optional | CaseInsensitive |
 | SimpleParsingMode | no argument | By default, FluentCsv use the RFC 4180 for parse your csv file. You can use SimpleParsingMode if your file dosen't respect it and you notice some problem with double quote. | Optional | NC
 | CultureInfo | [[CultureCode]](https://msdn.microsoft.com/en-us/library/hh441729.aspx) | Some data like date or decimal numbers are not the same according to the culture. For example french people use a comma as decimal separator while US people use a dot character. By defining the culture code, you can tel to FluentCsv how to parse this types. | Optional | CurrentCulture
@@ -398,11 +398,14 @@ Data EnumIsValid(string @enum)
 	
 # Change log
 
-### 2.0.0
+### 2.0.1 - 2021/03/03
+- [BugFix] Error on linux when reading last column due to default line delimiter
+
+### 2.0.0 - 2020/10/23
 - [Feature] MakingSureThat
 - [Improvement] Accepting Tuple as resultset
 
-### 1.1.0
+### 1.1.0 - 2018/09/05
 
 - [Feature] Read.Csv.EncodedIn
 - [Feature] Read.Csv.FromBytes
@@ -410,14 +413,14 @@ Data EnumIsValid(string @enum)
 - [Feature] ThatReturns.DictionaryOf<`T`>(d => d.KeyMember)
 - [Feature] SaveErrorsInFile method.
 
-### 1.0.2
+### 1.0.2 - 2018/08/24
 - [BugFix] Bad parsing for quadruple quotes
 
-### 1.0.1
+### 1.0.1 - 2018/08/22
 - [BugFix] Incorrect parsing if string start with UTF8 BOM 
 - [BugFix] Error when using a pipe as column delimiter
 
-### 1.0.0
+### 1.0.0 - 2018/08/17
 - First release of the library
 
 
