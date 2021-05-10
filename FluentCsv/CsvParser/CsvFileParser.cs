@@ -54,7 +54,7 @@ namespace FluentCsv.CsvParser
         public void DeclareFirstLineHasHeader()
         {
             _dataSplitter.EnsureDelimitersAreValid(LineDelimiter, ColumnDelimiter);
-            _headerIndex = _headerIndex ?? new HeaderIndex(SplitColumns(GetFirstLine(_source)), HeadersAsCaseInsensitive);
+            _headerIndex ??= new HeaderIndex(SplitColumns(GetFirstLine(_source)), HeadersAsCaseInsensitive);
         }
 
         private readonly ColumnsResolver<TResult> _columns;
@@ -72,13 +72,17 @@ namespace FluentCsv.CsvParser
         {
             _dataSplitter.EnsureDelimitersAreValid(LineDelimiter, ColumnDelimiter);
 
-            var currentLineNumber = 1;
-            var resultSet = SplitLines(_source.TrimEnd(LineDelimiter.ToCharArray()))
-                .Skip(HeaderIfExists())
-                .Select(line => _columns.GetResult(SplitColumns(line), currentLineNumber++))
-                .ToList();
+			var currentLineNumber = 1;
+			var resultSet = SplitLines(_source.TrimEnd(LineDelimiter.ToCharArray()))
+				.Select(line=>(line,currentLineNumber++))
+				.Skip(HeaderIfExists())
+				.AsParallel()
+				.Select(item => (_columns.GetResult(SplitColumns(item.line), item.Item2), item.Item2))
+				.OrderBy(a=>a.Item2)
+				.Select(a=>a.Item1)
+				.ToList();
 
-			result.Fill(
+            result.Fill(
 				resultSet.OfType<TResult>(), 
 				resultSet.OfType<CsvParseError>().ToArray());
 

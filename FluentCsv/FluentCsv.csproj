@@ -1,19 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Authors>Aurelien BOUDOUX</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>A .NET library for read your csv files in a fluent way.</Description>
     <Company />
     <PackageProjectUrl>https://github.com/aboudoux/FluentCSV</PackageProjectUrl>
-    <Version>2.0.1</Version>
-    <PackageReleaseNotes>[BugFix] Error on linux when reading last column due to default line delimiter</PackageReleaseNotes>
+    <Version>3.0.0</Version>
+    <PackageReleaseNotes>- Upgrade to .Net Standard 2.1
+- Rewriting for best performances (speed multiplied by 8 !)
+</PackageReleaseNotes>
     <PackageId>FluentCSV</PackageId>
     <Product>FluentCSV</Product>
-    <AssemblyVersion>2.0.1.0</AssemblyVersion>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

@@ -5,21 +5,21 @@
  
 ## Benefits
 
- - Written in .NET Standard 2.0 (can be used in all your .NET projects including .NET Core, Xamarin, Mono, and other...)
+ - Written in .NET Standard (can be used in all your .NET projects including .NET Core, Xamarin, Mono, and other...)
  - Implements  [RFC 4180](https://tools.ietf.org/html/rfc4180)
  - Free and Open source
  - Ease of reading and writing code (don't just do the right thing, but also says the right thing)
  - Automatically generates error lines based on your validation rules
 
 ## What's new ?
-FluentCsv 2.0 is now available with two new features !
+FluentCSV **3.0** is now available with a big performance improvement !
 
-- First, you can now use a tuple for your resultset instead of a POCO, which makes writing code easier.
-- And second, a new API member called "MakingSureThat" allows you to check the integrity of your data faster than the previous method based on exception handling.
+- The speed of the `Rfc4180` parser is multiplied by **8**.
+- The `SimpleParsingMode` gains **20%** of performance.
 
-Do not hesitate to declare an issue if you find a bug or have an idea of improvement.
+Thus, with this new version, you can read a CSV file of 1 000 000 lines in just a few seconds !
 
-Thanks you for using FluentCsv!
+[See more details here](https://github.com/aboudoux/FluentCSV/blob/Perf/Benchmark/README.MD).
 
 ## Adding FluentCSV to your project
 
@@ -397,6 +397,10 @@ Data EnumIsValid(string @enum)
     Error at line 7 column index 1 : Phone number is invalid
 	
 # Change log
+
+### 3.0.0 - 2021/06/12
+- [Improvement] Upgrade to .Net Standard 2.1
+- [Improvement] Rewriting for best performances ([see the benchmark](https://github.com/aboudoux/FluentCSV/blob/Perf/Benchmark/README.MD))
 
 ### 2.0.1 - 2021/03/03
 - [BugFix] Error on linux when reading last column due to default line delimiter

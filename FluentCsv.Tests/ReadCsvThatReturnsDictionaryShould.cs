@@ -3,13 +3,13 @@ using FluentAssertions;
 using FluentCsv.Exceptions;
 using FluentCsv.FluentReader;
 using FluentCsv.Tests.Results;
-using NUnit.Framework;
+using Xunit;
 
 namespace FluentCsv.Tests
 {
     public class ReadCsvThatReturnsDictionaryShould
     {
-        [Test]
+        [Fact]
         public void CreateDictionaryOfStringWithoutError()
         {
             const string input = "C1;C2\r\nA;1\r\nB;2\r\nC;3";
@@ -24,7 +24,7 @@ namespace FluentCsv.Tests
             csv.ResultSet["B"].Member2.Should().Be(2);
         }
 
-        [Test]
+        [Fact]
         public void CreateDictionaryOfIntWithoutError()
         {
             const string input = "C1;C2\r\nA;1\r\nB;2\r\nC;3";
@@ -38,7 +38,7 @@ namespace FluentCsv.Tests
             csv.ResultSet.Should().ContainKey(1);
         }
 
-        [Test]
+        [Fact]
         public void ThrowErrorIfDuplicateKeyAndShowLineNumberWithHeader()
         {
             const string input = "C1;C2\r\nA;1\r\nB;2\r\nA;3";
@@ -53,7 +53,7 @@ namespace FluentCsv.Tests
                 .And.Message.Should().Be("The key 'A' already exists.");
         }
 
-        [Test]
+        [Fact]
         public void WorkWithTuple()
         {
 	        const string input = "C1;C2\r\nA;1\r\nB;2\r\nC;3";

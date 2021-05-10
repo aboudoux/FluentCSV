@@ -4,13 +4,13 @@ using System.Text;
 using FluentAssertions;
 using FluentCsv.FluentReader;
 using FluentCsv.Tests.Results;
-using NUnit.Framework;
+using Xunit;
 
 namespace FluentCsv.Tests
 {
 	public class ReadCsvFromStreamShould
 	{
-		[Test]
+		[Fact]
 		public void WorksWithSimpleCsvFromMemoryStream()
 		{
 			var input = "test1;test2\r\ncoucou;test";

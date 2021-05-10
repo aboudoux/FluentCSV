@@ -3,13 +3,13 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using FluentCsv.FluentReader;
-using NUnit.Framework;
+using Xunit;
 
 namespace FluentCsv.Tests
 {
 	public class MakingSureThatShould
 	{
-		[Test]
+		[Fact]
 		public void ReportSimpleError() 
 		{
 			var csv = Read.Csv.FromString("A;B\r\n1;3")
@@ -26,7 +26,7 @@ namespace FluentCsv.Tests
 					: Data.Invalid("coucou");
 		}
 
-		[Test]
+		[Fact]
 		public void BeFastOnLargeFile()
 		{
 			var sourceFile = GetTestFilePath
@@ -46,10 +46,10 @@ namespace FluentCsv.Tests
 
 			Data IsTabac(string source) => source == "Tabac" ? Data.Valid : Data.Invalid("N'est pas un tabac");
 			result.Errors.Count().Should().Be(14510);
-			}).ExecutionTime().Should().BeLessOrEqualTo(TimeSpan.FromSeconds(2));
+			}).ExecutionTime().Should().BeLessOrEqualTo(TimeSpan.FromSeconds(3));
 		}
 
-		[Test]
+		[Fact]
 		public void WorkWithMultipleColumnsByName()
 		{
 			var result = Read.Csv.FromString("A;B\r\n1;2\r\n3;2")
@@ -62,7 +62,7 @@ namespace FluentCsv.Tests
 			result.Errors.Length.Should().Be(2);
 		}
 
-		[Test]
+		[Fact]
 		public void WorkWithMultipleColumnsByIndex() {
 			var result = Read.Csv.FromString("A;B\r\n1;2\r\n3;2")
 				.With.Header()
@@ -75,7 +75,7 @@ namespace FluentCsv.Tests
 			result.Errors.Length.Should().Be(2);
 		}
 
-		[Test]
+		[Fact]
 		public void WorkWithException()
 		{
 			var result = Read.Csv.FromString("Phone1;Phone2\r\n123456;232321\r\n0614894072;23432132")

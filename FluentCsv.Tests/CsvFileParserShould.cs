@@ -6,7 +6,7 @@ using FluentCsv.CsvParser.Results;
 using FluentCsv.CsvParser.Splitters;
 using FluentCsv.Exceptions;
 using FluentCsv.Tests.Results;
-using NUnit.Framework;
+using Xunit;
 
 namespace FluentCsv.Tests
 {
@@ -17,7 +17,7 @@ namespace FluentCsv.Tests
         private CsvFileParser<TestResult> GetParser(string input, IDataSplitter splitter = null)
             => new CsvFileParser<TestResult>(input, splitter ?? _defaultDataSplitter, new CultureInfo("fr-FR"));
 
-        [Test]
+        [Fact]
         public void ParseSimpleCsvFromString()
         {
             const string input = "test1\r\nTest2\r\ntest3";
@@ -28,7 +28,7 @@ namespace FluentCsv.Tests
             result.Should().HaveCount(3);            
         }
 
-        [Test]
+        [Fact]
         public void ParseCsvWithMultipleColumns()
         {
             const string input = "test1;1\r\ntest2;2\r\ntest3;3";
@@ -45,7 +45,7 @@ namespace FluentCsv.Tests
                 TestResult.Create("test3", 3));
         }
 
-        [Test]
+        [Fact]
         public void DontParseFirstLineIfDeclaredHasHeader()
         {
             const string input = "Firstname;Lastname\r\nIven;Bazinet\r\nArridano;Charette\r\nOlivier;Gamelin";
@@ -62,7 +62,7 @@ namespace FluentCsv.Tests
             result[2].Member1.Should().Be("Olivier");
         }
 
-        [Test]
+        [Fact]
         public void UseColumnName()
         {
             const string input = "Firstname;Age\r\nIven;20  \r\nArridano;30\r\nOlivier;40";
@@ -79,7 +79,7 @@ namespace FluentCsv.Tests
                 TestResult.Create("Olivier", 40));
         }
 
-        [Test]
+        [Fact]
         public void ThrowErrorIfUsingDuplicatedColumnName()
         {
             const string input = "FirstName;LastName;FirstName\r\nBenoit;DURANT;George";
@@ -90,7 +90,7 @@ namespace FluentCsv.Tests
             action.Should().Throw<DuplicateColumnNameException>();
         }
 
-        [Test]
+        [Fact]
         public void ThrowErrorIfColumnNameDoesNotExists()
         {
             const string input = "FirstName;LastName\r\nBenoit;DURANT";
@@ -101,7 +101,7 @@ namespace FluentCsv.Tests
             action.Should().Throw<ColumnNameNotFoundException>();
         }
 
-        [Test]
+        [Fact]
         public void DontThrowErrorIfNotUsingDuplicatedColumnName()
         {
             const string input = "FirstName;LastName;FirstName\r\nBenoit;DURANT;George";
@@ -113,7 +113,7 @@ namespace FluentCsv.Tests
             result.Should().HaveCount(1);
         }
 
-        [Test]
+        [Fact]
         public void DontIncludeExtraSpacesInHeader()
         {
             const string input = "FirstName   ;   LastName   \r\nBenoit;Durant";
@@ -127,7 +127,7 @@ namespace FluentCsv.Tests
             result.Should().AllBeEquivalentTo(TestResult.Create("Benoit"));
         }
 
-        [Test]
+        [Fact]
         public void ThrowErrorForEmptyLine()
         {
             const string input = "header1;header2\r\ntest1;test2\r\n\r\ntest3;test4";
@@ -140,7 +140,7 @@ namespace FluentCsv.Tests
             result.Errors.ShouldContainEquivalentTo(new CsvParseError(3,0,null,"The line is empty"));
         }
 
-        [Test]
+        [Fact]
         public void AcceptHeaderCaseUnsensitive()
         {
             const string input = "header1;header2\r\ntest1;test2\r\n\r\ntest3;test4";
@@ -155,7 +155,7 @@ namespace FluentCsv.Tests
                 TestResult.Create("test3"));
         }
 
-        [Test]
+        [Fact]
         public void WorkWithTuple() 
         {
 	        const string input = "header1;header2\r\ntest1;test2\r\n\r\ntest3;test4";

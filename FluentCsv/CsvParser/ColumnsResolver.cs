@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.InteropServices;
 using FluentCsv.Exceptions;
 using FluentCsv.FluentReader;
 

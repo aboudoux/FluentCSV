@@ -3,13 +3,13 @@ using System.Linq;
 using System.Text;
 using FluentAssertions;
 using FluentCsv.FluentReader;
-using NUnit.Framework;
+using Xunit;
 
 namespace FluentCsv.Tests
 {
     public class ReadCsvFilesShould
     {
-        [Test]
+        [Fact]
         public void LoadAnnuaireDebitTabac()
         {
             var sourceFile = GetTestFilePath
@@ -35,7 +35,7 @@ namespace FluentCsv.Tests
             result.Errors.Should().BeEmpty();
         }
 
-        [Test]
+        [Fact]
         public void LoadAnnuaireDebitTabacWithError()
         {
             var sourceFile = GetTestFilePath
@@ -62,7 +62,7 @@ namespace FluentCsv.Tests
             }
         }
 
-        [Test]
+        [Fact]
         public void LoadAnnuaireEcolesDoctorales()
         {
             var sourceFile = GetTestFilePath
@@ -82,7 +82,7 @@ namespace FluentCsv.Tests
             firstRow.AddressePostale.Should().Be("Aix- Marseille Université\r\nFaculté des Sciences de Luminy\r\nCase 901\r\n163, avenue de Luminy");
         }
 
-        [Test]
+        [Fact]
         public void LoadAnnuaireDebitTabacWithTuple() {
 	        var sourceFile = GetTestFilePath
 		        .FromDirectory("CsvFiles")

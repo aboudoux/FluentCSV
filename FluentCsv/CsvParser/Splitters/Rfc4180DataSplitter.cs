@@ -1,59 +1,88 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using FluentCsv.Exceptions;
 
 namespace FluentCsv.CsvParser.Splitters
 {
     public class Rfc4180DataSplitter : IDataSplitter
     {
+	    private const char Quote = '"';
         private const string DoubleQuote = "\"\"";
-        private const string Quote = "\"";
-        
-        public string[] SplitColumns(string input, string columnDelimiter)
+
+	    public string[] SplitColumns(string input, string columnDelimiter)
         {
-            EnsureDelimiterIsValid(columnDelimiter);
+            if (!input.Contains(Quote))
+	            return input.Split(columnDelimiter);
 
-            var regex = string.Format("(?<=(^|\\{0})(?<quote>\"?))([^\"]|(\"\"))*?(?=\\<quote>(?=\\{0}|$))", columnDelimiter);
+            var result = new List<string>();
+            var inputSpan = input.AsSpan();
+            var doubleQuote = DoubleQuote.AsSpan();
 
-            return Regex.Matches(input, regex)
-                .Cast<Match>()
-                .Select(a => ArrangeQuotes(a.Value))
-                .ToArray();
+            var startIndex = 0;
+            while (startIndex <= inputSpan.Length)
+            {
+	            var currentSlice = inputSpan.Slice(startIndex);
+	            int end = 0;
+	            if (currentSlice.IsEmpty)
+	            {
+                    result.Add(string.Empty);
+	            }
+	            else if (currentSlice[0] != Quote)
+	            {
+		            end = currentSlice.IndexOf(columnDelimiter);
+		            result.Add(end == -1
+			            ? currentSlice.ToString()
+			            : currentSlice.Slice(0, end).ToString());
+		            if (end == -1)
+			            break;
+	            }
+	            else
+	            {
+		            end = GetCloseQuoteIndex(currentSlice);
+		            var column = currentSlice.Slice(1, end);
+		            result.Add(column.Contains(doubleQuote, StringComparison.InvariantCulture)
+			            ? column.ToString().Replace(DoubleQuote, "\"")
+			            : column.ToString());
+		            end += 2;
+	            }
 
-            string ArrangeQuotes(string value)
-                => value == DoubleQuote 
-                    ? string.Empty 
-                    : value.Replace(DoubleQuote, Quote);
+	            startIndex += end + columnDelimiter.Length;
+            }
+
+            return result.ToArray();
+
+            int GetCloseQuoteIndex(ReadOnlySpan<char> span)
+            {
+	            var segment = span.Slice(1);
+	            var result = segment.IndexOf((Quote + columnDelimiter).AsSpan());
+	            return result == -1
+		            ? segment.Length - 1
+		            : result;
+            }
         }
 
         public string[] SplitLines(string input, string lineDelimiter)
         {
-            EnsureDelimiterIsValid(lineDelimiter);
-
             if (input.IsEmpty())
-                return new[]{string.Empty};
+	            return Array.Empty<string>();
 
-			var previousIndex = 0;
+            var previousIndex = 0;
 
-            return GetAllNewLineDelimiterIndexThatArentBetweenQuotes(input, lineDelimiter)
-                  .Select(SplittedLine)
-                  .ToArray();
+			return GetLinesIndex(input, lineDelimiter)
+				  .Select(SplitedLine)
+				  .ToArray();
 
-            string SplittedLine(int delimiterIndex)
-            {
-                var substring = input.Substring(previousIndex, delimiterIndex - previousIndex);
-                previousIndex = delimiterIndex + lineDelimiter.Length;
-                return substring;
-            }
-        }
+			string SplitedLine(int delimiterIndex) {
+				var substring = input.Substring(previousIndex, delimiterIndex - previousIndex);
+				previousIndex = delimiterIndex + lineDelimiter.Length;
+				return substring;
+			}
+		}
 
         public string GetFirstLine(string input, string lineDelimiter)
         {
-            EnsureDelimiterIsValid(lineDelimiter);
-
-            return GetAllNewLineDelimiterIndexThatArentBetweenQuotes(input, lineDelimiter)
+            return GetLinesIndex(input, lineDelimiter, false)
                 .Select(firstIndex => input.Substring(0, firstIndex))
                 .FirstOrDefault();
         }
@@ -70,93 +99,36 @@ namespace FluentCsv.CsvParser.Splitters
                 throw new BadDelimiterException("\"");
         }
 
-        private static IReadOnlyList<int> GetAllNewLineDelimiterIndexThatArentBetweenQuotes(string input, string lineDelimiter)
+        private static int[] GetLinesIndex(string input, ReadOnlySpan<char> lineDelimiterSpan, bool returnAll = true)
         {
-            const int notFound = -1;
+	        var result = new List<int>();
 
-            var allQuotes = GetAllQuotesIndex(input);
+	        var startIndex = 0;
 
-            var result = new List<int>();
+	        var currentSlice = input.Replace(DoubleQuote, "  ").AsSpan();
 
-            var delimiterIndex = 0;
-            var quotesToTest = new List<BoundedQuotes>();
-
-            while ((delimiterIndex = GetNewLineDelimiterIndex()) != notFound)
-            {
-                FeedOnlyBoundedQuotesLowerByDelimiterIndex();
-                AddDelimiterIfNotBetweenQuotes();
-                ClearQuotesToTestButKeepLastElement();
-            }
-
-            result.Add(input.Length);
-            return result;
-
-            int GetNewLineDelimiterIndex()
-            {
-                return input.IsEmpty()
-                    ? notFound
-                    : input.IndexOf(lineDelimiter, delimiterIndex + 1, StringComparison.Ordinal);
-            }
-
-            void FeedOnlyBoundedQuotesLowerByDelimiterIndex()
-                => quotesToTest.AddRange(
-                    allQuotes.DequeueWhile(a => a.StartQuoteIndex <= delimiterIndex));
-
-            void AddDelimiterIfNotBetweenQuotes()
-            {
-                if (quotesToTest.All(a => a.NotIncluded(delimiterIndex)))
-                    result.Add(delimiterIndex);
-            }
-
-            void ClearQuotesToTestButKeepLastElement()
-            {
-                if (quotesToTest.Any())
-                    quotesToTest.RemoveRange(0, quotesToTest.Count - 1);
-            }
-        }
-
-        private static Queue<BoundedQuotes> GetAllQuotesIndex(string input)
-        {
-            var sanitizedString = input.Replace(DoubleQuote, "  ");
-
-            var result = new Queue<BoundedQuotes>();
-
-            var bq = BoundedQuotes.Empty;
-            while ((bq = ExtractBoundedQuotesIndexes(sanitizedString, bq.EndQuoteIndex+1)) != BoundedQuotes.NotFound)
-                result.Enqueue(bq);
-
-            return result;
-        }
-
-        private static BoundedQuotes ExtractBoundedQuotesIndexes(string input, int startIndex)
-        {            
-            var startQuoteIndex = input.IndexOf(Quote, startIndex, StringComparison.Ordinal);
-            if (startQuoteIndex < 0)
-                return BoundedQuotes.NotFound;
-
-            var stopQuoteIndex = input.IndexOf(Quote, startQuoteIndex+1, StringComparison.Ordinal);
-            if(stopQuoteIndex < 0)
-                throw new MissingQuoteException();
-
-            return new BoundedQuotes(startQuoteIndex, stopQuoteIndex);
-        }
-
-        private class BoundedQuotes
-        {
-            public static BoundedQuotes Empty => new BoundedQuotes(-1, -1);
-            public static BoundedQuotes NotFound => null;
-
-            internal int StartQuoteIndex { get; }
-            internal int EndQuoteIndex { get; }
-
-            public BoundedQuotes(int startQuoteIndex, int endQuoteIndex)
-            {
-                StartQuoteIndex = startQuoteIndex;
-                EndQuoteIndex = endQuoteIndex;
-            }
-
-            public bool NotIncluded(int index)
-                => !(index >= StartQuoteIndex && index <= EndQuoteIndex);
+	        while (input.Length >= startIndex )
+	        {
+		        var firstQuoteIndex = currentSlice.IndexOf(Quote);
+		        var delimiterIndex = currentSlice.IndexOf(lineDelimiterSpan);
+		        if (firstQuoteIndex != -1 && firstQuoteIndex < delimiterIndex)
+		        {
+			        var lastQuoteIndex = currentSlice.Slice(firstQuoteIndex+1).IndexOf(Quote);
+			        if (lastQuoteIndex == -1) throw new MissingQuoteException();
+			        startIndex += firstQuoteIndex + lastQuoteIndex + 2;
+			        currentSlice = currentSlice.Slice(firstQuoteIndex + lastQuoteIndex + 2);
+		        }
+		        else
+		        {
+			        startIndex += delimiterIndex;
+			        result.Add(delimiterIndex == -1 ? input.Length : startIndex);
+			        if (!returnAll) break;
+			        if (delimiterIndex == -1) break;
+			        currentSlice = currentSlice.Slice(delimiterIndex + lineDelimiterSpan.Length);
+			        startIndex += lineDelimiterSpan.Length;
+		        }
+	        }
+	        return result.ToArray();
         }
     }
 }

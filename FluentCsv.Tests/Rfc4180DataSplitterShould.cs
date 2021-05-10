@@ -2,26 +2,26 @@
 using FluentAssertions;
 using FluentCsv.CsvParser.Splitters;
 using FluentCsv.Exceptions;
-using NUnit.Framework;
+using Xunit;
 
 namespace FluentCsv.Tests
 {
     public class Rfc4180DataSplitterShould
     {
-        [Test]
-        [TestCase(";", "Aurelien;BOUDOUX;\"9\r\nrue du test; impasse\r\n75001\r\nParis\"", "Aurelien", "BOUDOUX","9\r\nrue du test; impasse\r\n75001\r\nParis")]
-        [TestCase("<->", "Aurelien<->BOUDOUX<->\"9\r\nrue du test; <-> impasse <->\r\n75001\r\nParis\"", "Aurelien","BOUDOUX", "9\r\nrue du test; <-> impasse <->\r\n75001\r\nParis")]
-        [TestCase(",", "\"M. Aurelien BOUDOUX, TEST\",,", "M. Aurelien BOUDOUX, TEST", "", "")]
-        [TestCase(",", "\"TEST1\",\"TEST2\",\"TEST3\"", "TEST1", "TEST2", "TEST3")]
-        [TestCase("|", "\"TEST1\"|\"TEST2\"|\"TEST3\"", "TEST1", "TEST2", "TEST3")]
-        [TestCase("^", "\"TEST1\"^\"TEST2\"^\"TEST3\"", "TEST1", "TEST2", "TEST3")]
-        [TestCase("$", "\"TEST1\"$\"TEST2\"$\"TEST3\"", "TEST1", "TEST2", "TEST3")]
-        [TestCase(",", "TEST1,TEST2,TEST3", "TEST1", "TEST2", "TEST3")]
-        [TestCase(",", "TEST1,\"TEST2,TEST3\",TEST4", "TEST1", "TEST2,TEST3", "TEST4")]
-        [TestCase(",", "TEST1,\"TEST2,TEST3\",", "TEST1", "TEST2,TEST3", "")]
-        [TestCase(",", "\"Aurelien, \"\"BOUDOUX\"\"\",TEST,", "Aurelien, \"BOUDOUX\"", "TEST", "")]
-        [TestCase(",", "\"\"\"ok\",\"\",\" \"\" \"", "\"ok", "", " \" ")]
-        [TestCase(",", "\"\"\"ok\"\"\",\"\",\" \"\" \"", "\"ok\"", "", " \" ")]        
+        [Theory]
+        [InlineData(";", "Aurelien;BOUDOUX;\"9\r\nrue du test; impasse\r\n75001\r\nParis\"", "Aurelien", "BOUDOUX","9\r\nrue du test; impasse\r\n75001\r\nParis")]
+        [InlineData("<->", "Aurelien<->BOUDOUX<->\"9\r\nrue du test; <-> impasse <->\r\n75001\r\nParis\"", "Aurelien","BOUDOUX", "9\r\nrue du test; <-> impasse <->\r\n75001\r\nParis")]
+        [InlineData(",", "\"M. Aurelien BOUDOUX, TEST\",,", "M. Aurelien BOUDOUX, TEST", "", "")]
+        [InlineData(",", "\"TEST1\",\"TEST2\",\"TEST3\"", "TEST1", "TEST2", "TEST3")]
+        [InlineData("|", "\"TEST1\"|\"TEST2\"|\"TEST3\"", "TEST1", "TEST2", "TEST3")]
+        [InlineData("^", "\"TEST1\"^\"TEST2\"^\"TEST3\"", "TEST1", "TEST2", "TEST3")]
+        [InlineData("$", "\"TEST1\"$\"TEST2\"$\"TEST3\"", "TEST1", "TEST2", "TEST3")]
+        [InlineData(",", "TEST1,TEST2,TEST3", "TEST1", "TEST2", "TEST3")]
+        [InlineData(",", "TEST1,\"TEST2,TEST3\",TEST4", "TEST1", "TEST2,TEST3", "TEST4")]
+        [InlineData(",", "TEST1,\"TEST2,TEST3\",", "TEST1", "TEST2,TEST3", "")]
+        [InlineData(",", "\"Aurelien, \"\"BOUDOUX\"\"\",TEST,", "Aurelien, \"BOUDOUX\"", "TEST", "")]
+        [InlineData(",", "\"\"\"ok\",\"\",\" \"\" \"", "\"ok", "", " \" ")]
+        [InlineData(",", "\"\"\"ok\"\"\",\"\",\" \"\" \"", "\"ok\"", "", " \" ")]        
         public void SplitColumnsInRfc4180(string delimiter, string input, string expected1, string expected2, string expected3)
         {
             var splitter = new Rfc4180DataSplitter();
@@ -33,10 +33,10 @@ namespace FluentCsv.Tests
             result[2].Should().Be(expected3);
         }
 
-        [Test]        
-        [TestCase("\r\n", "Aurelien;BOUDOUX;\"9\r\nrue du test; impasse\r\n75001\r\nParis\"\r\n\"bonjour\"\r\ntest", "Aurelien;BOUDOUX;\"9\r\nrue du test; impasse\r\n75001\r\nParis\"", "\"bonjour\"", "test")]
-        [TestCase("\r\n", "Firstname;Address\r\nTEST1;\"10\r\nrue du test\"\r\n\"TEST2\r\nfirst\r\n\";OK", "Firstname;Address", "TEST1;\"10\r\nrue du test\"", "\"TEST2\r\nfirst\r\n\";OK")]
-        [TestCase("<endl>", "Column1;\"Column2\"<endl>\"test<endl>;test\"<endl>hello;ok", "Column1;\"Column2\"", "\"test<endl>;test\"", "hello;ok")]
+        [Theory]        
+        [InlineData("\r\n", "Aurelien;BOUDOUX;\"9\r\nrue du test; impasse\r\n75001\r\nParis\"\r\n\"bonjour\"\r\ntest", "Aurelien;BOUDOUX;\"9\r\nrue du test; impasse\r\n75001\r\nParis\"", "\"bonjour\"", "test")]
+        [InlineData("\r\n", "Firstname;Address\r\nTEST1;\"10\r\nrue du test\"\r\n\"TEST2\r\nfirst\r\n\";OK", "Firstname;Address", "TEST1;\"10\r\nrue du test\"", "\"TEST2\r\nfirst\r\n\";OK")]
+        [InlineData("<endl>", "Column1;\"Column2\"<endl>\"test<endl>;test\"<endl>hello;ok", "Column1;\"Column2\"", "\"test<endl>;test\"", "hello;ok")]
         public void ReplaceAllNewLIneWithinDoubleQuotes(string delimiter, string input, string expected1, string expected2, string expected3)
         {
             var splitter = new Rfc4180DataSplitter();
@@ -48,20 +48,19 @@ namespace FluentCsv.Tests
             result[2].Should().Be(expected3);
         }
 
-        [Test]
-        [TestCase("")]
-        [TestCase(null)]
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
         public void DontThrowErrorIfSplitEmptyLine(string input)
         {
             var splitter = new Rfc4180DataSplitter();
             var result = splitter.SplitLines(input, "\r\n");
 
-            result.Should().HaveCount(1);
-            result[0].Should().BeEmpty();
+            result.Should().BeEmpty();
         }
 
-        [Test]
-        [TestCase("\r\n","Test\r\n\"coucou")]
+        [Theory]
+        [InlineData("\r\n","Test\r\n\"coucou\r\n")]
         public void ThrowErrorIfNoEndQuoteFoundWhenExtractingLines(string delimiter, string input)
         {
             var splitter = new Rfc4180DataSplitter();
@@ -69,12 +68,12 @@ namespace FluentCsv.Tests
             action.Should().Throw<MissingQuoteException>();
         }
 
-        [Test]
-        [TestCase("\r\n","Column1;Column2","Column1;Column2")]
-        [TestCase("\r\n","Column1;Column2\r\ntest;test", "Column1;Column2")]
-        [TestCase("<endl>","Column1;Column2<endl>test;test", "Column1;Column2")]
-        [TestCase("\r\n","\"C1\r\n1\";\"C2\r\n2\"\r\nA;B","\"C1\r\n1\";\"C2\r\n2\"")]
-        [TestCase("\r\n", "", "")]
+        [Theory]
+        [InlineData("\r\n","Column1;Column2","Column1;Column2")]
+        [InlineData("\r\n","Column1;Column2\r\ntest;test", "Column1;Column2")]
+        [InlineData("<endl>","Column1;Column2<endl>test;test", "Column1;Column2")]
+        [InlineData("\r\n","\"C1\r\n1\";\"C2\r\n2\"\r\nA;B","\"C1\r\n1\";\"C2\r\n2\"")]
+        [InlineData("\r\n", "", "")]
         public void ExtractOnlyFirstLine(string delimiter, string input, string expected)
         {
             var splitter = new Rfc4180DataSplitter();
@@ -82,40 +81,23 @@ namespace FluentCsv.Tests
             firstLine.Should().Be(expected);
         }
 
-        [Test]
+        [Fact]
         public void ThrowErrorIfUsingDoubleQuoteAsLineDelimiter()
         {
-            const string input = "Header1;Header2\"Value1;Value2\"";
-
             var splitter = new Rfc4180DataSplitter();
-            Action action = () => splitter.SplitLines(input, "\"");
-
+            Action action = () => splitter.EnsureDelimitersAreValid("\"", ",");
             action.Should().Throw<BadDelimiterException>();
         }
 
-        [Test]
+        [Fact]
         public void ThrowErrorIfUsingDoubleQuoteAsColumnsDelimiter()
         {
-            const string input = "Header1\"Header2\"Value1\"Value2\"";
-
             var splitter = new Rfc4180DataSplitter();
-            Action action = () => splitter.SplitColumns(input, "\"");
-
+            Action action = () => splitter.EnsureDelimitersAreValid(",", "\"");
             action.Should().Throw<BadDelimiterException>();
         }
 
-        [Test]
-        public void ThrowErrorIfUsingDoubleQuoteAsGetFirstLineDelimiter()
-        {
-            const string input = "Header1\"Header2\"Value1\"Value2\"";
-
-            var splitter = new Rfc4180DataSplitter();
-            Action action = () => splitter.GetFirstLine(input, "\"");
-
-            action.Should().Throw<BadDelimiterException>();
-        }
-
-		[Test]
+		[Fact]
 	    public void TestReplace()
 		{
 			const string doubleQuote = "\"\"";
@@ -126,7 +108,7 @@ namespace FluentCsv.Tests
 			result.Should().Be(doubleQuote);
 		}
 
-		[Test]
+		[Fact]
 	    public void DoubleQuoteTest()
 	    {
 		    const string input = @"277;237C3989-4D81-4F62-9581-A19516D08D86;2018-07-16 09:56:08.780;37;""{""""AggregateId"""":""""237c3989-4d81-4f62-9581-a19516d08d86"""",""""SiteId"""":""""237c3989-4d81-4f62-9581-a19516d08d86"""",""""Contact"""":{""""ContactId"""":""""42497b38-f0e4-497c-918f-61fb27d5a208"""",""""Nom"""":""""BRUCKER"""",""""Prenom"""":"""""""",""""TypeContactSiteId"""":""""7bfa472a-ab24-44d8-917b-360d1204364b"""",""""MoyensDeContact"""":{""""TelephoneFixe"""":"""""""",""""TelephonePortable"""":""""+33603644655"""",""""Email"""":"""""""",""""AdressePostale"""":{""""NumeroEtVoie"""":""""10 Rue du Lac"""",""""Complement"""":"""""""",""""CodePostal"""":""""67114"""",""""Commune"""":""""Eschau"""",""""Pays"""":""""France""""}},""""AutresInformations"""":""""""""},""""HorodateCreationUtc"""":""""2018-07-16T09:56:08.6962731Z"""",""""Journalisation"""":{""""UtilisateurId"""":""""00000000-0000-0000-0000-000000000000"""",""""TacheId"""":-1,""""Horodate"""":""""0001-01-01T00:00:00""""}}""";
