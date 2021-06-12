@@ -1,4 +1,5 @@
 
+
 # FluentCSV 3.0
 ### Motivation
 On 2021-01-18, *Joel Verhagen* wrote a [blog post](https://www.joelverhagen.com/blog/2020/12/fastest-net-csv-parsers) to test different Csv .NET parser performance.
@@ -37,7 +38,7 @@ For this benchmark, we read a CSV file of 160Mo with 1 000 000 lines and 10 colu
 | SimpleParsingMode | **5.204 s** | 0.0865 s | 0.0722 s |
 ---
 #### Diagram
-![benchmark diagram](https://github.com/aboudoux/FluentCSV/blob/Perf/Benchmark/graph.PNG)
+![benchmark diagram](https://github.com/aboudoux/FluentCSV/blob/master/Benchmark/graph.PNG)
 
 ### Conclusions
 - The `Rfc4180` parser of FluentCSV 3 is now **8** more faster than FluentCSV 2 !
@@ -45,3 +46,9 @@ For this benchmark, we read a CSV file of 160Mo with 1 000 000 lines and 10 colu
 - The new `Rfc4180` parser is faster than `SimpleParsingMode` of the previous version of fluentCSV !
 - The difference between `SimpleParsingMode` and `Rfc4180` is largely reduced (only 700ms). The main objective of this new version is therefore achieved.
  
+### post-scriptum
+We have run the benchmark made by _Joel_ in our machine with FluentCSV 3. here's the result :
+
+[new diagram](https://github.com/aboudoux/FluentCSV/blob/master/Benchmark/total.PNG)
+
+So, it's better now.
