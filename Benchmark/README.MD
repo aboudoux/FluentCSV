@@ -49,6 +49,6 @@ For this benchmark, we read a CSV file of 160Mo with 1 000 000 lines and 10 colu
 ### post-scriptum
 We have run the benchmark made by _Joel_ in our machine with FluentCSV 3. here's the result :
 
-[new diagram](https://github.com/aboudoux/FluentCSV/blob/master/Benchmark/total.PNG)
+![new diagram](https://github.com/aboudoux/FluentCSV/blob/master/Benchmark/total.PNG)
 
 So, it's better now.
