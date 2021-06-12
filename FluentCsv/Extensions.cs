@@ -58,17 +58,6 @@ namespace FluentCsv
             }
         }
         
-	    internal static string RemoveBomIfExists(this string source)
-	    {
-		    const string utf8Bom1 = "\uFEFF";
-		    const string utf8Bom2 = "\uFFFE";
-
-		    return SourceContainsBom() 
-			    ? source.Replace(utf8Bom1, string.Empty).Replace(utf8Bom2, string.Empty) 
-			    : source;
-
-		    bool SourceContainsBom()
-			    => !source.IsEmpty() && (source.StartsWith(utf8Bom1) || source.StartsWith(utf8Bom2));
-	    }
+	    internal static string RemoveBomIfExists(this string source) => source.TrimStart('\uFEFF', '\uFFFE');
     }
 }

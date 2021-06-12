@@ -6,7 +6,7 @@ using FluentCsv.CsvParser;
 using FluentCsv.CsvParser.Results;
 using FluentCsv.CsvParser.Splitters;
 using FluentCsv.Tests.Results;
-using NUnit.Framework;
+using Xunit;
 
 namespace FluentCsv.Tests
 {
@@ -15,7 +15,7 @@ namespace FluentCsv.Tests
         private CsvFileParser<TestResult> GetParser(string input)
             => new CsvFileParser<TestResult>(input, new SimpleDataSplitter(), new CultureInfo("fr-FR"));
 
-        [Test]
+        [Fact]
         public void ReturnLineAndMessageOfBadDateConversion()
         {
             const string input = "01/01/2001\r\n01/01/2002\r\n51/01/2003\r\n01/01/2004";
@@ -24,10 +24,10 @@ namespace FluentCsv.Tests
             parser.AddColumn(0, a=>a.Member3);
             var result = parser.Parse(new ArrayCsvResult<TestResult>());
 
-            result.Errors.ShouldContainEquivalentTo(new CsvParseError(3,0,null, "La chaîne n'a pas été reconnue en tant que DateTime valide."));
+            result.Errors.ShouldContainEquivalentTo(new CsvParseError(3,0,null, "String '51/01/2003' was not recognized as a valid DateTime."));
         }
 
-        [Test]
+        [Fact]
         public void ProvideCorrectFileNumberIfFirstLineDeclaredAsHeader()
         {
             const string input = "Header\r\ntest1\r\ntest2\r\nbad\r\ntest3";
@@ -47,7 +47,7 @@ namespace FluentCsv.Tests
             }
         }
 
-		[Test]
+		[Fact]
 	    public void WriteErrorInFile()
 	    {
 			var fakeFile = new FakeFileWriter();

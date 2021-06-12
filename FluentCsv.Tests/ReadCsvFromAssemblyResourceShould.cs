@@ -3,13 +3,13 @@ using FluentAssertions;
 using FluentCsv.Exceptions;
 using FluentCsv.FluentReader;
 using FluentCsv.Tests.Results;
-using NUnit.Framework;
+using Xunit;
 
 namespace FluentCsv.Tests
 {
     public class ReadCsvFromAssemblyResourceShould
     {
-        [Test]
+        [Fact]
         public void LoadResource1Csv()
         {
             var csv = Read.Csv.FromAssemblyResource("FluentCsv.Tests.CsvFiles.resource1.csv")
@@ -25,7 +25,7 @@ namespace FluentCsv.Tests
                 );
         }
 
-        [Test]
+        [Fact]
         public void ThrowErrorIfResourceNotFound()
         {
             Action action = () => Read.Csv.FromAssemblyResource("unknown")

@@ -4,13 +4,13 @@ using FluentCsv.CsvParser;
 using FluentCsv.Exceptions;
 using FluentCsv.FluentReader;
 using FluentCsv.Tests.Results;
-using NUnit.Framework;
+using Xunit;
 
 namespace FluentCsv.Tests
 {
     public class ReadCsvWithErrorShould
     {
-        [Test]
+        [Fact]
         public void ThrowFluentCsvExceptionIfHeaderNotExists()
         {
             Action action = () =>
@@ -22,7 +22,7 @@ namespace FluentCsv.Tests
             action.Should().Throw<FluentCsvException>();
         }
 
-        [Test]
+        [Fact]
         public void ReturnProperErrorIfColumnIndexNotFound()
         {
             var result = Read.Csv.FromString("test;test2")
@@ -34,7 +34,7 @@ namespace FluentCsv.Tests
         }
 
 
-        [Test]
+        [Fact]
         public void ContainsCustomErrorIfBadStringFound()
         {
             const string input = "Header\r\ntest1\r\ntest2\r\nbad\r\ntest3";

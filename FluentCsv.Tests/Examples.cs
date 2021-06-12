@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using FluentAssertions;
 using FluentCsv.FluentReader;
-using NUnit.Framework;
+using Xunit;
 
 namespace FluentCsv.Tests
 {
@@ -15,7 +12,7 @@ namespace FluentCsv.Tests
     {
         private const string CsvFiles = "CsvFiles";
 
-        [Test]
+        [Fact]
         public void Sample1()
         {
             var file = GetTestFilePath.FromDirectory(CsvFiles)
@@ -34,7 +31,7 @@ namespace FluentCsv.Tests
             csv.Errors.ForEach(e => Debug.WriteLine($"Error at line {e.LineNumber} column index {e.ColumnZeroBasedIndex} : {e.ErrorMessage}"));
         }
 
-        [Test]
+        [Fact]
         public void ExampleA()
         {
             var file = GetTestFilePath.FromDirectory(CsvFiles)
@@ -55,7 +52,7 @@ namespace FluentCsv.Tests
             csv.ResultSet.ForEach(Console.WriteLine);
         }
 
-        [Test]
+        [Fact]
         public void ExampleB()
         {
             const string input = "NAME-name#Smith-Bob#Rob\"in-Wiliam";
@@ -74,7 +71,7 @@ namespace FluentCsv.Tests
             csv.ResultSet.ForEach(a=> Debug.WriteLine($"{a.FirstName} {a.LastName}"));
         }
 
-        [Test]
+        [Fact]
         public void ExampleC()
         {
             var file = GetTestFilePath.FromDirectory(CsvFiles)
@@ -96,7 +93,7 @@ namespace FluentCsv.Tests
             csv.Errors.ForEach(e => Console.WriteLine($"Error at line {e.LineNumber} column index {e.ColumnZeroBasedIndex} : {e.ErrorMessage}"));
         }
 
-        [Test]
+        [Fact]
         public void ExampleC1() {
 	        var file = GetTestFilePath.FromDirectory(CsvFiles)
 		        .AndFileName("ExampleC.csv");
@@ -132,14 +129,6 @@ namespace FluentCsv.Tests
     {
         public string Name { get; set; }
         public int Age { get; set; }
-    }
-
-    public class CsvName
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-
-        public override string ToString() => $"{FirstName} {LastName}";
     }
 
     public class CsvInfos

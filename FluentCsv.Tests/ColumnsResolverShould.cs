@@ -4,7 +4,7 @@ using FluentAssertions;
 using FluentCsv.CsvParser;
 using FluentCsv.Exceptions;
 using FluentCsv.Tests.Results;
-using NUnit.Framework;
+using Xunit;
 
 namespace FluentCsv.Tests
 {
@@ -12,7 +12,7 @@ namespace FluentCsv.Tests
     {
         private CultureInfo TestCulture = new CultureInfo("fr-FR");
 
-        [Test]
+        [Fact]
         public void ExtractSomeColumns()
         {
             var resolver = new ColumnsResolver<TestResult>(TestCulture);
@@ -25,7 +25,7 @@ namespace FluentCsv.Tests
             result.Should().BeEquivalentTo(TestResult.Create("coucou",5, new DateTime(1980, 07, 01)));
         }
 
-        [Test]
+        [Fact]
         public void ThrowErrorIfAddColumnWithSameIndex()
         {
             var resolver = new ColumnsResolver<TestResult>(TestCulture);
@@ -34,7 +34,7 @@ namespace FluentCsv.Tests
             error.Should().Throw<ColumnWithSameIndexAlreadyDeclaredException>();
         }
 
-        [Test]
+        [Fact]
         public void IncludeDeeperProperties()
         {
             var resolver = new ColumnsResolver<DeepResult>(TestCulture);
@@ -46,7 +46,7 @@ namespace FluentCsv.Tests
             result.Contact.Firstname.Should().Be("MARTIN");
         }
 
-        [Test]
+        [Fact]
         public void IncludeDeeperPropertiesWithMoreLevel()
         {
             var resolver = new ColumnsResolver<DeepResult>(TestCulture);
@@ -58,7 +58,7 @@ namespace FluentCsv.Tests
             result.Contact.Infos.Comment.Should().Be("MARTIN");
         }
 
-        [Test]
+        [Fact]
         public void ThrowErrorIfDeeperPropertiesIsNullInstance()
         {
             var resolver = new ColumnsResolver<DeepResult>(TestCulture);

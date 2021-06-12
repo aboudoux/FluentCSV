@@ -6,13 +6,13 @@ using FluentCsv.CsvParser;
 using FluentCsv.Exceptions;
 using FluentCsv.FluentReader;
 using FluentCsv.Tests.Results;
-using NUnit.Framework;
+using Xunit;
 
 namespace FluentCsv.Tests
 {
     public class ReadCsvFromStringShould
     {
-        [Test]
+        [Fact]
         public void ReturnsSimpleResultSet()
         {
             const string input = "test1;1\r\ntest2;2\r\ntest3;3";
@@ -30,7 +30,7 @@ namespace FluentCsv.Tests
                 TestResult.Create("test3", 3));
         }
 
-        [Test]
+        [Fact]
         public void ReturnResultSetWithColumnTransformation()
         {
             const string input = "01012001\r\n01022002\r\n01032003";
@@ -48,7 +48,7 @@ namespace FluentCsv.Tests
             );
         }
 
-        [Test]
+        [Fact]
         public void ParseCsvWithCustomColumnSeparator()
         {
             const string input = "test1<->1<->01012001\r\ntest2<->2<->01012002\r\ntest3<->3<->01012003";
@@ -69,7 +69,7 @@ namespace FluentCsv.Tests
             );
         }
 
-        [Test]
+        [Fact]
         public void ParseWithCustomLineSeparator()
         {
             const string input = "test1<endl>test2<endl>test3";
@@ -86,7 +86,7 @@ namespace FluentCsv.Tests
             resultSet[2].Member1.Should().Be("test3");
         }
 
-        [Test]
+        [Fact]
         public void ParseWithCustomLineAndColumnSeparator()
         {
             const string input = @"test1-1-01012001^test2-2-01012002^test3-3-01012003";
@@ -107,7 +107,7 @@ namespace FluentCsv.Tests
                 );
         }
 
-        [Test]
+        [Fact]
         public void DontReadFirstLineIfHeader()
         {
             const string input = "Name,Age\r\nJules,20\r\nGaetan,30\r\nBenoit,40";
@@ -126,7 +126,7 @@ namespace FluentCsv.Tests
                 TestResult.Create("Benoit", 40));
         }
 
-        [Test]
+        [Fact]
         public void UseColumnName()
         {
             const string input = "Name,Age\r\nJules,20\r\nGaetan,30\r\nBenoit,40";
@@ -148,7 +148,7 @@ namespace FluentCsv.Tests
         private static DateTime ParseFromEightDigit(string eightDigitDate)
             => DateTime.ParseExact(eightDigitDate, "ddMMyyyy", CultureInfo.InvariantCulture);
 
-        [Test]
+        [Fact]
         public void ReadColumnWithColumnSeparator()
         {
             const string input = "Firstname;Lastname;Address\r\nAurelien;BOUDOUX;\"9 rue du test;impasse;75001;Paris\"";
@@ -163,7 +163,7 @@ namespace FluentCsv.Tests
             resultSet.ShouldContainEquivalentTo(TestResultWithMultiline.Create("Aurelien", "BOUDOUX", "9 rue du test;impasse;75001;Paris"));
         }
 
-        [Test]
+        [Fact]
         public void DontUseRfc4180ForParsing()
         {
             const string input = "Firstname;Lastname\r\n\"M. B\"OK;Benoit";
@@ -178,7 +178,7 @@ namespace FluentCsv.Tests
             resultSet.ShouldContainEquivalentTo(TestResultWithMultiline.Create("\"M. B\"OK", "Benoit"));
         }
 
-        [Test]
+        [Fact]
         public void ReadColumnWithMultilineAndColumnSeparator()
         {
             const string input = "Firstname;Lastname;Address\r\nAurelien;BOUDOUX;\"9\r\nrue du test; impasse\r\n75001\r\nParis\"";
@@ -193,7 +193,7 @@ namespace FluentCsv.Tests
             resultSet.ShouldContainEquivalentTo(TestResultWithMultiline.Create("Aurelien","BOUDOUX", "9\r\nrue du test; impasse\r\n75001\r\nParis"));
         }
 
-        [Test]
+        [Fact]
         public void ReadCsvWithColumnThatContainsNewLine()
         {
             const string input = "\"FirstName\r\nLastName\";\"Home\r\nAddress\"\r\nMARTIN;\"12\r\nRue test\"";
@@ -207,7 +207,7 @@ namespace FluentCsv.Tests
             resultSet.ShouldContainEquivalentTo(TestResultWithMultiline.Create("MARTIN", address: "12\r\nRue test"));
         }
 
-        [Test]
+        [Fact]
         public void ThrowErrorIfUsingQuoteAsLineDelimiterInRfc4810ButWorksIfDisableIt()
         {
             const string input = "Header1;Header2\"Value1;Value2\"Value3;Value4";
@@ -234,7 +234,7 @@ namespace FluentCsv.Tests
                 TestResultWithMultiline.Create("Value3", "Value4"));
         }
 
-        [Test]
+        [Fact]
         public void ThrowErrorIfUsingQuoteAsColumnsDelimiterInRfc4810ButWorksIfDisableIt()
         {
             const string input = "Header1\"Header2\r\nValue1\"Value2\r\nValue3\"Value4";
@@ -261,7 +261,7 @@ namespace FluentCsv.Tests
                 TestResultWithMultiline.Create("Value3", "Value4"));
         }
 
-        [Test]
+        [Fact]
         public void ThrowErrorIfDefineEmptyColumnsDelimiter()
         {
             const string input = "Header1\"Header2\r\nValue1\"Value2\r\nValue3\"Value4";
@@ -276,7 +276,7 @@ namespace FluentCsv.Tests
             action.Should().Throw<EmptyColumnDelimiterException>();
         }
 
-        [Test]
+        [Fact]
         public void ThrowErrorIfDefineEmptyLinesDelimiter()
         {
             const string input = "Header1\"Header2\r\nValue1\"Value2\r\nValue3\"Value4";
@@ -291,7 +291,7 @@ namespace FluentCsv.Tests
             action.Should().Throw<EmptyLineDelimiterException>();
         }
 
-        [Test]
+        [Fact]
         public void AllowWhiteSpaceInLineDelimiter()
         {
             const string input = "Header1;Header2 Value1;Value2 Value3;Value4";
@@ -309,7 +309,7 @@ namespace FluentCsv.Tests
                 TestResultWithMultiline.Create("Value3", "Value4"));
         }
 
-        [Test]
+        [Fact]
         public void AllowWhiteSpaceInColumnsLineDelimiter()
         {
             const string input = "Header1 Header2\r\nValue1 Value2\r\nValue3 Value4";
@@ -327,7 +327,7 @@ namespace FluentCsv.Tests
                 TestResultWithMultiline.Create("Value3", "Value4"));
         }
 
-        [Test]
+        [Fact]
         public void ReadHeaderCaseSensitive()
         {
             const string input = "HeAder1\r\ntest1";
@@ -341,7 +341,7 @@ namespace FluentCsv.Tests
             action.Should().Throw<ColumnNameNotFoundException>();
         }
 
-        [Test]
+        [Fact]
         public void ThrowErrorIfDuplicateCaseInsensitiveHeader()
         {
             const string input = "header;HEADER\r\ntest;TEST";
@@ -354,7 +354,7 @@ namespace FluentCsv.Tests
             action.Should().Throw<DuplicateColumnNameException>();
         }
 
-        [Test]
+        [Fact]
         public void DontThrowErrorIfDuplicateCaseSensitiveHeader()
         {
             const string input = "header;HEADER\r\ntest1;TEST2";
@@ -368,7 +368,7 @@ namespace FluentCsv.Tests
             result.ShouldContainEquivalentTo(TestResult.Create("test1"));
         }
 
-        [Test]
+        [Fact]
         public void WorkWithDeepStructureThatContainsValueObject()
         {
             const string input = "Name;Phone\r\nDUPONT;0187225445\r\nMARTIN;0655457676\r\nERROR;078872129\r\n";
@@ -385,7 +385,7 @@ namespace FluentCsv.Tests
             result.Errors.ShouldContainEquivalentTo(new CsvParseError(4,1,"phone", "078872129 is not a valid phone number"));
         }
 
-        [Test]
+        [Fact]
         public void ResolveCsvDataWithUsCulture()
         {
             const string input = "Date;Size\r\n07/01/2018;1.2";
@@ -400,9 +400,9 @@ namespace FluentCsv.Tests
             csv.ResultSet.ShouldContainEquivalentTo(TestResult.Create(member3: new DateTime(2018,07,01), member4: 1.2m));
         }
 
-		[Test]
-		[TestCase("\uFEFFHEADER1;HEADER2;HEADER3\r\nTEST1;TEST2;TEST3")]
-		[TestCase("\uFEFF\"HEADER1\";\"HEADER2\";\"HEADER3\"\r\nTEST1;TEST2;TEST3")]
+		[Theory]
+		[InlineData("\uFEFFHEADER1;HEADER2;HEADER3\r\nTEST1;TEST2;TEST3")]
+		[InlineData("\uFEFF\"HEADER1\";\"HEADER2\";\"HEADER3\"\r\nTEST1;TEST2;TEST3")]
 	    public void ReadUtf8StringWithBom(string csvData)
 		{
 			var csv = Read.Csv.FromString(csvData)
