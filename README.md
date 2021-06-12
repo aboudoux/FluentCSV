@@ -19,7 +19,7 @@ FluentCSV **3.0** is now available with a big performance improvement !
 
 Thus, with this new version, you can read a CSV file of 1 000 000 lines in just a few seconds !
 
-[See more details here](https://github.com/aboudoux/FluentCSV/blob/Perf/Benchmark/README.MD).
+[See more details here](https://github.com/aboudoux/FluentCSV/blob/master/Benchmark/README.MD).
 
 ## Adding FluentCSV to your project
 
@@ -400,7 +400,7 @@ Data EnumIsValid(string @enum)
 
 ### 3.0.0 - 2021/06/12
 - [Improvement] Upgrade to .Net Standard 2.1
-- [Improvement] Rewriting for best performances ([see the benchmark](https://github.com/aboudoux/FluentCSV/blob/Perf/Benchmark/README.MD))
+- [Improvement] Rewriting for best performances ([see the benchmark](https://github.com/aboudoux/FluentCSV/blob/master/Benchmark/README.MD))
 
 ### 2.0.1 - 2021/03/03
 - [BugFix] Error on linux when reading last column due to default line delimiter
