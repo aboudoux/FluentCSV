@@ -9,7 +9,7 @@
  - Implements  [RFC 4180](https://tools.ietf.org/html/rfc4180)
  - Free and Open source
  - Ease of reading and writing code (don't just do the right thing, but also says the right thing)
- - Automatically generates error lines based on your validation rules
+ - Automatically generates an error row report, customizable with your validation rules
 
 ## What's new ?
 FluentCSV **3.0** is now available with a big performance improvement !
