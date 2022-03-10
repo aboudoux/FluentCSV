@@ -97,8 +97,10 @@ Output
 
 ### ThatReturns.
 
-> Define what kind of object to returns as resultset and how to populate them.
-> The type must be a class with a parameterless constructor, and contains properties with public getter and setter, or a tuple like `(string a,int b)`
+> Define what kind of object to returns as resultset and how to populate them.  
+> The type must be a class with a parameterless constructor, and contains properties with public getter and setter, or a tuple like `(string a,int b)`.  
+> Due to a limitation of the `ValueTuple<>` generic type, use a POCO instead of a tuple if your result contains more than 7 members.  
+
 > You must choose one of the following methods.
 
 |Method| Argument(s) | Comment |
