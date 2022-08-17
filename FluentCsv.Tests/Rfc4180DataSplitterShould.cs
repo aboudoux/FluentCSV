@@ -115,8 +115,8 @@ namespace FluentCsv.Tests
 
 		    var splitter = new Rfc4180DataSplitter();
 
-		    var colums =splitter.SplitColumns(input, ";");
-		    colums[4].Should().Contain("\"Complement\":\"\"");
+		    var columns =splitter.SplitColumns(input, ";");
+		    columns[4].Should().Contain("\"Complement\":\"\"");
 	    }
 	}
 }
