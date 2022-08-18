@@ -6,7 +6,7 @@ On 2021-01-18, *Joel Verhagen* wrote a [blog post](https://www.joelverhagen.com/
 
 In this test, FluentCSV is very very far behind with a very bad score of 57s for parsing 1 000 000 lines where the others take only few seconds for do the job.
 
-Although the main purpose of FluentCSV is to make your code super clean and readable by providing a fluent API for reading your CSV files, this is not a reason to have performance issue like this, it's why we have worked on an upgrade to fix it !
+Although the main purpose of FluentCSV is to make your code super clean and readable by providing a fluent API for reading your CSV files, this is not a reason to have performance issue like this, it's why we have worked on an upgrade to fix it!
 
 ### Action plan
 FluentCSV contains two parser :
@@ -41,9 +41,9 @@ For this benchmark, we read a CSV file of 160Mo with 1 000 000 lines and 10 colu
 ![benchmark diagram](https://github.com/aboudoux/FluentCSV/blob/master/Benchmark/graph.PNG)
 
 ### Conclusions
-- The `Rfc4180` parser of FluentCSV 3 is now **8** more faster than FluentCSV 2 !
-- The `SimpleParsingMode` of FluentCSV 3 gains **20%** of performance thanks to parralelization (I guess the more core you have on your machine, the faster the parser works)
-- The new `Rfc4180` parser is faster than `SimpleParsingMode` of the previous version of fluentCSV !
+- The `Rfc4180` parser of FluentCSV 3 is now **8** more faster than FluentCSV 2!
+- The `SimpleParsingMode` of FluentCSV 3 gains **20%** of performance thanks to parallelization (I guess the more core you have on your machine, the faster the parser works)
+- The new `Rfc4180` parser is faster than `SimpleParsingMode` of the previous version of fluentCSV!
 - The difference between `SimpleParsingMode` and `Rfc4180` is largely reduced (only 700ms). The main objective of this new version is therefore achieved.
  
 ### post-scriptum
